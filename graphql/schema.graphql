@@ -1,0 +1,174 @@
+schema {
+  query: Query
+  mutation: Mutation
+  subscription: Subscription
+}
+
+enum GameStatus {
+  LOBBY
+  TEAMS_SET
+  ROUND_ACTIVE
+  GRADING
+  REVEAL
+  FINISHED
+}
+
+enum QuestionType {
+  TEXT
+  PICTURE_10
+}
+
+enum RoundStatus {
+  DRAFT
+  ACTIVE
+  GRADING
+  REVEALED
+}
+
+type Game {
+  id: ID!
+  joinCode: String!
+  status: GameStatus!
+  currentRound: Int
+  players: [Player!]!
+  teams: [Team!]!
+}
+
+type Player {
+  id: ID!
+  displayName: String!
+  teamId: ID
+}
+
+type Team {
+  id: ID!
+  name: String!
+  score: Int!
+  doubleUsedRound: Int
+  players: [Player!]!
+}
+
+type Round {
+  number: Int!
+  category: String!
+  status: RoundStatus!
+  questions: [Question!]!
+}
+
+type Question {
+  number: Int!
+  type: QuestionType!
+  text: String
+  imageUrl: String
+  defaultPoints: Int!
+  "Only populated after the round is revealed."
+  correctAnswers: [String!]
+}
+
+type TeamResponse {
+  roundNumber: Int!
+  questionNumber: Int!
+  teamId: ID!
+  answers: [String!]!
+  doubled: Boolean!
+  graded: Boolean!
+  gradedPoints: [Int!]
+}
+
+type RoundResult {
+  round: Round!
+  responses: [TeamResponse!]!
+  standings: [Team!]!
+}
+
+type CreateGamePayload {
+  game: Game!
+  "Secret token authorizing GM-only mutations. Shown once; keep it safe."
+  gmToken: String!
+}
+
+type JoinGamePayload {
+  game: Game!
+  player: Player!
+}
+
+type UploadUrlPayload {
+  uploadUrl: String!
+  imageKey: String!
+}
+
+"Coarse-grained update fanned out to onGameUpdated subscribers."
+type GameUpdate {
+  gameId: ID!
+  status: GameStatus!
+  currentRound: Int
+  "Event hint, e.g. PLAYER_JOINED, TEAMS_SET, ROUND_STARTED, ROUND_REVEALED."
+  event: String!
+  game: Game!
+}
+
+input QuestionInput {
+  type: QuestionType!
+  text: String
+  imageKey: String
+  correctAnswers: [String!]!
+  defaultPoints: Int!
+}
+
+input SubmitAnswersInput {
+  gameId: ID!
+  playerId: ID!
+  roundNumber: Int!
+  "One entry per question; PICTURE_10 answers are the 10 strings for that question."
+  answers: [QuestionAnswersInput!]!
+  double: Boolean
+}
+
+input QuestionAnswersInput {
+  questionNumber: Int!
+  answers: [String!]!
+}
+
+input GradeResponseInput {
+  gameId: ID!
+  gmToken: String!
+  roundNumber: Int!
+  questionNumber: Int!
+  teamId: ID!
+  points: [Int!]!
+}
+
+type Query {
+  game(gameId: ID!): Game
+  myTeam(gameId: ID!, playerId: ID!): Team
+  roundResults(gameId: ID!, roundNumber: Int!): RoundResult
+  standings(gameId: ID!): [Team!]!
+}
+
+type Mutation {
+  createGame: CreateGamePayload!
+  joinGame(joinCode: String!, playerId: ID!, displayName: String!): JoinGamePayload!
+  randomizeTeams(gameId: ID!, gmToken: String!, teamCount: Int!): GameUpdate!
+  setTeamName(gameId: ID!, playerId: ID!, teamId: ID!, name: String!): GameUpdate!
+  createRound(gameId: ID!, gmToken: String!, category: String!, questions: [QuestionInput!]!): Round!
+  startRound(gameId: ID!, gmToken: String!, roundNumber: Int!): GameUpdate!
+  chooseDouble(gameId: ID!, playerId: ID!, roundNumber: Int!): GameUpdate!
+  submitAnswers(input: SubmitAnswersInput!): GameUpdate!
+  gradeResponse(input: GradeResponseInput!): TeamResponse!
+  endRound(gameId: ID!, gmToken: String!, roundNumber: Int!): GameUpdate!
+  getImageUploadUrl(gameId: ID!, gmToken: String!, contentType: String!): UploadUrlPayload!
+}
+
+type Subscription {
+  onGameUpdated(gameId: ID!): GameUpdate
+    @aws_subscribe(
+      mutations: [
+        "randomizeTeams"
+        "setTeamName"
+        "startRound"
+        "chooseDouble"
+        "submitAnswers"
+        "endRound"
+      ]
+    )
+}
