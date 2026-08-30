@@ -41,3 +41,27 @@ export function optionalString(
   if (raw === undefined || raw === null) return undefined;
   return requiredString(args, name, options);
 }
+
+export interface IntArgOptions {
+  min?: number;
+  max?: number;
+}
+
+/** Read a required integer argument. GraphQL `Int!` guarantees a number, not a sane one. */
+export function requiredInt(
+  args: Record<string, unknown>,
+  name: string,
+  options: IntArgOptions = {},
+): number {
+  const value = args[name];
+  if (typeof value !== "number" || !Number.isInteger(value)) {
+    throw new ValidationError(`"${name}" is required and must be an integer`);
+  }
+  if (options.min !== undefined && value < options.min) {
+    throw new ValidationError(`"${name}" must be at least ${options.min}`);
+  }
+  if (options.max !== undefined && value > options.max) {
+    throw new ValidationError(`"${name}" must be at most ${options.max}`);
+  }
+  return value;
+}

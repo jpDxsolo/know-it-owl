@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { Game, Player, Team } from "@know-it-owl/core";
-import { assembleGame } from "@know-it-owl/functions/lib/views";
+import { assembleGame, gameUpdate } from "@know-it-owl/functions/lib/views";
 
 const game: Game = { id: "g1", joinCode: "ABC123", status: "TEAMS_SET", currentRound: null };
 
@@ -34,5 +34,22 @@ describe("assembleGame", () => {
   it("carries the game fields through", () => {
     const view = assembleGame(game, [], [], []);
     expect(view).toMatchObject({ id: "g1", joinCode: "ABC123", status: "TEAMS_SET" });
+  });
+});
+
+describe("gameUpdate", () => {
+  it("lifts the game's identity and status onto the envelope", () => {
+    const view = assembleGame({ ...game, currentRound: 2 }, players, teams, []);
+    expect(gameUpdate(view, "TEAMS_SET")).toMatchObject({
+      gameId: "g1",
+      status: "TEAMS_SET",
+      currentRound: 2,
+      event: "TEAMS_SET",
+    });
+  });
+
+  it("carries the snapshot through untouched", () => {
+    const view = assembleGame(game, players, teams, []);
+    expect(gameUpdate(view, "TEAM_RENAMED").game).toBe(view);
   });
 });
