@@ -2,12 +2,13 @@ import type { TeamResponse } from "@know-it-owl/core";
 import { optionalString, requiredInt, requiredString } from "../lib/args.js";
 import { ForbiddenError, NotFoundError } from "../lib/errors.js";
 import { loadGameState, loadRoundSubmissions } from "../lib/gameState.js";
-import { viewerRole, visibleRound, type VisibleRound } from "../lib/visibility.js";
+import { signRounds, type SignedRound } from "../lib/images.js";
+import { viewerRole, visibleRound } from "../lib/visibility.js";
 import { assembleGame, type TeamView } from "../lib/views.js";
 import { standingsFor } from "./standings.js";
 
 export interface RoundResult {
-  round: VisibleRound;
+  round: SignedRound;
   responses: TeamResponse[];
   standings: TeamView[];
 }
@@ -41,8 +42,9 @@ export async function roundResults(args: Record<string, unknown>): Promise<Round
     throw new ForbiddenError("These results are not public until the round is revealed");
   }
 
+  const [signed] = await signRounds([view]);
   const { responses } = await loadRoundSubmissions(gameId, roundNumber);
   const game = assembleGame(state.game, state.players, state.teams, []);
 
-  return { round: view, responses, standings: standingsFor(game.teams) };
+  return { round: signed, responses, standings: standingsFor(game.teams) };
 }

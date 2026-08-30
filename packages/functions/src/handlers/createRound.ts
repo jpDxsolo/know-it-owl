@@ -6,7 +6,8 @@ import { assertGm } from "../lib/gmAuth.js";
 import * as keys from "../lib/keys.js";
 import { isQuestionKey, toRound, type QuestionItem, type RoundItem } from "../lib/mappers.js";
 import { MAX_QUESTIONS_PER_ROUND, parseQuestionInputs } from "../lib/questionInput.js";
-import { withoutAnswerKeys, type VisibleRound } from "../lib/visibility.js";
+import { signRounds, type SignedRound } from "../lib/images.js";
+import { withoutAnswerKeys } from "../lib/visibility.js";
 
 const MAX_CATEGORY_LENGTH = 60;
 
@@ -19,7 +20,7 @@ const IN_PLAY = new Set(["ACTIVE", "GRADING"]);
  *
  * V1 has no draft editing: a mistake means authoring a new round.
  */
-export async function createRound(args: Record<string, unknown>): Promise<VisibleRound> {
+export async function createRound(args: Record<string, unknown>): Promise<SignedRound> {
   const gameId = requiredString(args, "gameId");
   const gmToken = requiredString(args, "gmToken");
   const category = requiredString(args, "category", { maxLength: MAX_CATEGORY_LENGTH });
@@ -84,5 +85,6 @@ export async function createRound(args: Record<string, unknown>): Promise<Visibl
 
   // The GM gets every question back but no answer keys: one rule, applied to
   // every pre-reveal payload, rather than an exception for the author.
-  return withoutAnswerKeys(round, questions);
+  const [signed] = await signRounds([withoutAnswerKeys(round, questions)]);
+  return signed;
 }

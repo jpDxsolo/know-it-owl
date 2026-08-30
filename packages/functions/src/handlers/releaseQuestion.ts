@@ -54,7 +54,7 @@ export async function releaseQuestion(args: Record<string, unknown>): Promise<Ga
   }
 
   const released = { ...round, releasedCount: questionNumber };
-  const view = snapshot(
+  const view = await snapshot(
     {
       ...state,
       rounds: state.rounds.map((candidate) =>

@@ -81,7 +81,7 @@ export async function chooseDouble(args: Record<string, unknown>): Promise<GameU
     throw error;
   }
 
-  const view = snapshot(
+  const view = await snapshot(
     {
       ...state,
       teams: state.teams.map((candidate) =>
