@@ -5,6 +5,7 @@
  * This is the KIO-08 gate: the per-handler suites assert that each write is
  * shaped correctly, and this asserts that the sequence of them is a game.
  */
+import { readFile } from "node:fs/promises";
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { chooseDouble } from "@know-it-owl/functions/handlers/chooseDouble";
 import { createGame } from "@know-it-owl/functions/handlers/createGame";
@@ -20,6 +21,7 @@ import { roundResults } from "@know-it-owl/functions/handlers/roundResults";
 import { standings } from "@know-it-owl/functions/handlers/standings";
 import { startRound } from "@know-it-owl/functions/handlers/startRound";
 import { submitAnswers } from "@know-it-owl/functions/handlers/submitAnswers";
+import { setTeamName } from "@know-it-owl/functions/handlers/setTeamName";
 import { setClient } from "@know-it-owl/functions/lib/db";
 import * as keys from "@know-it-owl/functions/lib/keys";
 import { installFakeDynamo, type FakeTable } from "./support/fakeDynamo.js";
@@ -413,6 +415,89 @@ describe("walkthrough: nothing leaks to a player", () => {
       ["Lima"],
     ]);
     expect(public_?.responses).toHaveLength(6);
+  });
+});
+
+describe("walkthrough: every broadcast is a player view", () => {
+  /**
+   * Every mutation in the `onGameUpdated` @aws_subscribe list returns the very
+   * object AppSync fans out to *all* subscribers, so a GM-shaped snapshot in any
+   * of them would hand the answer key to the room. The handlers each pass
+   * "PLAYER" to `snapshot`, and this is what holds them to it.
+   */
+  it("carries no answer keys, no GM token and no unreleased questions", async () => {
+    const created = await createGame();
+    const { gmToken } = created;
+    const gameId = created.game.id;
+    const joinCode = created.game.joinCode;
+
+    const broadcasts: unknown[] = [];
+    for (const [index, playerId] of ["p1", "p2", "p3", "p4"].entries()) {
+      broadcasts.push(await joinGame({ joinCode, playerId, displayName: `Player ${index + 1}` }));
+    }
+
+    const drawn = await randomizeTeams({ gameId, gmToken, teamCount: 2 });
+    broadcasts.push(drawn);
+    const teamIds = drawn.game.teams.map((team) => team.id);
+    const [captain, other] = await captains(gameId, teamIds);
+
+    broadcasts.push(
+      await setTeamName({ gameId, playerId: captain, teamId: teamIds[0], name: "Owls" }),
+    );
+
+    await createRound({ gameId, gmToken, category: "Capitals", questions: QUESTIONS });
+    broadcasts.push(await startRound({ gameId, gmToken, roundNumber: 1 }));
+    broadcasts.push(await chooseDouble({ gameId, playerId: captain, roundNumber: 1 }));
+    broadcasts.push(
+      await releaseQuestion({ gameId, gmToken, roundNumber: 1, questionNumber: 2 }),
+    );
+
+    const preReveal = JSON.stringify(broadcasts);
+    for (const answer of ANSWER_KEYS) {
+      expect(preReveal).not.toContain(answer);
+    }
+    expect(preReveal).not.toContain(gmToken);
+    expect(preReveal).not.toContain("gmTokenHash");
+    // Two of three released, so the third question has not been unveiled yet.
+    expect(preReveal).toContain("Capital of Norway?");
+    expect(preReveal).not.toContain("Capital of Peru?");
+
+    await releaseQuestion({ gameId, gmToken, roundNumber: 1, questionNumber: 3 });
+    for (const playerId of [captain, other]) {
+      broadcasts.push(
+        await submitAnswers({
+          input: { gameId, playerId, roundNumber: 1, answers: answersFor(3, "guess") },
+        }),
+      );
+    }
+
+    const reveal = await endRound({ gameId, gmToken, roundNumber: 1 });
+    broadcasts.push(reveal);
+
+    // The reveal is where the keys become public; the token never does.
+    expect(JSON.stringify(broadcasts)).not.toContain(gmToken);
+    expect(JSON.stringify(broadcasts)).not.toContain("gmTokenHash");
+    expect(JSON.stringify(reveal)).toContain("Paris");
+  });
+
+  it("names every mutation the schema fans out", async () => {
+    // The handlers above are the @aws_subscribe list in graphql/schema.graphql.
+    // If a mutation is added there, it belongs in the broadcast check too.
+    const schema = await readFile(
+      new URL("../../../../graphql/schema.graphql", import.meta.url),
+      "utf8",
+    );
+    const list = schema.split("@aws_subscribe")[1]?.split("]")[0] ?? "";
+    expect([...list.matchAll(/"([a-zA-Z]+)"/g)].map((match) => match[1])).toEqual([
+      "joinGame",
+      "randomizeTeams",
+      "setTeamName",
+      "startRound",
+      "releaseQuestion",
+      "chooseDouble",
+      "submitAnswers",
+      "endRound",
+    ]);
   });
 });
 
