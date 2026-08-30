@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { randomizeTeams } from "./teams.js";
+import { randomizeTeams } from "@know-it-owl/core";
 
 const players = (n: number) => Array.from({ length: n }, (_, i) => `p${i + 1}`);
 

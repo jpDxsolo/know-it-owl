@@ -7,9 +7,17 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.696.0",
+    "@aws-sdk/lib-dynamodb": "^3.696.0",
     "@know-it-owl/core": "*"
   },
   "devDependencies": {
-    "@types/aws-lambda": "^8.10.145"
+    "@types/aws-lambda": "^8.10.145",
+    "@types/node": "^22.20.1"
+  },
+  "exports": {
+    "./lib/*": "./src/lib/*.ts",
+    "./handlers/*": "./src/handlers/*.ts",
+    "./resolver": "./src/resolver.ts"
   }
 }
