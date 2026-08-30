@@ -10,6 +10,10 @@ import { gameUpdate, type GameUpdate } from "../lib/views.js";
 /** A round can be ended straight from ACTIVE — nobody is obliged to score. */
 const ENDABLE = new Set(["ACTIVE", "GRADING"]);
 
+function missingSubmissions(teams: readonly { id: string; name: string }[], submittedIds: Set<string>): string[] {
+  return teams.filter((team) => !submittedIds.has(team.id)).map((team) => team.name);
+}
+
 /**
  * DynamoDB caps a transaction at 100 items: the round, the game, and one score
  * update per team that scored.
@@ -21,9 +25,9 @@ const MAX_TRANSACT_ITEMS = 100;
  * running scores.
  *
  * The scores and both status changes are one transaction, so there is no window
- * where the answers are public but the standings are stale. Teams that did not
- * submit simply contribute nothing — they are not written and do not block the
- * reveal.
+ * where the answers are public but the standings are stale. Every team must
+ * have submitted first — a reveal with an outstanding team would freeze their
+ * answers out of the scoreboard.
  */
 export async function endRound(args: Record<string, unknown>): Promise<GameUpdate> {
   const gameId = requiredString(args, "gameId");
@@ -44,7 +48,18 @@ export async function endRound(args: Record<string, unknown>): Promise<GameUpdat
     );
   }
 
-  const { responses } = await loadRoundSubmissions(gameId, roundNumber);
+  const { responses, submissions } = await loadRoundSubmissions(gameId, roundNumber);
+
+  // Every team must have handed in before the round can be revealed — otherwise
+  // a stragglers' answers would be locked out of the scoreboard.
+  const submittedIds = new Set(submissions.map((entry) => entry.teamId));
+  const outstanding = missingSubmissions(state.teams, submittedIds);
+  if (outstanding.length > 0) {
+    throw new ConflictError(
+      `Cannot end round ${roundNumber}: ${outstanding.join(", ")} ${outstanding.length === 1 ? "has" : "have"} not submitted`,
+    );
+  }
+
   // Addition only. A doubled team's points were doubled by the GM on entry.
   const totals = sumRoundPointsByTeam(responses);
 

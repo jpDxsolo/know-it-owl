@@ -230,11 +230,16 @@ describe("gradeResponse", () => {
 describe("endRound", () => {
   const args = { gameId: "g1", gmToken: GM_TOKEN, roundNumber: 1 };
 
+  function submission(teamId: string, doubled = false): Record<string, unknown> {
+    return { ...keys.submission("g1", 1, teamId), teamId, submittedAt: "2026-08-30", doubled };
+  }
+
   const graded = [
     responseItem(1, "t1", { graded: true, gradedPoints: [2], doubled: true }),
     responseItem(2, "t1", { graded: true, gradedPoints: [3], doubled: true }),
     responseItem(1, "t2", { graded: true, gradedPoints: [1] }),
-    { ...keys.submission("g1", 1, "t1"), teamId: "t1", submittedAt: "2026-08-30", doubled: true },
+    submission("t1", true),
+    submission("t2"),
   ];
 
   it("adds the entered points to each team's score in one transaction", async () => {
@@ -286,7 +291,11 @@ describe("endRound", () => {
   it("does not write a team that scored nothing, and is not blocked by it", async () => {
     stubGame({
       roundStatus: "GRADING",
-      responses: [responseItem(1, "t1", { graded: true, gradedPoints: [2] })],
+      responses: [
+        responseItem(1, "t1", { graded: true, gradedPoints: [2] }),
+        submission("t1"),
+        submission("t2"),
+      ],
     });
     const update = await endRound(args);
 
@@ -296,11 +305,22 @@ describe("endRound", () => {
     expect(update.game.teams.find((team) => team.id === "t2")?.score).toBe(4);
   });
 
-  it("ends a round nobody submitted for", async () => {
+  it("refuses to end a round with an outstanding team", async () => {
+    stubGame({
+      roundStatus: "GRADING",
+      responses: [
+        responseItem(1, "t1", { graded: true, gradedPoints: [2] }),
+        submission("t1"),
+      ],
+    });
+    await expect(endRound(args)).rejects.toThrow(/Hawks .* not submitted/);
+    expect(ddbMock.commandCalls(TransactWriteCommand)).toHaveLength(0);
+  });
+
+  it("refuses a round with no submissions at all", async () => {
     stubGame({ responses: [] });
-    const update = await endRound(args);
-    expect(writes()).toHaveLength(2);
-    expect(update.event).toBe("ROUND_REVEALED");
+    await expect(endRound(args)).rejects.toThrow(ConflictError);
+    expect(ddbMock.commandCalls(TransactWriteCommand)).toHaveLength(0);
   });
 
   it("ignores ungraded responses when summing", async () => {
@@ -309,6 +329,8 @@ describe("endRound", () => {
       responses: [
         responseItem(1, "t1", { graded: true, gradedPoints: [2] }),
         responseItem(2, "t1"),
+        submission("t1"),
+        submission("t2"),
       ],
     });
     const update = await endRound(args);
