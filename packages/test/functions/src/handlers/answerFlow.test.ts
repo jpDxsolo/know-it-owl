@@ -167,7 +167,7 @@ describe("chooseDouble", () => {
 
   it("refuses a player with no team", async () => {
     stubGame({ playerTeamId: null });
-    await expect(chooseDouble(doubleArgs)).rejects.toThrow(ValidationError);
+    await expect(chooseDouble(doubleArgs)).rejects.toThrow(ConflictError);
   });
 
   it("rejects an unknown player, round and game", async () => {

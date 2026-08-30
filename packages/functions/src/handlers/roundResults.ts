@@ -26,11 +26,13 @@ export async function roundResults(args: Record<string, unknown>): Promise<Round
   const gmToken = optionalString(args, "gmToken");
 
   const state = await loadGameState(gameId);
-  if (!state) return null;
+  // A nullable query returns null for the absence of the thing it names, and
+  // errors for anything else missing: no round yet is null, no game is an error.
+  if (!state) throw new NotFoundError("No such game");
 
   const role = viewerRole(gmToken, state.gmTokenHash);
   const round = state.rounds.find((candidate) => candidate.number === roundNumber);
-  if (!round) throw new NotFoundError(`No round ${roundNumber} in this game`);
+  if (!round) return null;
 
   if (round.status !== "REVEALED" && role !== "GM") {
     throw new ForbiddenError("These results are not public until the round is revealed");
