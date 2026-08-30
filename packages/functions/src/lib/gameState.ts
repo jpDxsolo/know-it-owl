@@ -22,6 +22,7 @@ import {
   toTeamResponse,
   type Submission,
 } from "./mappers.js";
+import { signRounds } from "./images.js";
 import { visibleRounds, type ViewerRole } from "./visibility.js";
 import { assembleGame, type GameView } from "./views.js";
 
@@ -69,13 +70,16 @@ export async function loadGameState(gameId: string): Promise<GameState | undefin
  * Answer keys and unreleased questions are in `state` for the length of the
  * call; `visibleRounds` is the only thing standing between them and the
  * response, which is why it lives in one module rather than per handler.
+ *
+ * Async because image keys become presigned GET URLs here — the bucket is
+ * private, so a stored key is useless to a browser on its own.
  */
-export function snapshot(state: GameState, role: ViewerRole): GameView {
+export async function snapshot(state: GameState, role: ViewerRole): Promise<GameView> {
   return assembleGame(
     state.game,
     state.players,
     state.teams,
-    visibleRounds(state.rounds, state.questions, role),
+    await signRounds(visibleRounds(state.rounds, state.questions, role)),
   );
 }
 

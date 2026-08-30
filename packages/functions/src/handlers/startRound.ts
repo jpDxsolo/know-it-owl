@@ -73,7 +73,7 @@ export async function startRound(args: Record<string, unknown>): Promise<GameUpd
   // Snapshot what was just written. Player view: this fans out to everyone, so
   // only question 1 travels with it.
   const started = { ...round, status: "ACTIVE" as const, releasedCount: 1 };
-  const view = snapshot(
+  const view = await snapshot(
     {
       ...state,
       game: { ...state.game, status: "ROUND_ACTIVE", currentRound: roundNumber },

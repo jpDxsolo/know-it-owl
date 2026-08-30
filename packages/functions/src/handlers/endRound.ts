@@ -109,7 +109,7 @@ export async function endRound(args: Record<string, unknown>): Promise<GameUpdat
 
   await transactWrite(writes);
 
-  const view = snapshot(
+  const view = await snapshot(
     {
       ...state,
       game: { ...state.game, status: "REVEAL" },

@@ -114,7 +114,7 @@ export async function submitAnswers(args: Record<string, unknown>): Promise<Game
     throw error;
   }
 
-  const view = snapshot(
+  const view = await snapshot(
     {
       ...state,
       teams: state.teams.map((candidate) =>

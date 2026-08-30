@@ -4,7 +4,7 @@
  * so handlers assemble these from several items in the game partition.
  */
 import type { Game, GameStatus, Player, Team } from "@know-it-owl/core";
-import type { VisibleRound } from "./visibility.js";
+import type { SignedRound } from "./images.js";
 
 /** A team plus the roster of players assigned to it. */
 export interface TeamView extends Team {
@@ -19,7 +19,7 @@ export interface TeamView extends Team {
 export interface GameView extends Game {
   players: Player[];
   teams: TeamView[];
-  rounds: VisibleRound[];
+  rounds: SignedRound[];
 }
 
 export interface CreateGamePayload {
@@ -38,7 +38,7 @@ export function assembleGame(
   game: Game,
   players: Player[],
   teams: Team[],
-  rounds: VisibleRound[],
+  rounds: SignedRound[],
 ): GameView {
   return {
     ...game,
