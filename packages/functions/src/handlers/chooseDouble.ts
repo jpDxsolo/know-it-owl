@@ -1,7 +1,7 @@
 import type { Team } from "@know-it-owl/core";
 import { requiredInt, requiredString } from "../lib/args.js";
 import { cancellationCodes, tableName, transactWrite } from "../lib/db.js";
-import { ConflictError, NotFoundError, ValidationError } from "../lib/errors.js";
+import { ConflictError, NotFoundError } from "../lib/errors.js";
 import { loadGameState, snapshot, type GameState } from "../lib/gameState.js";
 import * as keys from "../lib/keys.js";
 import { gameUpdate, type GameUpdate } from "../lib/views.js";
@@ -13,7 +13,7 @@ export function callerTeam(state: GameState, playerId: string): Team {
   const player = state.players.find((candidate) => candidate.id === playerId);
   if (!player) throw new NotFoundError("No such player in this game");
   if (player.teamId === null) {
-    throw new ValidationError("You have not been assigned to a team yet");
+    throw new ConflictError("You have not been assigned to a team yet");
   }
   const team = state.teams.find((candidate) => candidate.id === player.teamId);
   if (!team) throw new NotFoundError("No such team in this game");

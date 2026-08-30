@@ -391,11 +391,11 @@ describe("roundResults", () => {
     expect(result?.responses[0].questionNumber).toBe(1);
   });
 
-  it("returns null for an unknown game and errors for an unknown round", async () => {
+  it("errors for an unknown game and returns null for a round not yet created", async () => {
     ddbMock.on(GetCommand).resolves({});
-    expect(await roundResults({ gameId: "nope", roundNumber: 1 })).toBeNull();
+    await expect(roundResults({ gameId: "nope", roundNumber: 1 })).rejects.toThrow(NotFoundError);
     stubGame();
-    await expect(roundResults({ gameId: "g1", roundNumber: 9 })).rejects.toThrow(NotFoundError);
+    expect(await roundResults({ gameId: "g1", roundNumber: 9 })).toBeNull();
   });
 });
 

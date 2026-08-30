@@ -102,8 +102,15 @@ export async function endRound(args: Record<string, unknown>): Promise<GameUpdat
       TableName: table,
       Key: keys.gameMeta(gameId),
       UpdateExpression: "SET #status = :reveal",
+      // Every other status write is conditional; this one was not, so a REVEAL
+      // could stomp a game that had already moved on.
+      ConditionExpression: "#status IN (:roundActive, :grading)",
       ExpressionAttributeNames: { "#status": "status" },
-      ExpressionAttributeValues: { ":reveal": "REVEAL" },
+      ExpressionAttributeValues: {
+        ":reveal": "REVEAL",
+        ":roundActive": "ROUND_ACTIVE",
+        ":grading": "GRADING",
+      },
     },
   });
 

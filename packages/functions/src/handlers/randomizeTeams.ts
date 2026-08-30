@@ -1,12 +1,13 @@
 import { randomizeTeams as splitIntoTeams } from "@know-it-owl/core";
 import type { Player, Team } from "@know-it-owl/core";
 import { requiredInt, requiredString } from "../lib/args.js";
-import { getItem, queryPrefix, tableName, transactWrite } from "../lib/db.js";
+import { tableName, transactWrite } from "../lib/db.js";
 import { ConflictError, NotFoundError, ValidationError } from "../lib/errors.js";
 import { assertGm } from "../lib/gmAuth.js";
 import { newTeamId } from "../lib/ids.js";
 import * as keys from "../lib/keys.js";
-import { toGame, toPlayer, type TeamItem } from "../lib/mappers.js";
+import { loadGameState } from "../lib/gameState.js";
+import type { TeamItem } from "../lib/mappers.js";
 import { assembleGame, gameUpdate, type GameUpdate } from "../lib/views.js";
 
 /**
@@ -30,29 +31,22 @@ export async function randomizeTeams(args: Record<string, unknown>): Promise<Gam
   const gmToken = requiredString(args, "gmToken");
   const teamCount = requiredInt(args, "teamCount", { min: 1 });
 
-  const meta = await getItem(keys.gameMeta(gameId));
-  if (!meta) throw new NotFoundError("No such game");
-  assertGm(gmToken, typeof meta.gmTokenHash === "string" ? meta.gmTokenHash : undefined);
+  const state = await loadGameState(gameId);
+  if (!state) throw new NotFoundError("No such game");
+  assertGm(gmToken, state.gmTokenHash);
 
-  const game = toGame(meta);
+  const game = state.game;
   if (!RANDOMIZABLE.has(game.status)) {
     throw new ConflictError("Teams can only be randomized before the first round starts");
   }
 
-  const pk = keys.gamePk(gameId);
-  const [playerItems, teamItems, roundItems] = await Promise.all([
-    queryPrefix(pk, keys.prefixes.players()),
-    queryPrefix(pk, keys.prefixes.teams()),
-    queryPrefix(pk, keys.prefixes.rounds()),
-  ]);
-
   // Re-drawing teams after a round exists would orphan that round's responses,
   // which are keyed by team id.
-  if (roundItems.length > 0) {
+  if (state.rounds.length > 0) {
     throw new ConflictError("Teams cannot be randomized once a round has been created");
   }
 
-  const players = playerItems.map(toPlayer);
+  const players = state.players;
   if (players.length === 0) {
     throw new ValidationError("Cannot randomize teams before any player has joined");
   }
@@ -62,7 +56,7 @@ export async function randomizeTeams(args: Record<string, unknown>): Promise<Gam
     );
   }
 
-  const required = teamItems.length + teamCount + players.length + 1;
+  const required = state.teams.length + teamCount + players.length + 1;
   if (required > MAX_TRANSACT_ITEMS) {
     throw new ConflictError(
       `This game is too large to re-draw teams atomically (${required} writes, limit ${MAX_TRANSACT_ITEMS})`,
@@ -81,8 +75,8 @@ export async function randomizeTeams(args: Record<string, unknown>): Promise<Gam
   const teamIdByPlayer = new Map<string, string>();
   const writes: Parameters<typeof transactWrite>[0] = [];
 
-  for (const item of teamItems) {
-    writes.push({ Delete: { TableName: table, Key: { pk: item.pk, sk: item.sk } } });
+  for (const existing of state.teams) {
+    writes.push({ Delete: { TableName: table, Key: keys.team(gameId, existing.id) } });
   }
 
   dealt.forEach((playerIds, index) => {
