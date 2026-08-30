@@ -1,0 +1,408 @@
+import { cleanup, render, screen, waitFor, within } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { MemoryRouter, Route, Routes } from "react-router-dom";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import type { Game } from "@know-it-owl/frontend/hooks/useGame";
+import { GmGrading } from "@know-it-owl/frontend/screens/GmGrading";
+import { setApiConfig } from "@know-it-owl/frontend/services/config";
+import { setGmToken } from "@know-it-owl/frontend/services/identity";
+
+class InertSocket {
+  onopen: (() => void) | undefined;
+  onmessage: ((event: MessageEvent<string>) => void) | undefined;
+  onclose: (() => void) | undefined;
+  onerror: (() => void) | undefined;
+  readyState = 0;
+  send(): void {}
+  close(): void {}
+}
+
+let calls: { query: string; variables: Record<string, unknown> }[] = [];
+
+function player(id: string, displayName: string, teamId: string | null = null) {
+  return { id, displayName, teamId };
+}
+
+function team(id: string, name: string, members: ReturnType<typeof player>[]) {
+  return {
+    id,
+    name,
+    score: 0,
+    doubleUsedRound: null,
+    lastSubmittedRound: 1,
+    players: members,
+  };
+}
+
+const ada = player("p1", "Ada", "t1");
+const grace = player("p2", "Grace", "t2");
+
+const game: Game = {
+  id: "g1",
+  joinCode: "ABC123",
+  status: "GRADING",
+  currentRound: 1,
+  players: [ada, grace],
+  teams: [team("t1", "Owls", [ada]), team("t2", "Bears", [grace])],
+  rounds: [],
+};
+
+function textQuestion(number: number) {
+  return {
+    number,
+    type: "TEXT" as const,
+    text: `Question ${number}?`,
+    imageUrl: null,
+    defaultPoints: 2,
+    correctAnswers: ["Canberra"],
+  };
+}
+
+function pictureQuestion(number: number) {
+  return {
+    number,
+    type: "PICTURE_10" as const,
+    text: null,
+    imageUrl: "https://images.test/one.jpg",
+    defaultPoints: 1,
+    correctAnswers: Array.from({ length: 10 }, (_, index) => `Thing ${index + 1}`),
+  };
+}
+
+function response(
+  questionNumber: number,
+  teamId: string,
+  answers: string[],
+  overrides: { doubled?: boolean; gradedPoints?: number[] | null } = {},
+) {
+  return {
+    roundNumber: 1,
+    questionNumber,
+    teamId,
+    answers,
+    doubled: overrides.doubled ?? false,
+    graded: overrides.gradedPoints != null,
+    gradedPoints: overrides.gradedPoints ?? null,
+  };
+}
+
+type Question = ReturnType<typeof textQuestion> | ReturnType<typeof pictureQuestion>;
+
+function results(questions: Question[], responses: ReturnType<typeof response>[]) {
+  return {
+    round: {
+      number: 1,
+      category: "Capitals",
+      status: "GRADING",
+      releasedCount: questions.length,
+      questionCount: questions.length,
+      questions,
+    },
+    responses,
+    standings: game.teams,
+  };
+}
+
+function serve(payload: ReturnType<typeof results>): void {
+  vi.stubGlobal(
+    "fetch",
+    vi.fn(async (_url: string, init: RequestInit) => {
+      const body = JSON.parse(String(init.body)) as {
+        query: string;
+        variables: Record<string, unknown>;
+      };
+      calls.push(body);
+      if (body.query.includes("query RoundResults")) {
+        return {
+          ok: true,
+          status: 200,
+          json: async () => ({ data: { roundResults: payload } }),
+        };
+      }
+      if (body.query.includes("query Game")) {
+        return { ok: true, status: 200, json: async () => ({ data: { game } }) };
+      }
+      return { ok: true, status: 200, json: async () => ({ data: { gradeResponse: null } }) };
+    }),
+  );
+}
+
+function renderGrading() {
+  return render(
+    <MemoryRouter initialEntries={["/game/g1/gm/grading"]}>
+      <Routes>
+        <Route path="/game/:gameId/gm/grading" element={<GmGrading />} />
+      </Routes>
+    </MemoryRouter>,
+  );
+}
+
+const oneTextQuestion = () =>
+  results(
+    [textQuestion(1)],
+    [response(1, "t1", ["Canberra"]), response(1, "t2", ["Sydney"])],
+  );
+
+beforeEach(() => {
+  calls = [];
+  localStorage.clear();
+  setApiConfig({ url: "https://api.test/graphql", realtimeUrl: "wss://rt.test", apiKey: "da2-x" });
+  vi.stubGlobal("WebSocket", InertSocket);
+});
+
+afterEach(() => {
+  cleanup();
+  vi.unstubAllGlobals();
+  vi.restoreAllMocks();
+  setApiConfig(undefined);
+  localStorage.clear();
+});
+
+describe("who is allowed in", () => {
+  it("refuses a browser with no host key", async () => {
+    serve(oneTextQuestion());
+    renderGrading();
+    expect(screen.getByText(/not your game to run/i)).toBeInTheDocument();
+  });
+});
+
+describe("the marking sheet", () => {
+  it("puts every team's answer against the key", async () => {
+    setGmToken("g1", "token");
+    serve(oneTextQuestion());
+    renderGrading();
+
+    await waitFor(() => expect(screen.getByText(/marking round 1 · capitals/i)).toBeInTheDocument());
+    expect(screen.getByText("Question 1?")).toBeInTheDocument();
+    // Once as the answer key, once as what the Owls wrote.
+    expect(screen.getAllByText("Canberra")).toHaveLength(2);
+    expect(screen.getByText("Sydney")).toBeInTheDocument();
+    expect(screen.getByText("Owls")).toBeInTheDocument();
+    expect(screen.getByText("Bears")).toBeInTheDocument();
+  });
+
+  it("counts what is left to mark", async () => {
+    setGmToken("g1", "token");
+    serve(
+      results(
+        [textQuestion(1)],
+        [
+          response(1, "t1", ["Canberra"], { gradedPoints: [2] }),
+          response(1, "t2", ["Sydney"]),
+        ],
+      ),
+    );
+    renderGrading();
+
+    await waitFor(() => expect(screen.getByText(/1 of 2 marked/i)).toBeInTheDocument());
+    expect(screen.getByText(/1 answer is still unmarked/i)).toBeInTheDocument();
+  });
+
+  it("shows points already entered, and leaves an unmarked box empty", async () => {
+    setGmToken("g1", "token");
+    serve(
+      results(
+        [textQuestion(1)],
+        [
+          response(1, "t1", ["Canberra"], { gradedPoints: [2] }),
+          response(1, "t2", ["Sydney"]),
+        ],
+      ),
+    );
+    renderGrading();
+
+    await waitFor(() =>
+      expect(screen.getByLabelText("Points for Owls")).toHaveValue(2),
+    );
+    expect(screen.getByLabelText("Points for Bears")).toHaveValue(null);
+  });
+
+  it("says so when a team handed in nothing for a question", async () => {
+    setGmToken("g1", "token");
+    serve(results([textQuestion(1)], [response(1, "t1", ["Canberra"])]));
+    renderGrading();
+
+    await waitFor(() => expect(screen.getByText(/nothing handed in/i)).toBeInTheDocument());
+  });
+});
+
+describe("entering points", () => {
+  it("sends exactly what was typed, to the right team and question", async () => {
+    setGmToken("g1", "token");
+    serve(oneTextQuestion());
+    renderGrading();
+    await waitFor(() => expect(screen.getByLabelText("Points for Bears")).toBeInTheDocument());
+
+    await userEvent.type(screen.getByLabelText("Points for Bears"), "1");
+    await userEvent.tab();
+
+    await waitFor(() => expect(calls.some((c) => c.query.includes("GradeResponse"))).toBe(true));
+    expect(calls.find((c) => c.query.includes("GradeResponse"))?.variables.input).toEqual({
+      gameId: "g1",
+      gmToken: "token",
+      roundNumber: 1,
+      questionNumber: 1,
+      teamId: "t2",
+      points: [1],
+    });
+  });
+
+  it("does not multiply a doubled team's number — the typed value is final", async () => {
+    setGmToken("g1", "token");
+    serve(
+      results(
+        [textQuestion(1)],
+        [response(1, "t1", ["Canberra"], { doubled: true }), response(1, "t2", ["Sydney"])],
+      ),
+    );
+    renderGrading();
+    await waitFor(() => expect(screen.getByLabelText("Points for Owls")).toBeInTheDocument());
+
+    await userEvent.type(screen.getByLabelText("Points for Owls"), "4");
+    await userEvent.tab();
+
+    await waitFor(() => expect(calls.some((c) => c.query.includes("GradeResponse"))).toBe(true));
+    const sent = calls.find((c) => c.query.includes("GradeResponse"))?.variables.input as {
+      points: number[];
+    };
+    expect(sent.points).toEqual([4]);
+  });
+
+  it("marks a whole answer right in one tap, at the question's own value", async () => {
+    setGmToken("g1", "token");
+    serve(oneTextQuestion());
+    renderGrading();
+    await waitFor(() => expect(screen.getByText("Owls")).toBeInTheDocument());
+
+    const row = screen.getByLabelText("Points for Owls").closest("li");
+    await userEvent.click(within(row as HTMLElement).getByRole("button", { name: "Full" }));
+
+    await waitFor(() => expect(calls.some((c) => c.query.includes("GradeResponse"))).toBe(true));
+    const sent = calls.find((c) => c.query.includes("GradeResponse"))?.variables.input as {
+      points: number[];
+      teamId: string;
+    };
+    expect(sent).toMatchObject({ teamId: "t1", points: [2] });
+  });
+
+  it("gives a picture round one box per item", async () => {
+    setGmToken("g1", "token");
+    serve(
+      results(
+        [pictureQuestion(1)],
+        [
+          response(
+            1,
+            "t1",
+            Array.from({ length: 10 }, (_, index) => `Guess ${index + 1}`),
+          ),
+        ],
+      ),
+    );
+    renderGrading();
+
+    await waitFor(() =>
+      expect(screen.getByLabelText("Points for Owls, item 1")).toBeInTheDocument(),
+    );
+    expect(screen.getByLabelText("Points for Owls, item 10")).toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole("button", { name: "All right" }));
+    await waitFor(() => expect(calls.some((c) => c.query.includes("GradeResponse"))).toBe(true));
+    const sent = calls.find((c) => c.query.includes("GradeResponse"))?.variables.input as {
+      points: number[];
+    };
+    expect(sent.points).toEqual([1, 1, 1, 1, 1, 1, 1, 1, 1, 1]);
+  });
+
+  it("reports a refusal rather than losing it", async () => {
+    setGmToken("g1", "token");
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (_url: string, init: RequestInit) => {
+        const body = JSON.parse(String(init.body)) as { query: string };
+        if (body.query.includes("query RoundResults")) {
+          return {
+            ok: true,
+            status: 200,
+            json: async () => ({ data: { roundResults: oneTextQuestion() } }),
+          };
+        }
+        if (body.query.includes("query Game")) {
+          return { ok: true, status: 200, json: async () => ({ data: { game } }) };
+        }
+        return {
+          ok: true,
+          status: 200,
+          json: async () => ({
+            errors: [
+              { message: "Round 1 is no longer being graded", errorType: "ConflictError" },
+            ],
+          }),
+        };
+      }),
+    );
+    renderGrading();
+    await waitFor(() => expect(screen.getByText("Owls")).toBeInTheDocument());
+
+    const row = screen.getByLabelText("Points for Owls").closest("li");
+    await userEvent.click(within(row as HTMLElement).getByRole("button", { name: "Full" }));
+
+    await waitFor(() =>
+      expect(screen.getByText(/no longer being graded/i)).toBeInTheDocument(),
+    );
+  });
+});
+
+describe("the doubled badge", () => {
+  it("is impossible to miss, and says the host has to type the doubled value", async () => {
+    setGmToken("g1", "token");
+    serve(
+      results(
+        [textQuestion(1)],
+        [response(1, "t1", ["Canberra"], { doubled: true }), response(1, "t2", ["Sydney"])],
+      ),
+    );
+    renderGrading();
+
+    await waitFor(() => expect(screen.getByText("DOUBLED ×2")).toBeInTheDocument());
+    expect(screen.getByText(/nothing is multiplied for you/i)).toBeInTheDocument();
+  });
+
+  it("is absent for a team that did not double", async () => {
+    setGmToken("g1", "token");
+    serve(oneTextQuestion());
+    renderGrading();
+
+    await waitFor(() => expect(screen.getByText("Owls")).toBeInTheDocument());
+    expect(screen.queryByText("DOUBLED ×2")).not.toBeInTheDocument();
+  });
+});
+
+describe("finishing the round", () => {
+  it("reveals the round", async () => {
+    setGmToken("g1", "token");
+    serve(oneTextQuestion());
+    renderGrading();
+    await waitFor(() =>
+      expect(screen.getByRole("button", { name: /end round and reveal/i })).toBeEnabled(),
+    );
+
+    await userEvent.click(screen.getByRole("button", { name: /end round and reveal/i }));
+    await waitFor(() => expect(calls.some((c) => c.query.includes("EndRound"))).toBe(true));
+    expect(calls.find((c) => c.query.includes("EndRound"))?.variables).toEqual({
+      gameId: "g1",
+      gmToken: "token",
+      roundNumber: 1,
+    });
+  });
+
+  it("warns that unmarked answers will score nothing", async () => {
+    setGmToken("g1", "token");
+    serve(oneTextQuestion());
+    renderGrading();
+
+    await waitFor(() =>
+      expect(screen.getByText(/2 answers are still unmarked/i)).toBeInTheDocument(),
+    );
+  });
+});
