@@ -9,7 +9,7 @@ import { loadGameView } from "./getGame.js";
 
 const MAX_JOIN_CODE_LENGTH = 12;
 const MAX_PLAYER_ID_LENGTH = 64;
-const MAX_DISPLAY_NAME_LENGTH = 40;
+const MAX_DISPLAY_NAME_LENGTH = 30;
 
 /** Resolve a join code to its game id via the JOINCODE# lookup item. */
 async function gameIdForCode(code: string): Promise<string> {
@@ -73,5 +73,5 @@ export async function joinGame(args: Record<string, unknown>): Promise<JoinGameP
     ? view.players.map((candidate) => (candidate.id === playerId ? player : candidate))
     : [...view.players, player];
 
-  return { game: assembleGame(view, players, view.teams), player };
+  return { game: assembleGame(view, players, view.teams, view.rounds), player };
 }

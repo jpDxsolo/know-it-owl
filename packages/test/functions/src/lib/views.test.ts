@@ -18,7 +18,7 @@ const teams: Team[] = [
 
 describe("assembleGame", () => {
   it("groups players onto their teams", () => {
-    const view = assembleGame(game, players, teams);
+    const view = assembleGame(game, players, teams, []);
     expect(view.teams.map((team) => team.players.map((player) => player.id))).toEqual([
       ["p1", "p3"],
       ["p2"],
@@ -26,13 +26,13 @@ describe("assembleGame", () => {
   });
 
   it("keeps unassigned players on the game roster", () => {
-    const view = assembleGame(game, players, teams);
+    const view = assembleGame(game, players, teams, []);
     expect(view.players).toHaveLength(4);
     expect(view.teams.flatMap((team) => team.players)).toHaveLength(3);
   });
 
   it("carries the game fields through", () => {
-    const view = assembleGame(game, [], []);
+    const view = assembleGame(game, [], [], []);
     expect(view).toMatchObject({ id: "g1", joinCode: "ABC123", status: "TEAMS_SET" });
   });
 });

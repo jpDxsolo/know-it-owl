@@ -45,6 +45,7 @@ describe("createGame", () => {
     expect(game.currentRound).toBeNull();
     expect(game.players).toEqual([]);
     expect(game.teams).toEqual([]);
+    expect(game.rounds).toEqual([]);
     expect(game.joinCode).toMatch(/^[A-HJ-NP-Z2-9]{6}$/);
   });
 

@@ -42,6 +42,7 @@ function stubGame(status = "LOBBY", players: Record<string, unknown>[] = []): vo
     .on(QueryCommand, { ExpressionAttributeValues: { ":sk": "PLAYER#" } })
     .resolves({ Items: players });
   ddbMock.on(QueryCommand, { ExpressionAttributeValues: { ":sk": "TEAM#" } }).resolves({ Items: [] });
+  ddbMock.on(QueryCommand, { ExpressionAttributeValues: { ":sk": "ROUND#" } }).resolves({ Items: [] });
   ddbMock.on(PutCommand).resolves({});
 }
 
@@ -132,10 +133,18 @@ describe("joinGame", () => {
     expect(ddbMock.commandCalls(GetCommand)).toHaveLength(0);
   });
 
+  it("accepts a display name at the 30-character limit", async () => {
+    stubGame();
+    const name = "x".repeat(30);
+    await expect(joinGame({ ...args, displayName: name })).resolves.toMatchObject({
+      player: { displayName: name },
+    });
+  });
+
   it("rejects an over-long display name", async () => {
     stubGame();
-    await expect(joinGame({ ...args, displayName: "x".repeat(41) })).rejects.toThrow(
-      /at most 40 characters/,
+    await expect(joinGame({ ...args, displayName: "x".repeat(31) })).rejects.toThrow(
+      /at most 30 characters/,
     );
   });
 
