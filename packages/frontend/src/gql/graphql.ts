@@ -1,4 +1,5 @@
 /* eslint-disable */
+import type { DocumentTypeDecoration } from '@graphql-typed-document-node/core';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -283,6 +284,153 @@ export type UploadUrlPayload = {
   uploadUrl: Scalars['String']['output'];
 };
 
+export type GameFieldsFragment = { id: string, joinCode: string, status: GameStatus, currentRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }>, teams: Array<{ id: string, name: string, score: number, doubleUsedRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }> }>, rounds: Array<{ number: number, category: string, status: RoundStatus, releasedCount: number, questions: Array<{ number: number, type: QuestionType, text?: string | null, imageUrl?: string | null, defaultPoints: number, correctAnswers?: Array<string> | null }> }> };
+
+export type GameUpdateFieldsFragment = { gameId: string, status: GameStatus, currentRound?: number | null, event: string, player?: { id: string, displayName: string, teamId?: string | null } | null, game: { id: string, joinCode: string, status: GameStatus, currentRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }>, teams: Array<{ id: string, name: string, score: number, doubleUsedRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }> }>, rounds: Array<{ number: number, category: string, status: RoundStatus, releasedCount: number, questions: Array<{ number: number, type: QuestionType, text?: string | null, imageUrl?: string | null, defaultPoints: number, correctAnswers?: Array<string> | null }> }> } };
+
+export type GameQueryVariables = Exact<{
+  gameId: Scalars['ID']['input'];
+  gmToken?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type GameQuery = { game?: { id: string, joinCode: string, status: GameStatus, currentRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }>, teams: Array<{ id: string, name: string, score: number, doubleUsedRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }> }>, rounds: Array<{ number: number, category: string, status: RoundStatus, releasedCount: number, questions: Array<{ number: number, type: QuestionType, text?: string | null, imageUrl?: string | null, defaultPoints: number, correctAnswers?: Array<string> | null }> }> } | null };
+
+export type MyTeamQueryVariables = Exact<{
+  gameId: Scalars['ID']['input'];
+  playerId: Scalars['ID']['input'];
+}>;
+
+
+export type MyTeamQuery = { myTeam?: { id: string, name: string, score: number, doubleUsedRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }> } | null };
+
+export type RoundResultsQueryVariables = Exact<{
+  gameId: Scalars['ID']['input'];
+  roundNumber: Scalars['Int']['input'];
+  gmToken?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type RoundResultsQuery = { roundResults?: { round: { number: number, category: string, status: RoundStatus, releasedCount: number, questions: Array<{ number: number, type: QuestionType, text?: string | null, imageUrl?: string | null, defaultPoints: number, correctAnswers?: Array<string> | null }> }, responses: Array<{ roundNumber: number, questionNumber: number, teamId: string, answers: Array<string>, doubled: boolean, graded: boolean, gradedPoints?: Array<number> | null }>, standings: Array<{ id: string, name: string, score: number, doubleUsedRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }> }> } | null };
+
+export type StandingsQueryVariables = Exact<{
+  gameId: Scalars['ID']['input'];
+}>;
+
+
+export type StandingsQuery = { standings: Array<{ id: string, name: string, score: number, doubleUsedRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }> }> };
+
+export type CreateGameMutationVariables = Exact<{ [key: string]: never; }>;
+
+
+export type CreateGameMutation = { createGame: { gmToken: string, game: { id: string, joinCode: string, status: GameStatus, currentRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }>, teams: Array<{ id: string, name: string, score: number, doubleUsedRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }> }>, rounds: Array<{ number: number, category: string, status: RoundStatus, releasedCount: number, questions: Array<{ number: number, type: QuestionType, text?: string | null, imageUrl?: string | null, defaultPoints: number, correctAnswers?: Array<string> | null }> }> } } };
+
+export type CreateRoundMutationVariables = Exact<{
+  gameId: Scalars['ID']['input'];
+  gmToken: Scalars['String']['input'];
+  category: Scalars['String']['input'];
+  questions: Array<QuestionInput> | QuestionInput;
+}>;
+
+
+export type CreateRoundMutation = { createRound: { number: number, category: string, status: RoundStatus, releasedCount: number, questions: Array<{ number: number, type: QuestionType, text?: string | null, imageUrl?: string | null, defaultPoints: number, correctAnswers?: Array<string> | null }> } };
+
+export type GradeResponseMutationVariables = Exact<{
+  input: GradeResponseInput;
+}>;
+
+
+export type GradeResponseMutation = { gradeResponse: { roundNumber: number, questionNumber: number, teamId: string, answers: Array<string>, doubled: boolean, graded: boolean, gradedPoints?: Array<number> | null } };
+
+export type GetImageUploadUrlMutationVariables = Exact<{
+  gameId: Scalars['ID']['input'];
+  gmToken: Scalars['String']['input'];
+  contentType: Scalars['String']['input'];
+  contentLength: Scalars['Int']['input'];
+}>;
+
+
+export type GetImageUploadUrlMutation = { getImageUploadUrl: { uploadUrl: string, imageKey: string } };
+
+export type JoinGameMutationVariables = Exact<{
+  joinCode: Scalars['String']['input'];
+  playerId: Scalars['ID']['input'];
+  displayName: Scalars['String']['input'];
+}>;
+
+
+export type JoinGameMutation = { joinGame: { gameId: string, status: GameStatus, currentRound?: number | null, event: string, player?: { id: string, displayName: string, teamId?: string | null } | null, game: { id: string, joinCode: string, status: GameStatus, currentRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }>, teams: Array<{ id: string, name: string, score: number, doubleUsedRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }> }>, rounds: Array<{ number: number, category: string, status: RoundStatus, releasedCount: number, questions: Array<{ number: number, type: QuestionType, text?: string | null, imageUrl?: string | null, defaultPoints: number, correctAnswers?: Array<string> | null }> }> } } };
+
+export type RandomizeTeamsMutationVariables = Exact<{
+  gameId: Scalars['ID']['input'];
+  gmToken: Scalars['String']['input'];
+  teamCount: Scalars['Int']['input'];
+}>;
+
+
+export type RandomizeTeamsMutation = { randomizeTeams: { gameId: string, status: GameStatus, currentRound?: number | null, event: string, player?: { id: string, displayName: string, teamId?: string | null } | null, game: { id: string, joinCode: string, status: GameStatus, currentRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }>, teams: Array<{ id: string, name: string, score: number, doubleUsedRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }> }>, rounds: Array<{ number: number, category: string, status: RoundStatus, releasedCount: number, questions: Array<{ number: number, type: QuestionType, text?: string | null, imageUrl?: string | null, defaultPoints: number, correctAnswers?: Array<string> | null }> }> } } };
+
+export type SetTeamNameMutationVariables = Exact<{
+  gameId: Scalars['ID']['input'];
+  playerId: Scalars['ID']['input'];
+  teamId: Scalars['ID']['input'];
+  name: Scalars['String']['input'];
+}>;
+
+
+export type SetTeamNameMutation = { setTeamName: { gameId: string, status: GameStatus, currentRound?: number | null, event: string, player?: { id: string, displayName: string, teamId?: string | null } | null, game: { id: string, joinCode: string, status: GameStatus, currentRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }>, teams: Array<{ id: string, name: string, score: number, doubleUsedRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }> }>, rounds: Array<{ number: number, category: string, status: RoundStatus, releasedCount: number, questions: Array<{ number: number, type: QuestionType, text?: string | null, imageUrl?: string | null, defaultPoints: number, correctAnswers?: Array<string> | null }> }> } } };
+
+export type StartRoundMutationVariables = Exact<{
+  gameId: Scalars['ID']['input'];
+  gmToken: Scalars['String']['input'];
+  roundNumber: Scalars['Int']['input'];
+}>;
+
+
+export type StartRoundMutation = { startRound: { gameId: string, status: GameStatus, currentRound?: number | null, event: string, player?: { id: string, displayName: string, teamId?: string | null } | null, game: { id: string, joinCode: string, status: GameStatus, currentRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }>, teams: Array<{ id: string, name: string, score: number, doubleUsedRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }> }>, rounds: Array<{ number: number, category: string, status: RoundStatus, releasedCount: number, questions: Array<{ number: number, type: QuestionType, text?: string | null, imageUrl?: string | null, defaultPoints: number, correctAnswers?: Array<string> | null }> }> } } };
+
+export type ReleaseQuestionMutationVariables = Exact<{
+  gameId: Scalars['ID']['input'];
+  gmToken: Scalars['String']['input'];
+  roundNumber: Scalars['Int']['input'];
+  questionNumber: Scalars['Int']['input'];
+}>;
+
+
+export type ReleaseQuestionMutation = { releaseQuestion: { gameId: string, status: GameStatus, currentRound?: number | null, event: string, player?: { id: string, displayName: string, teamId?: string | null } | null, game: { id: string, joinCode: string, status: GameStatus, currentRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }>, teams: Array<{ id: string, name: string, score: number, doubleUsedRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }> }>, rounds: Array<{ number: number, category: string, status: RoundStatus, releasedCount: number, questions: Array<{ number: number, type: QuestionType, text?: string | null, imageUrl?: string | null, defaultPoints: number, correctAnswers?: Array<string> | null }> }> } } };
+
+export type ChooseDoubleMutationVariables = Exact<{
+  gameId: Scalars['ID']['input'];
+  playerId: Scalars['ID']['input'];
+  roundNumber: Scalars['Int']['input'];
+}>;
+
+
+export type ChooseDoubleMutation = { chooseDouble: { gameId: string, status: GameStatus, currentRound?: number | null, event: string, player?: { id: string, displayName: string, teamId?: string | null } | null, game: { id: string, joinCode: string, status: GameStatus, currentRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }>, teams: Array<{ id: string, name: string, score: number, doubleUsedRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }> }>, rounds: Array<{ number: number, category: string, status: RoundStatus, releasedCount: number, questions: Array<{ number: number, type: QuestionType, text?: string | null, imageUrl?: string | null, defaultPoints: number, correctAnswers?: Array<string> | null }> }> } } };
+
+export type SubmitAnswersMutationVariables = Exact<{
+  input: SubmitAnswersInput;
+}>;
+
+
+export type SubmitAnswersMutation = { submitAnswers: { gameId: string, status: GameStatus, currentRound?: number | null, event: string, player?: { id: string, displayName: string, teamId?: string | null } | null, game: { id: string, joinCode: string, status: GameStatus, currentRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }>, teams: Array<{ id: string, name: string, score: number, doubleUsedRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }> }>, rounds: Array<{ number: number, category: string, status: RoundStatus, releasedCount: number, questions: Array<{ number: number, type: QuestionType, text?: string | null, imageUrl?: string | null, defaultPoints: number, correctAnswers?: Array<string> | null }> }> } } };
+
+export type EndRoundMutationVariables = Exact<{
+  gameId: Scalars['ID']['input'];
+  gmToken: Scalars['String']['input'];
+  roundNumber: Scalars['Int']['input'];
+}>;
+
+
+export type EndRoundMutation = { endRound: { gameId: string, status: GameStatus, currentRound?: number | null, event: string, player?: { id: string, displayName: string, teamId?: string | null } | null, game: { id: string, joinCode: string, status: GameStatus, currentRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }>, teams: Array<{ id: string, name: string, score: number, doubleUsedRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }> }>, rounds: Array<{ number: number, category: string, status: RoundStatus, releasedCount: number, questions: Array<{ number: number, type: QuestionType, text?: string | null, imageUrl?: string | null, defaultPoints: number, correctAnswers?: Array<string> | null }> }> } } };
+
+export type OnGameUpdatedSubscriptionVariables = Exact<{
+  gameId: Scalars['ID']['input'];
+}>;
+
+
+export type OnGameUpdatedSubscription = { onGameUpdated?: { gameId: string, status: GameStatus, currentRound?: number | null, event: string, player?: { id: string, displayName: string, teamId?: string | null } | null, game: { id: string, joinCode: string, status: GameStatus, currentRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }>, teams: Array<{ id: string, name: string, score: number, doubleUsedRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }> }>, rounds: Array<{ number: number, category: string, status: RoundStatus, releasedCount: number, questions: Array<{ number: number, type: QuestionType, text?: string | null, imageUrl?: string | null, defaultPoints: number, correctAnswers?: Array<string> | null }> }> } } | null };
+
 export class TypedDocumentString<TResult, TVariables>
   extends String
   implements DocumentTypeDecoration<TResult, TVariables>
@@ -301,3 +449,807 @@ export class TypedDocumentString<TResult, TVariables>
     return this.value;
   }
 }
+export const GameFieldsFragmentDoc = new TypedDocumentString(`
+    fragment GameFields on Game {
+  id
+  joinCode
+  status
+  currentRound
+  players {
+    id
+    displayName
+    teamId
+  }
+  teams {
+    id
+    name
+    score
+    doubleUsedRound
+    players {
+      id
+      displayName
+      teamId
+    }
+  }
+  rounds {
+    number
+    category
+    status
+    releasedCount
+    questions {
+      number
+      type
+      text
+      imageUrl
+      defaultPoints
+      correctAnswers
+    }
+  }
+}
+    `, {"fragmentName":"GameFields"}) as unknown as TypedDocumentString<GameFieldsFragment, unknown>;
+export const GameUpdateFieldsFragmentDoc = new TypedDocumentString(`
+    fragment GameUpdateFields on GameUpdate {
+  gameId
+  status
+  currentRound
+  event
+  player {
+    id
+    displayName
+    teamId
+  }
+  game {
+    ...GameFields
+  }
+}
+    fragment GameFields on Game {
+  id
+  joinCode
+  status
+  currentRound
+  players {
+    id
+    displayName
+    teamId
+  }
+  teams {
+    id
+    name
+    score
+    doubleUsedRound
+    players {
+      id
+      displayName
+      teamId
+    }
+  }
+  rounds {
+    number
+    category
+    status
+    releasedCount
+    questions {
+      number
+      type
+      text
+      imageUrl
+      defaultPoints
+      correctAnswers
+    }
+  }
+}`, {"fragmentName":"GameUpdateFields"}) as unknown as TypedDocumentString<GameUpdateFieldsFragment, unknown>;
+export const GameDocument = new TypedDocumentString(`
+    query Game($gameId: ID!, $gmToken: String) {
+  game(gameId: $gameId, gmToken: $gmToken) {
+    ...GameFields
+  }
+}
+    fragment GameFields on Game {
+  id
+  joinCode
+  status
+  currentRound
+  players {
+    id
+    displayName
+    teamId
+  }
+  teams {
+    id
+    name
+    score
+    doubleUsedRound
+    players {
+      id
+      displayName
+      teamId
+    }
+  }
+  rounds {
+    number
+    category
+    status
+    releasedCount
+    questions {
+      number
+      type
+      text
+      imageUrl
+      defaultPoints
+      correctAnswers
+    }
+  }
+}`) as unknown as TypedDocumentString<GameQuery, GameQueryVariables>;
+export const MyTeamDocument = new TypedDocumentString(`
+    query MyTeam($gameId: ID!, $playerId: ID!) {
+  myTeam(gameId: $gameId, playerId: $playerId) {
+    id
+    name
+    score
+    doubleUsedRound
+    players {
+      id
+      displayName
+      teamId
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<MyTeamQuery, MyTeamQueryVariables>;
+export const RoundResultsDocument = new TypedDocumentString(`
+    query RoundResults($gameId: ID!, $roundNumber: Int!, $gmToken: String) {
+  roundResults(gameId: $gameId, roundNumber: $roundNumber, gmToken: $gmToken) {
+    round {
+      number
+      category
+      status
+      releasedCount
+      questions {
+        number
+        type
+        text
+        imageUrl
+        defaultPoints
+        correctAnswers
+      }
+    }
+    responses {
+      roundNumber
+      questionNumber
+      teamId
+      answers
+      doubled
+      graded
+      gradedPoints
+    }
+    standings {
+      id
+      name
+      score
+      doubleUsedRound
+      players {
+        id
+        displayName
+        teamId
+      }
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<RoundResultsQuery, RoundResultsQueryVariables>;
+export const StandingsDocument = new TypedDocumentString(`
+    query Standings($gameId: ID!) {
+  standings(gameId: $gameId) {
+    id
+    name
+    score
+    doubleUsedRound
+    players {
+      id
+      displayName
+      teamId
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<StandingsQuery, StandingsQueryVariables>;
+export const CreateGameDocument = new TypedDocumentString(`
+    mutation CreateGame {
+  createGame {
+    gmToken
+    game {
+      ...GameFields
+    }
+  }
+}
+    fragment GameFields on Game {
+  id
+  joinCode
+  status
+  currentRound
+  players {
+    id
+    displayName
+    teamId
+  }
+  teams {
+    id
+    name
+    score
+    doubleUsedRound
+    players {
+      id
+      displayName
+      teamId
+    }
+  }
+  rounds {
+    number
+    category
+    status
+    releasedCount
+    questions {
+      number
+      type
+      text
+      imageUrl
+      defaultPoints
+      correctAnswers
+    }
+  }
+}`) as unknown as TypedDocumentString<CreateGameMutation, CreateGameMutationVariables>;
+export const CreateRoundDocument = new TypedDocumentString(`
+    mutation CreateRound($gameId: ID!, $gmToken: String!, $category: String!, $questions: [QuestionInput!]!) {
+  createRound(
+    gameId: $gameId
+    gmToken: $gmToken
+    category: $category
+    questions: $questions
+  ) {
+    number
+    category
+    status
+    releasedCount
+    questions {
+      number
+      type
+      text
+      imageUrl
+      defaultPoints
+      correctAnswers
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<CreateRoundMutation, CreateRoundMutationVariables>;
+export const GradeResponseDocument = new TypedDocumentString(`
+    mutation GradeResponse($input: GradeResponseInput!) {
+  gradeResponse(input: $input) {
+    roundNumber
+    questionNumber
+    teamId
+    answers
+    doubled
+    graded
+    gradedPoints
+  }
+}
+    `) as unknown as TypedDocumentString<GradeResponseMutation, GradeResponseMutationVariables>;
+export const GetImageUploadUrlDocument = new TypedDocumentString(`
+    mutation GetImageUploadUrl($gameId: ID!, $gmToken: String!, $contentType: String!, $contentLength: Int!) {
+  getImageUploadUrl(
+    gameId: $gameId
+    gmToken: $gmToken
+    contentType: $contentType
+    contentLength: $contentLength
+  ) {
+    uploadUrl
+    imageKey
+  }
+}
+    `) as unknown as TypedDocumentString<GetImageUploadUrlMutation, GetImageUploadUrlMutationVariables>;
+export const JoinGameDocument = new TypedDocumentString(`
+    mutation JoinGame($joinCode: String!, $playerId: ID!, $displayName: String!) {
+  joinGame(joinCode: $joinCode, playerId: $playerId, displayName: $displayName) {
+    ...GameUpdateFields
+  }
+}
+    fragment GameFields on Game {
+  id
+  joinCode
+  status
+  currentRound
+  players {
+    id
+    displayName
+    teamId
+  }
+  teams {
+    id
+    name
+    score
+    doubleUsedRound
+    players {
+      id
+      displayName
+      teamId
+    }
+  }
+  rounds {
+    number
+    category
+    status
+    releasedCount
+    questions {
+      number
+      type
+      text
+      imageUrl
+      defaultPoints
+      correctAnswers
+    }
+  }
+}
+fragment GameUpdateFields on GameUpdate {
+  gameId
+  status
+  currentRound
+  event
+  player {
+    id
+    displayName
+    teamId
+  }
+  game {
+    ...GameFields
+  }
+}`) as unknown as TypedDocumentString<JoinGameMutation, JoinGameMutationVariables>;
+export const RandomizeTeamsDocument = new TypedDocumentString(`
+    mutation RandomizeTeams($gameId: ID!, $gmToken: String!, $teamCount: Int!) {
+  randomizeTeams(gameId: $gameId, gmToken: $gmToken, teamCount: $teamCount) {
+    ...GameUpdateFields
+  }
+}
+    fragment GameFields on Game {
+  id
+  joinCode
+  status
+  currentRound
+  players {
+    id
+    displayName
+    teamId
+  }
+  teams {
+    id
+    name
+    score
+    doubleUsedRound
+    players {
+      id
+      displayName
+      teamId
+    }
+  }
+  rounds {
+    number
+    category
+    status
+    releasedCount
+    questions {
+      number
+      type
+      text
+      imageUrl
+      defaultPoints
+      correctAnswers
+    }
+  }
+}
+fragment GameUpdateFields on GameUpdate {
+  gameId
+  status
+  currentRound
+  event
+  player {
+    id
+    displayName
+    teamId
+  }
+  game {
+    ...GameFields
+  }
+}`) as unknown as TypedDocumentString<RandomizeTeamsMutation, RandomizeTeamsMutationVariables>;
+export const SetTeamNameDocument = new TypedDocumentString(`
+    mutation SetTeamName($gameId: ID!, $playerId: ID!, $teamId: ID!, $name: String!) {
+  setTeamName(gameId: $gameId, playerId: $playerId, teamId: $teamId, name: $name) {
+    ...GameUpdateFields
+  }
+}
+    fragment GameFields on Game {
+  id
+  joinCode
+  status
+  currentRound
+  players {
+    id
+    displayName
+    teamId
+  }
+  teams {
+    id
+    name
+    score
+    doubleUsedRound
+    players {
+      id
+      displayName
+      teamId
+    }
+  }
+  rounds {
+    number
+    category
+    status
+    releasedCount
+    questions {
+      number
+      type
+      text
+      imageUrl
+      defaultPoints
+      correctAnswers
+    }
+  }
+}
+fragment GameUpdateFields on GameUpdate {
+  gameId
+  status
+  currentRound
+  event
+  player {
+    id
+    displayName
+    teamId
+  }
+  game {
+    ...GameFields
+  }
+}`) as unknown as TypedDocumentString<SetTeamNameMutation, SetTeamNameMutationVariables>;
+export const StartRoundDocument = new TypedDocumentString(`
+    mutation StartRound($gameId: ID!, $gmToken: String!, $roundNumber: Int!) {
+  startRound(gameId: $gameId, gmToken: $gmToken, roundNumber: $roundNumber) {
+    ...GameUpdateFields
+  }
+}
+    fragment GameFields on Game {
+  id
+  joinCode
+  status
+  currentRound
+  players {
+    id
+    displayName
+    teamId
+  }
+  teams {
+    id
+    name
+    score
+    doubleUsedRound
+    players {
+      id
+      displayName
+      teamId
+    }
+  }
+  rounds {
+    number
+    category
+    status
+    releasedCount
+    questions {
+      number
+      type
+      text
+      imageUrl
+      defaultPoints
+      correctAnswers
+    }
+  }
+}
+fragment GameUpdateFields on GameUpdate {
+  gameId
+  status
+  currentRound
+  event
+  player {
+    id
+    displayName
+    teamId
+  }
+  game {
+    ...GameFields
+  }
+}`) as unknown as TypedDocumentString<StartRoundMutation, StartRoundMutationVariables>;
+export const ReleaseQuestionDocument = new TypedDocumentString(`
+    mutation ReleaseQuestion($gameId: ID!, $gmToken: String!, $roundNumber: Int!, $questionNumber: Int!) {
+  releaseQuestion(
+    gameId: $gameId
+    gmToken: $gmToken
+    roundNumber: $roundNumber
+    questionNumber: $questionNumber
+  ) {
+    ...GameUpdateFields
+  }
+}
+    fragment GameFields on Game {
+  id
+  joinCode
+  status
+  currentRound
+  players {
+    id
+    displayName
+    teamId
+  }
+  teams {
+    id
+    name
+    score
+    doubleUsedRound
+    players {
+      id
+      displayName
+      teamId
+    }
+  }
+  rounds {
+    number
+    category
+    status
+    releasedCount
+    questions {
+      number
+      type
+      text
+      imageUrl
+      defaultPoints
+      correctAnswers
+    }
+  }
+}
+fragment GameUpdateFields on GameUpdate {
+  gameId
+  status
+  currentRound
+  event
+  player {
+    id
+    displayName
+    teamId
+  }
+  game {
+    ...GameFields
+  }
+}`) as unknown as TypedDocumentString<ReleaseQuestionMutation, ReleaseQuestionMutationVariables>;
+export const ChooseDoubleDocument = new TypedDocumentString(`
+    mutation ChooseDouble($gameId: ID!, $playerId: ID!, $roundNumber: Int!) {
+  chooseDouble(gameId: $gameId, playerId: $playerId, roundNumber: $roundNumber) {
+    ...GameUpdateFields
+  }
+}
+    fragment GameFields on Game {
+  id
+  joinCode
+  status
+  currentRound
+  players {
+    id
+    displayName
+    teamId
+  }
+  teams {
+    id
+    name
+    score
+    doubleUsedRound
+    players {
+      id
+      displayName
+      teamId
+    }
+  }
+  rounds {
+    number
+    category
+    status
+    releasedCount
+    questions {
+      number
+      type
+      text
+      imageUrl
+      defaultPoints
+      correctAnswers
+    }
+  }
+}
+fragment GameUpdateFields on GameUpdate {
+  gameId
+  status
+  currentRound
+  event
+  player {
+    id
+    displayName
+    teamId
+  }
+  game {
+    ...GameFields
+  }
+}`) as unknown as TypedDocumentString<ChooseDoubleMutation, ChooseDoubleMutationVariables>;
+export const SubmitAnswersDocument = new TypedDocumentString(`
+    mutation SubmitAnswers($input: SubmitAnswersInput!) {
+  submitAnswers(input: $input) {
+    ...GameUpdateFields
+  }
+}
+    fragment GameFields on Game {
+  id
+  joinCode
+  status
+  currentRound
+  players {
+    id
+    displayName
+    teamId
+  }
+  teams {
+    id
+    name
+    score
+    doubleUsedRound
+    players {
+      id
+      displayName
+      teamId
+    }
+  }
+  rounds {
+    number
+    category
+    status
+    releasedCount
+    questions {
+      number
+      type
+      text
+      imageUrl
+      defaultPoints
+      correctAnswers
+    }
+  }
+}
+fragment GameUpdateFields on GameUpdate {
+  gameId
+  status
+  currentRound
+  event
+  player {
+    id
+    displayName
+    teamId
+  }
+  game {
+    ...GameFields
+  }
+}`) as unknown as TypedDocumentString<SubmitAnswersMutation, SubmitAnswersMutationVariables>;
+export const EndRoundDocument = new TypedDocumentString(`
+    mutation EndRound($gameId: ID!, $gmToken: String!, $roundNumber: Int!) {
+  endRound(gameId: $gameId, gmToken: $gmToken, roundNumber: $roundNumber) {
+    ...GameUpdateFields
+  }
+}
+    fragment GameFields on Game {
+  id
+  joinCode
+  status
+  currentRound
+  players {
+    id
+    displayName
+    teamId
+  }
+  teams {
+    id
+    name
+    score
+    doubleUsedRound
+    players {
+      id
+      displayName
+      teamId
+    }
+  }
+  rounds {
+    number
+    category
+    status
+    releasedCount
+    questions {
+      number
+      type
+      text
+      imageUrl
+      defaultPoints
+      correctAnswers
+    }
+  }
+}
+fragment GameUpdateFields on GameUpdate {
+  gameId
+  status
+  currentRound
+  event
+  player {
+    id
+    displayName
+    teamId
+  }
+  game {
+    ...GameFields
+  }
+}`) as unknown as TypedDocumentString<EndRoundMutation, EndRoundMutationVariables>;
+export const OnGameUpdatedDocument = new TypedDocumentString(`
+    subscription OnGameUpdated($gameId: ID!) {
+  onGameUpdated(gameId: $gameId) {
+    ...GameUpdateFields
+  }
+}
+    fragment GameFields on Game {
+  id
+  joinCode
+  status
+  currentRound
+  players {
+    id
+    displayName
+    teamId
+  }
+  teams {
+    id
+    name
+    score
+    doubleUsedRound
+    players {
+      id
+      displayName
+      teamId
+    }
+  }
+  rounds {
+    number
+    category
+    status
+    releasedCount
+    questions {
+      number
+      type
+      text
+      imageUrl
+      defaultPoints
+      correctAnswers
+    }
+  }
+}
+fragment GameUpdateFields on GameUpdate {
+  gameId
+  status
+  currentRound
+  event
+  player {
+    id
+    displayName
+    teamId
+  }
+  game {
+    ...GameFields
+  }
+}`) as unknown as TypedDocumentString<OnGameUpdatedSubscription, OnGameUpdatedSubscriptionVariables>;
