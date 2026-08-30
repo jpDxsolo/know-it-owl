@@ -1,0 +1,40 @@
+.kio-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--kio-space-3);
+}
+
+.kio-status {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--kio-space-2);
+  margin: 0;
+  padding: var(--kio-space-1) var(--kio-space-3);
+  background-color: var(--kio-navy-surface);
+  border: 1px solid var(--kio-hairline);
+  border-radius: var(--kio-radius-pill);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--kio-muted);
+}
+
+.kio-status__dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background-color: currentColor;
+}
+
+.kio-status--live { color: var(--kio-green); }
+.kio-status--connecting { color: var(--kio-amber); }
+.kio-status--offline { color: var(--kio-red); }
+
+/* Only the reconnecting state pulses — a steady green should sit still. */
+.kio-status--connecting .kio-status__dot {
+  animation: kio-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes kio-pulse {
+  50% { opacity: 0.25; }
+}
