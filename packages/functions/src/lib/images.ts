@@ -42,8 +42,9 @@ export function setS3Client(client: S3Client | undefined): void {
 }
 
 /**
- * Name of the images bucket. SST links it as `SST_RESOURCE_Images`;
- * `IMAGES_BUCKET` wins when set so tests and local runs can point elsewhere.
+ * Name of the images bucket. `IMAGES_BUCKET` is what the deployed function is
+ * given (sst.config.ts passes it through), and what tests and local runs
+ * override. The `SST_RESOURCE_Images` fallback covers a v2-style link.
  */
 export function bucketName(): string {
   const explicit = process.env.IMAGES_BUCKET;

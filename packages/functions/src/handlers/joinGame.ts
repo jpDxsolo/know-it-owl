@@ -4,7 +4,7 @@ import { getItem, putItem } from "../lib/db.js";
 import { ConflictError, NotFoundError } from "../lib/errors.js";
 import * as keys from "../lib/keys.js";
 import type { JoinCodeItem, PlayerItem } from "../lib/mappers.js";
-import { assembleGame, type JoinGamePayload } from "../lib/views.js";
+import { assembleGame, gameUpdate, type GameUpdate } from "../lib/views.js";
 import { loadGameView } from "./getGame.js";
 
 const MAX_JOIN_CODE_LENGTH = 12;
@@ -27,7 +27,7 @@ async function gameIdForCode(code: string): Promise<string> {
  * a second player: the write is keyed on that id and carries the existing
  * `teamId` forward, making a repeat join a no-op apart from the display name.
  */
-export async function joinGame(args: Record<string, unknown>): Promise<JoinGamePayload> {
+export async function joinGame(args: Record<string, unknown>): Promise<GameUpdate> {
   const code = requiredString(args, "joinCode", {
     uppercase: true,
     maxLength: MAX_JOIN_CODE_LENGTH,
@@ -73,5 +73,6 @@ export async function joinGame(args: Record<string, unknown>): Promise<JoinGameP
     ? view.players.map((candidate) => (candidate.id === playerId ? player : candidate))
     : [...view.players, player];
 
-  return { game: assembleGame(view, players, view.teams, view.rounds), player };
+  const snapshot = assembleGame(view, players, view.teams, view.rounds);
+  return gameUpdate(snapshot, "PLAYER_JOINED", player);
 }

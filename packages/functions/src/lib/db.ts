@@ -32,8 +32,9 @@ export function setClient(client: DynamoDBDocumentClient | undefined): void {
 }
 
 /**
- * Name of the single table. SST links it as `SST_RESOURCE_Table`; `TABLE_NAME`
- * wins when set so tests and local runs can point elsewhere.
+ * Name of the single table. `TABLE_NAME` is what the deployed function is given
+ * (sst.config.ts passes it through), and what tests and local runs override. The
+ * `SST_RESOURCE_Table` fallback covers a v2-style link that sets it directly.
  */
 export function tableName(): string {
   const explicit = process.env.TABLE_NAME;
