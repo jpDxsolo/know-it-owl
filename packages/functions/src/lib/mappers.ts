@@ -43,6 +43,7 @@ export interface TeamItem extends Item {
 export interface RoundItem extends Item {
   category: string;
   status: RoundStatus;
+  releasedCount: number;
 }
 
 export interface QuestionItem extends Item {
@@ -201,6 +202,7 @@ export function toRound(item: Item): Round {
     number: numberFrom(suffixAfter(item.sk, "ROUND#"), item.sk),
     category: str(item, "category"),
     status: oneOf(item, "status", ROUND_STATUSES),
+    releasedCount: num(item, "releasedCount"),
   };
 }
 

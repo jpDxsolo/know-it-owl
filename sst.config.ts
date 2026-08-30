@@ -38,6 +38,7 @@ export default $config({
       "setTeamName",
       "createRound",
       "startRound",
+      "releaseQuestion",
       "chooseDouble",
       "submitAnswers",
       "gradeResponse",

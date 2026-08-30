@@ -5,6 +5,7 @@ import { randomizeTeams } from "./handlers/randomizeTeams.js";
 import { setTeamName } from "./handlers/setTeamName.js";
 import { createRound } from "./handlers/createRound.js";
 import { startRound } from "./handlers/startRound.js";
+import { releaseQuestion } from "./handlers/releaseQuestion.js";
 import { chooseDouble } from "./handlers/chooseDouble.js";
 import { submitAnswers } from "./handlers/submitAnswers.js";
 import { gradeResponse } from "./handlers/gradeResponse.js";
@@ -30,6 +31,7 @@ const handlers: Record<string, Handler> = {
   setTeamName,
   createRound,
   startRound,
+  releaseQuestion,
   chooseDouble,
   submitAnswers,
   gradeResponse,

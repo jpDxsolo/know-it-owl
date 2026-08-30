@@ -44,11 +44,11 @@ function questionItem(round: number, number: number, answer: string): Record<str
  * order — so round 10 arrives before round 2.
  */
 const roundItems = [
-  { ...keys.round("g1", 1), category: "History", status: "REVEALED" },
+  { ...keys.round("g1", 1), category: "History", status: "REVEALED", releasedCount: 1 },
   questionItem(1, 1, "Paris"),
-  { ...keys.round("g1", 10), category: "Finale", status: "DRAFT" },
+  { ...keys.round("g1", 10), category: "Finale", status: "DRAFT", releasedCount: 0 },
   questionItem(10, 1, "Secret"),
-  { ...keys.round("g1", 2), category: "Music", status: "ACTIVE" },
+  { ...keys.round("g1", 2), category: "Music", status: "ACTIVE", releasedCount: 1 },
   questionItem(2, 1, "Bowie"),
 ];
 

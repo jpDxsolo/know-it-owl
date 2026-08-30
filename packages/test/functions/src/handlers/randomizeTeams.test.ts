@@ -180,7 +180,7 @@ describe("randomizeTeams", () => {
   it("refuses to re-draw once a round exists", async () => {
     stubGame({
       status: "TEAMS_SET",
-      rounds: [{ ...keys.round("g1", 1), category: "History", status: "DRAFT" }],
+      rounds: [{ ...keys.round("g1", 1), category: "History", status: "DRAFT", releasedCount: 0 }],
     });
     await expect(randomizeTeams(args)).rejects.toThrow(/once a round has been created/);
     expect(ddbMock.commandCalls(TransactWriteCommand)).toHaveLength(0);

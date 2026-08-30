@@ -54,6 +54,8 @@ type Round {
   number: Int!
   category: String!
   status: RoundStatus!
+  "How many questions the GM has unveiled. Players never see beyond it."
+  releasedCount: Int!
   questions: [Question!]!
 }
 
@@ -155,6 +157,8 @@ type Mutation {
   setTeamName(gameId: ID!, playerId: ID!, teamId: ID!, name: String!): GameUpdate!
   createRound(gameId: ID!, gmToken: String!, category: String!, questions: [QuestionInput!]!): Round!
   startRound(gameId: ID!, gmToken: String!, roundNumber: Int!): GameUpdate!
+  "Unveil the next question. Strictly sequential: questionNumber must be releasedCount + 1."
+  releaseQuestion(gameId: ID!, gmToken: String!, roundNumber: Int!, questionNumber: Int!): GameUpdate!
   chooseDouble(gameId: ID!, playerId: ID!, roundNumber: Int!): GameUpdate!
   submitAnswers(input: SubmitAnswersInput!): GameUpdate!
   gradeResponse(input: GradeResponseInput!): TeamResponse!
@@ -169,6 +173,7 @@ type Subscription {
         "randomizeTeams"
         "setTeamName"
         "startRound"
+        "releaseQuestion"
         "chooseDouble"
         "submitAnswers"
         "endRound"

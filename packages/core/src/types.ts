@@ -35,6 +35,8 @@ export interface Round {
   number: number;
   category: string;
   status: RoundStatus;
+  /** Questions unveiled so far, 0 while the round is a draft. */
+  releasedCount: number;
 }
 
 export interface Question {

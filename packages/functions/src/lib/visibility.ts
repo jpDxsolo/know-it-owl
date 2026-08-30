@@ -54,16 +54,48 @@ export function isAnswerKeyVisible(status: RoundStatus, role: ViewerRole): boole
   return role === "GM" || status === "REVEALED";
 }
 
+/**
+ * Within a started round the GM unveils questions one at a time, and players
+ * never see past `releasedCount`. A REVEALED round shows everything, since its
+ * answers are public by then.
+ */
+export function isQuestionReleased(
+  round: Round,
+  questionNumber: number,
+  role: ViewerRole,
+): boolean {
+  if (role === "GM" || round.status === "REVEALED") return true;
+  return questionNumber <= round.releasedCount;
+}
+
+function withKey(question: Question, includeKey: boolean): VisibleQuestion {
+  const { correctAnswers, ...rest } = question;
+  return { ...rest, correctAnswers: includeKey ? [...correctAnswers] : null };
+}
+
+function questionsOf(round: Round, questions: Question[]): Question[] {
+  return questions.filter((question) => question.roundNumber === round.number);
+}
+
 /** Strip the answer key from a question unless this viewer may see it. */
 export function visibleQuestion(
   question: Question,
   roundStatus: RoundStatus,
   role: ViewerRole,
 ): VisibleQuestion {
-  const { correctAnswers, ...rest } = question;
+  return withKey(question, isAnswerKeyVisible(roundStatus, role));
+}
+
+/**
+ * Every question in a round with no answer keys at all — the echo a GM gets
+ * back from authoring. Deliberately bypasses the release gate (the GM wrote
+ * these) but never the key gate, so that no pre-reveal payload anywhere in the
+ * API carries a `correctAnswers` array.
+ */
+export function withoutAnswerKeys(round: Round, questions: Question[]): VisibleRound {
   return {
-    ...rest,
-    correctAnswers: isAnswerKeyVisible(roundStatus, role) ? [...correctAnswers] : null,
+    ...round,
+    questions: questionsOf(round, questions).map((question) => withKey(question, false)),
   };
 }
 
@@ -79,8 +111,8 @@ export function visibleRound(
   if (!isRoundVisible(round.status, role)) return undefined;
   return {
     ...round,
-    questions: questions
-      .filter((question) => question.roundNumber === round.number)
+    questions: questionsOf(round, questions)
+      .filter((question) => isQuestionReleased(round, question.number, role))
       .map((question) => visibleQuestion(question, round.status, role)),
   };
 }

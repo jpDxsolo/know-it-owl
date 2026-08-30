@@ -5,9 +5,11 @@ import {
   isAnswerKeyVisible,
   isRoundVisible,
   viewerRole,
+  isQuestionReleased,
   visibleQuestion,
   visibleRound,
   visibleRounds,
+  withoutAnswerKeys,
 } from "@know-it-owl/functions/lib/visibility";
 
 const TOKEN = "s3cret-token";
@@ -25,9 +27,9 @@ function question(roundNumber: number, number: number): Question {
 }
 
 const rounds: Round[] = [
-  { number: 1, category: "History", status: "REVEALED" },
-  { number: 2, category: "Music", status: "ACTIVE" },
-  { number: 3, category: "Surprise", status: "DRAFT" },
+  { number: 1, category: "History", status: "REVEALED", releasedCount: 1 },
+  { number: 2, category: "Music", status: "ACTIVE", releasedCount: 2 },
+  { number: 3, category: "Surprise", status: "DRAFT", releasedCount: 0 },
 ];
 
 const questions = [question(1, 1), question(2, 1), question(2, 2), question(3, 1)];
@@ -116,5 +118,50 @@ describe("visibleRounds", () => {
     const result = visibleRounds(rounds, questions, "GM");
     expect(result.map((round) => round.number)).toEqual([1, 2, 3]);
     expect(result.flatMap((round) => round.questions).every((q) => q.correctAnswers)).toBe(true);
+  });
+});
+
+describe("isQuestionReleased", () => {
+  const active = { number: 2, category: "Music", status: "ACTIVE" as const, releasedCount: 2 };
+
+  it("lets a player see up to the counter and no further", () => {
+    expect(isQuestionReleased(active, 2, "PLAYER")).toBe(true);
+    expect(isQuestionReleased(active, 3, "PLAYER")).toBe(false);
+  });
+
+  it("shows the GM a question the players have not reached", () => {
+    expect(isQuestionReleased(active, 3, "GM")).toBe(true);
+  });
+
+  it("opens every question once the round is revealed", () => {
+    const revealed = { ...active, status: "REVEALED" as const, releasedCount: 1 };
+    expect(isQuestionReleased(revealed, 3, "PLAYER")).toBe(true);
+  });
+
+  it("releases nothing in a round that has not started", () => {
+    const draft = { ...active, status: "DRAFT" as const, releasedCount: 0 };
+    expect(isQuestionReleased(draft, 1, "PLAYER")).toBe(false);
+  });
+});
+
+describe("visibleRound release gating", () => {
+  it("drops questions past the counter for a player", () => {
+    const round = { number: 2, category: "Music", status: "ACTIVE" as const, releasedCount: 1 };
+    const result = visibleRound(round, questions, "PLAYER");
+    expect(result?.questions.map((q) => q.number)).toEqual([1]);
+  });
+
+  it("keeps them all for the GM", () => {
+    const round = { number: 2, category: "Music", status: "ACTIVE" as const, releasedCount: 1 };
+    expect(visibleRound(round, questions, "GM")?.questions.map((q) => q.number)).toEqual([1, 2]);
+  });
+});
+
+describe("withoutAnswerKeys", () => {
+  it("returns every question of the round with no key at all", () => {
+    const round = { number: 2, category: "Music", status: "DRAFT" as const, releasedCount: 0 };
+    const result = withoutAnswerKeys(round, questions);
+    expect(result.questions.map((q) => q.number)).toEqual([1, 2]);
+    expect(result.questions.every((q) => q.correctAnswers === null)).toBe(true);
   });
 });
