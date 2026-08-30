@@ -7,10 +7,21 @@
  * applied. Handlers that have just written may adjust the loaded state and
  * snapshot that, rather than re-reading eventually-consistent data.
  */
-import type { Game, Player, Question, Round, Team } from "@know-it-owl/core";
+import type { Game, Player, Question, Round, Team, TeamResponse } from "@know-it-owl/core";
 import { getItem, queryPrefix } from "./db.js";
 import * as keys from "./keys.js";
-import { isQuestionKey, toGame, toPlayer, toQuestion, toRound, toTeam } from "./mappers.js";
+import {
+  isQuestionKey,
+  isSubmissionKey,
+  toGame,
+  toPlayer,
+  toQuestion,
+  toRound,
+  toSubmission,
+  toTeam,
+  toTeamResponse,
+  type Submission,
+} from "./mappers.js";
 import { visibleRounds, type ViewerRole } from "./visibility.js";
 import { assembleGame, type GameView } from "./views.js";
 
@@ -66,4 +77,27 @@ export function snapshot(state: GameState, role: ViewerRole): GameView {
     state.teams,
     visibleRounds(state.rounds, state.questions, role),
   );
+}
+
+export interface RoundSubmissions {
+  responses: TeamResponse[];
+  /** One per team that has handed in — the marker items written with the answers. */
+  submissions: Submission[];
+}
+
+/**
+ * Read one round's answers and submission markers.
+ *
+ * Kept out of `GameState` on purpose: the game query and the fan-out snapshots
+ * never need them, and a round's responses grow with the number of teams.
+ */
+export async function loadRoundSubmissions(
+  gameId: string,
+  roundNumber: number,
+): Promise<RoundSubmissions> {
+  const items = await queryPrefix(keys.gamePk(gameId), keys.prefixes.responses(roundNumber));
+  return {
+    responses: items.filter((item) => !isSubmissionKey(item.sk)).map(toTeamResponse),
+    submissions: items.filter((item) => isSubmissionKey(item.sk)).map(toSubmission),
+  };
 }
