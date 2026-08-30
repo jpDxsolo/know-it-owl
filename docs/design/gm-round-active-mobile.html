@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Know It Owl - Host Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        navy: {
+                            ground: '#0E1A2F',
+                            surface: '#16294A',
+                            raised: '#1E3765'
+                        },
+                        brand: {
+                            gold: '#F5A81C',
+                            amber: '#F0821E',
+                            blue: '#2F7FE0',
+                            cream: '#F7EFE2',
+                            muted: '#9DB0CE',
+                            green: '#3FB27F',
+                            red: '#E5484D'
+                        }
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                    fontFamily: {
+                        "headline": ["Outfit", "sans-serif"],
+                        "display": ["Outfit", "sans-serif"],
+                        "body": ["Plus Jakarta Sans", "sans-serif"],
+                        "label": ["Plus Jakarta Sans", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: #0E1A2F; /* navy ground */
+            color: #F7EFE2; /* cream */
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-body min-h-screen flex flex-col pb-[120px] pt-16">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full bg-[#0E1A2F] border-b border-[#1E3765] shadow-none flex justify-between items-center px-4 h-16 z-50">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[#F5A81C]">castle</span>
+<span class="text-xl font-headline font-black text-[#F5A81C] tracking-tighter">Know It Owl</span>
+</div>
+<button class="hover:bg-[#1E3765] transition-colors active:scale-95 duration-100 p-2 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-[#F5A81C]">sensors</span>
+</button>
+</header>
+<main class="flex-1 px-4 py-6 max-w-[390px] mx-auto w-full flex flex-col gap-6">
+<!-- Header Section -->
+<section class="flex flex-col gap-1">
+<h1 class="font-headline font-black text-2xl text-brand-gold">Round 2 · 90s Music</h1>
+<p class="text-brand-muted font-medium">Question 3 of 5 released</p>
+</section>
+<!-- Progress Card -->
+<section class="bg-navy-surface rounded-xl p-4 border border-navy-raised flex flex-col gap-4">
+<div class="flex justify-between items-center">
+<span class="font-bold text-brand-cream text-sm">Teams in</span>
+<span class="font-bold text-brand-gold">2 of 4</span>
+</div>
+<div class="flex gap-2">
+<!-- Team 1 In -->
+<div class="flex-1 bg-brand-green/20 border border-brand-green rounded-full py-1.5 px-2 flex items-center justify-center gap-1">
+<span class="material-symbols-outlined text-brand-green text-sm" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="text-brand-green text-xs font-bold truncate">Trivia...</span>
+</div>
+<!-- Team 2 In -->
+<div class="flex-1 bg-brand-green/20 border border-brand-green rounded-full py-1.5 px-2 flex items-center justify-center gap-1">
+<span class="material-symbols-outlined text-brand-green text-sm" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="text-brand-green text-xs font-bold truncate">Quizz...</span>
+</div>
+<!-- Team 3 Pending -->
+<div class="flex-1 bg-navy-ground border border-navy-raised rounded-full py-1.5 px-2 flex items-center justify-center gap-1 opacity-60">
+<span class="material-symbols-outlined text-brand-muted text-sm">pending</span>
+<span class="text-brand-muted text-xs font-bold truncate">Brain...</span>
+</div>
+<!-- Team 4 Pending -->
+<div class="flex-1 bg-navy-ground border border-navy-raised rounded-full py-1.5 px-2 flex items-center justify-center gap-1 opacity-60">
+<span class="material-symbols-outlined text-brand-muted text-sm">pending</span>
+<span class="text-brand-muted text-xs font-bold truncate">Smart...</span>
+</div>
+</div>
+</section>
+<!-- Question List -->
+<section class="flex flex-col gap-3">
+<!-- Q1 Released -->
+<div class="bg-navy-surface rounded-lg p-3 flex flex-col gap-2">
+<div class="flex justify-between items-center">
+<span class="text-xs font-bold text-brand-muted uppercase tracking-wider">Q1</span>
+<span class="text-[10px] font-bold text-brand-green bg-brand-green/20 px-2 py-0.5 rounded uppercase tracking-wider">Released</span>
+</div>
+<p class="text-sm font-medium">Which Britpop band released the album 'Parklife' in 1994?</p>
+</div>
+<!-- Q2 Released -->
+<div class="bg-navy-surface rounded-lg p-3 flex flex-col gap-2">
+<div class="flex justify-between items-center">
+<span class="text-xs font-bold text-brand-muted uppercase tracking-wider">Q2</span>
+<span class="text-[10px] font-bold text-brand-green bg-brand-green/20 px-2 py-0.5 rounded uppercase tracking-wider">Released</span>
+</div>
+<p class="text-sm font-medium">Who had a massive hit with 'Smells Like Teen Spirit'?</p>
+</div>
+<!-- Q3 Released -->
+<div class="bg-navy-surface rounded-lg p-3 flex flex-col gap-2">
+<div class="flex justify-between items-center">
+<span class="text-xs font-bold text-brand-muted uppercase tracking-wider">Q3</span>
+<span class="text-[10px] font-bold text-brand-green bg-brand-green/20 px-2 py-0.5 rounded uppercase tracking-wider">Released</span>
+</div>
+<p class="text-sm font-medium">Which artist released 'Jagged Little Pill'?</p>
+</div>
+<!-- Q4 Active/Next -->
+<div class="bg-navy-surface rounded-lg p-4 flex flex-col gap-4 border-2 border-brand-gold shadow-[0_0_15px_rgba(245,168,28,0.15)] relative overflow-hidden">
+<div class="absolute top-0 left-0 w-1 h-full bg-brand-gold"></div>
+<div class="flex justify-between items-center pl-2">
+<span class="text-xs font-bold text-brand-gold uppercase tracking-wider">Q4 · Up Next</span>
+</div>
+<p class="text-sm font-medium pl-2">What was the best-selling single of 1997 in the UK?</p>
+<button class="w-full bg-brand-gold text-navy-ground font-bold py-3 rounded-full flex items-center justify-center gap-2 active:scale-95 transition-transform mt-2">
+<span class="material-symbols-outlined text-xl">send</span>
+                    Release next
+                </button>
+</div>
+<!-- Q5 Locked -->
+<div class="bg-navy-surface/50 rounded-lg p-3 flex flex-col gap-2 opacity-60 border border-navy-raised border-dashed">
+<div class="flex justify-between items-center">
+<span class="text-xs font-bold text-brand-muted uppercase tracking-wider">Q5</span>
+<span class="material-symbols-outlined text-brand-muted text-sm">lock</span>
+</div>
+<p class="text-sm font-medium text-brand-muted line-clamp-1 blur-[2px] select-none">Who won the Grammy for Album of the Year in 1999?</p>
+</div>
+</section>
+</main>
+<!-- Bottom Action Area (Above Nav) -->
+<div class="fixed bottom-[88px] left-0 w-full px-4 max-w-[390px] mx-auto left-1/2 -translate-x-1/2 z-40">
+<button class="w-full bg-navy-surface border border-brand-red/50 text-brand-red font-bold py-4 rounded-xl flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-transform">
+<span class="material-symbols-outlined">stop_circle</span>
+            End round and reveal
+        </button>
+</div>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-2 pb-6 pt-2 bg-[#0E1A2F] rounded-t-xl shadow-[0_-4px_12px_rgba(0,0,0,0.3)] md:hidden before:absolute before:inset-0 before:bg-[#16294A] before:-z-10 before:rounded-t-xl before:opacity-0">
+<!-- Rounds (Active) -->
+<button class="flex flex-col items-center justify-center text-[#F5A81C] bg-[#1E3765] rounded-full px-4 py-1 active:scale-90 transition-transform">
+<span class="material-symbols-outlined text-2xl mb-1" style="font-variation-settings: 'FILL' 1;">quiz</span>
+<span class="font-label text-xs font-bold uppercase tracking-widest">Rounds</span>
+</button>
+<!-- Teams (Inactive) -->
+<button class="flex flex-col items-center justify-center text-[#9DB0CE] opacity-80 hover:text-[#F7EFE2] active:scale-90 transition-transform px-4 py-1">
+<span class="material-symbols-outlined text-2xl mb-1">groups</span>
+<span class="font-label text-xs font-bold uppercase tracking-widest">Teams</span>
+</button>
+<!-- Settings (Inactive) -->
+<button class="flex flex-col items-center justify-center text-[#9DB0CE] opacity-80 hover:text-[#F7EFE2] active:scale-90 transition-transform px-4 py-1">
+<span class="material-symbols-outlined text-2xl mb-1">settings</span>
+<span class="font-label text-xs font-bold uppercase tracking-widest">Settings</span>
+</button>
+</nav>
+</body></html>

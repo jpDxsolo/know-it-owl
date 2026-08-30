@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Know It Owl - Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700;800;900&display=swap');
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        navy: {
+                            ground: '#0E1A2F',
+                            surface: '#16294A',
+                            raised: '#1E3765'
+                        },
+                        brand: {
+                            gold: '#F5A81C',
+                            amber: '#F0821E',
+                            blue: '#2F7FE0',
+                            cream: '#F7EFE2',
+                            muted: '#9DB0CE',
+                            green: '#3FB27F',
+                            red: '#E5484D'
+                        }
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                    fontFamily: {
+                        "headline": ["Public Sans", "sans-serif"],
+                        "display": ["Public Sans", "sans-serif"],
+                        "body": ["Plus Jakarta Sans", "sans-serif"],
+                        "label": ["Plus Jakarta Sans", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-navy-ground text-brand-cream font-body min-h-screen flex">
+<!-- SideNavBar (Shared Component JSON mapped) -->
+<nav class="fixed left-0 top-0 h-full flex flex-col pt-20 pb-6 w-64 bg-navy-surface border-r border-navy-raised shadow-xl z-50">
+<!-- Brand / Header -->
+<div class="px-6 mb-8 flex flex-col items-center">
+<div class="w-16 h-16 rounded-full overflow-hidden mb-3 border-2 border-brand-gold">
+<img class="w-full h-full object-cover" data-alt="A stylized, glowing orange owl icon designed in a sleek, modern vector style. The owl appears sharp and intelligent, set against a deep navy blue background. The illustration uses minimal shading, focusing on bold shapes and a high-contrast aesthetic suitable for a premium dark-mode pub quiz app logo." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAYf1TNL7pSFyh6ien8Jr-IXR34ct2o_hOLKPNzoZtJ8yr6Z3DS0mBdONf4Jct_APn1oC5kL1rVVnH8qWrortlw8_TGtxsPgAUuQyqAg6VitkieJyfYz5aJThwg2eSeKdAT5lmofT_SMuLUUGnXruRFIZHAcKplVzoRJo5tcVndsoljPWJCXLxnd0Ytfmm83-Nut5iy25BSIkBcNhwa6aZHkeZIhgijYkhXmGHhNVCmBWBFfxHw18XT2VfgaXrAE1oQQ8YLWmgSHj8"/>
+</div>
+<h2 class="font-headline font-bold text-lg text-brand-cream">Game Master</h2>
+<p class="text-sm text-brand-muted">Hosting in Pub Central</p>
+</div>
+<!-- Navigation Tabs -->
+<div class="flex-1 px-4 space-y-2">
+<!-- Active Tab -->
+<a class="flex items-center gap-3 bg-navy-raised text-brand-gold rounded-lg px-4 py-3 border-l-4 border-brand-gold transition-all duration-150 active:translate-x-1" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">quiz</span>
+<span class="text-sm font-label font-bold uppercase tracking-wider">Games</span>
+</a>
+<a class="flex items-center gap-3 text-brand-muted px-4 py-3 hover:bg-navy-raised/50 hover:text-brand-cream rounded-lg transition-all duration-150 active:translate-x-1" href="#">
+<span class="material-symbols-outlined">library_books</span>
+<span class="text-sm font-label font-bold uppercase tracking-wider">Library</span>
+</a>
+<a class="flex items-center gap-3 text-brand-muted px-4 py-3 hover:bg-navy-raised/50 hover:text-brand-cream rounded-lg transition-all duration-150 active:translate-x-1" href="#">
+<span class="material-symbols-outlined">leaderboard</span>
+<span class="text-sm font-label font-bold uppercase tracking-wider">Results</span>
+</a>
+<a class="flex items-center gap-3 text-brand-muted px-4 py-3 hover:bg-navy-raised/50 hover:text-brand-cream rounded-lg transition-all duration-150 active:translate-x-1" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="text-sm font-label font-bold uppercase tracking-wider">Players</span>
+</a>
+</div>
+<div class="px-6 my-4">
+<button class="w-full py-3 bg-navy-raised hover:bg-navy-raised/80 text-brand-cream font-bold rounded-full transition-colors">Create New Round</button>
+</div>
+<!-- Footer Tabs -->
+<div class="px-4 space-y-2 mt-auto">
+<a class="flex items-center gap-3 text-brand-muted px-4 py-3 hover:bg-navy-raised/50 hover:text-brand-cream rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined">help_outline</span>
+<span class="text-sm font-label font-bold uppercase tracking-wider">Help</span>
+</a>
+<a class="flex items-center gap-3 text-brand-muted px-4 py-3 hover:bg-navy-raised/50 hover:text-brand-cream rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="text-sm font-label font-bold uppercase tracking-wider">Sign Out</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="ml-64 flex-1 p-8 relative min-h-screen">
+<div class="max-w-5xl mx-auto space-y-8 pb-32">
+<!-- Top Section: Game Code -->
+<div class="bg-navy-surface rounded-xl p-8 relative overflow-hidden border border-navy-raised shadow-lg">
+<!-- Decorative grid background -->
+<div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(#F5A81C 1px, transparent 1px); background-size: 20px 20px;"></div>
+<div class="relative z-10 flex flex-col items-center justify-center text-center">
+<p class="text-brand-muted font-bold tracking-widest uppercase mb-2">Join Code</p>
+<div class="flex items-center gap-4">
+<h1 class="text-6xl md:text-8xl font-display font-black text-brand-gold tracking-widest">OWL842</h1>
+<button aria-label="Copy Code" class="p-3 bg-navy-raised hover:bg-navy-raised/80 rounded-full text-brand-cream transition-colors group">
+<span class="material-symbols-outlined group-active:scale-95 transition-transform">content_copy</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Middle Section: Two Columns -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+<!-- Left Column: Teams -->
+<div class="space-y-4">
+<div class="flex items-center justify-between mb-6">
+<h3 class="font-headline font-bold text-2xl">Teams</h3>
+<span class="px-3 py-1 bg-brand-green/20 text-brand-green text-sm font-bold rounded-full flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-brand-green animate-pulse"></span>
+                            2 Connected
+                        </span>
+</div>
+<!-- Team Card 1 -->
+<div class="bg-navy-surface p-5 rounded-xl border border-navy-raised">
+<h4 class="font-bold text-xl mb-3 text-brand-cream">The Quizzly Bears</h4>
+<div class="space-y-2">
+<div class="flex items-center justify-between p-2 rounded-lg hover:bg-navy-raised/30 transition-colors">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-navy-raised flex items-center justify-center text-sm font-bold text-brand-gold">A</div>
+<span>Alex P.</span>
+</div>
+<span class="material-symbols-outlined text-brand-green text-sm">check_circle</span>
+</div>
+<div class="flex items-center justify-between p-2 rounded-lg hover:bg-navy-raised/30 transition-colors">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-navy-raised flex items-center justify-center text-sm font-bold text-brand-gold">S</div>
+<span>Sam G.</span>
+</div>
+<span class="material-symbols-outlined text-brand-green text-sm">check_circle</span>
+</div>
+<div class="flex items-center justify-between p-2 rounded-lg hover:bg-navy-raised/30 transition-colors">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-navy-raised flex items-center justify-center text-sm font-bold text-brand-gold">M</div>
+<span>Mia T.</span>
+</div>
+<span class="material-symbols-outlined text-brand-green text-sm">check_circle</span>
+</div>
+</div>
+</div>
+<!-- Team Card 2 -->
+<div class="bg-navy-surface p-5 rounded-xl border border-navy-raised">
+<h4 class="font-bold text-xl mb-3 text-brand-cream">The Smarty Pants</h4>
+<div class="space-y-2">
+<div class="flex items-center justify-between p-2 rounded-lg hover:bg-navy-raised/30 transition-colors">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-navy-raised flex items-center justify-center text-sm font-bold text-brand-gold">D</div>
+<span>David R.</span>
+</div>
+<span class="material-symbols-outlined text-brand-green text-sm">check_circle</span>
+</div>
+<div class="flex items-center justify-between p-2 rounded-lg hover:bg-navy-raised/30 transition-colors">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-navy-raised flex items-center justify-center text-sm font-bold text-brand-gold">E</div>
+<span>Elena V.</span>
+</div>
+<span class="material-symbols-outlined text-brand-green text-sm">check_circle</span>
+</div>
+<div class="flex items-center justify-between p-2 rounded-lg hover:bg-navy-raised/30 transition-colors">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-navy-raised flex items-center justify-center text-sm font-bold text-brand-gold">C</div>
+<span>Chris B.</span>
+</div>
+<span class="material-symbols-outlined text-brand-green text-sm">check_circle</span>
+</div>
+</div>
+</div>
+<button class="w-full py-4 text-brand-blue font-bold flex items-center justify-center gap-2 hover:bg-navy-surface rounded-xl transition-colors">
+<span class="material-symbols-outlined">shuffle</span>
+                        Re-draw teams
+                    </button>
+</div>
+<!-- Right Column: Rounds -->
+<div class="space-y-4">
+<div class="flex items-center justify-between mb-6">
+<h3 class="font-headline font-bold text-2xl">Rounds</h3>
+<span class="text-brand-muted text-sm font-bold">2 Total</span>
+</div>
+<!-- Round 1 -->
+<div class="bg-navy-surface p-5 rounded-xl border border-navy-raised flex items-center justify-between group cursor-pointer hover:border-brand-gold transition-colors">
+<div>
+<div class="flex items-center gap-3 mb-1">
+<span class="text-brand-muted font-bold text-sm">Round 1</span>
+<span class="px-2 py-0.5 bg-brand-green/20 text-brand-green text-xs font-bold rounded-full">READY</span>
+</div>
+<h4 class="font-bold text-xl">Capitals</h4>
+</div>
+<div class="text-right">
+<p class="text-brand-muted text-sm">10 Questions</p>
+<span class="material-symbols-outlined text-brand-muted group-hover:text-brand-gold transition-colors mt-2">edit</span>
+</div>
+</div>
+<!-- Round 2 -->
+<div class="bg-navy-surface p-5 rounded-xl border border-navy-raised flex items-center justify-between group cursor-pointer hover:border-brand-gold transition-colors opacity-80">
+<div>
+<div class="flex items-center gap-3 mb-1">
+<span class="text-brand-muted font-bold text-sm">Round 2</span>
+<span class="px-2 py-0.5 bg-navy-raised text-brand-muted text-xs font-bold rounded-full">DRAFT</span>
+</div>
+<h4 class="font-bold text-xl">90s Music</h4>
+</div>
+<div class="text-right">
+<p class="text-brand-muted text-sm">15 Questions</p>
+<span class="material-symbols-outlined text-brand-muted group-hover:text-brand-gold transition-colors mt-2">edit</span>
+</div>
+</div>
+<!-- New Round Action -->
+<button class="w-full p-5 border-2 border-dashed border-navy-raised rounded-xl flex items-center justify-center gap-3 text-brand-muted hover:text-brand-cream hover:border-brand-cream hover:bg-navy-surface transition-all">
+<span class="material-symbols-outlined">add_circle</span>
+<span class="font-bold">New round</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Floating Action Button (FAB) -->
+<div class="fixed bottom-8 left-64 right-0 flex justify-center pointer-events-none z-40">
+<button class="pointer-events-auto bg-brand-gold hover:bg-brand-amber text-navy-ground font-headline font-black text-xl px-10 py-5 rounded-full shadow-2xl flex items-center gap-3 transform transition-transform active:scale-95 hover:-translate-y-1">
+                Start round 1
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</button>
+</div>
+</main>
+</body></html>

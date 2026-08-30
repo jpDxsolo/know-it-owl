@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Live Hosting Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            navy: {
+                                ground: '#0E1A2F',
+                                surface: '#16294A',
+                                raised: '#1E3765'
+                            },
+                            gold: '#F5A81C',
+                            amber: '#F0821E',
+                            blue: '#2F7FE0',
+                            cream: '#F7EFE2',
+                            muted: '#9DB0CE',
+                            green: '#3FB27F',
+                            red: '#E5484D'
+                        }
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "0.75rem", // ROUND_TWELVE approx 12px
+                        "xl": "1rem",
+                        "full": "9999px"
+                    },
+                    fontFamily: {
+                        headline: ["Outfit", "sans-serif"],
+                        display: ["Outfit", "sans-serif"],
+                        body: ["Plus Jakarta Sans", "sans-serif"],
+                        label: ["Plus Jakarta Sans", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: #0E1A2F;
+            color: #F7EFE2;
+        }
+        .font-variation-fill {
+            font-variation-settings: 'FILL' 1;
+        }
+    </style>
+</head>
+<body class="font-body antialiased selection:bg-brand-gold selection:text-brand-navy-ground min-h-screen flex flex-col">
+<!-- TopAppBar -->
+<header class="bg-[#0E1A2F] border-b border-[#1E3765] flex justify-between items-center px-4 py-3 w-full sticky top-0 z-50 flat no shadows">
+<div class="text-xl font-headline font-black tracking-tight text-[#F5A81C]">
+            Know It Owl
+        </div>
+<div class="flex items-center gap-4">
+<button class="text-[#F5A81C] hover:bg-[#1E3765] transition-colors rounded-full p-2 active:scale-95 transition-transform">
+<span class="material-symbols-outlined font-variation-fill" data-icon="sensors" data-weight="fill">sensors</span>
+</button>
+<button class="text-[#F5A81C] hover:bg-[#1E3765] transition-colors rounded-full p-2 active:scale-95 transition-transform">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+</div>
+</header>
+<main class="flex-1 flex flex-col md:flex-row relative">
+<!-- SideNav (Web only, implied from context but suppressed based on instruction if transactional. Keeping it for completeness if deemed destination. Let's suppress standard nav for focus, but prompt asks for main content layout) -->
+<!-- Main Content Area -->
+<div class="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 flex flex-col gap-8 pb-32">
+<!-- Header Section -->
+<div class="flex flex-col gap-2">
+<h1 class="font-headline font-bold text-3xl md:text-4xl text-brand-gold">Round 2 · 90s Music</h1>
+<p class="font-body text-brand-muted text-lg">Question 3 of 5 released</p>
+</div>
+<!-- Two Column Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+<!-- Left Column (Questions) 65% -->
+<div class="lg:col-span-8 flex flex-col gap-4">
+<h2 class="font-headline font-bold text-xl text-brand-cream mb-2">Questions</h2>
+<!-- Question Row 1 (Released) -->
+<div class="bg-brand-navy-surface rounded-lg p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border border-transparent">
+<div class="flex flex-col gap-1">
+<span class="font-label text-sm text-brand-muted">Question 1</span>
+<p class="font-body text-base text-brand-cream font-medium">Which artist released the hit single "Smells Like Teen Spirit" in 1991?</p>
+</div>
+<div class="flex items-center gap-2 bg-brand-navy-ground px-3 py-1.5 rounded-full self-start sm:self-auto border border-brand-green/20">
+<span class="material-symbols-outlined text-brand-green text-sm" data-icon="check_circle">check_circle</span>
+<span class="font-label text-xs font-semibold text-brand-green tracking-wide">RELEASED</span>
+</div>
+</div>
+<!-- Question Row 2 (Released) -->
+<div class="bg-brand-navy-surface rounded-lg p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border border-transparent">
+<div class="flex flex-col gap-1">
+<span class="font-label text-sm text-brand-muted">Question 2</span>
+<p class="font-body text-base text-brand-cream font-medium">Which girl group told us what they "really, really want" in 1996?</p>
+</div>
+<div class="flex items-center gap-2 bg-brand-navy-ground px-3 py-1.5 rounded-full self-start sm:self-auto border border-brand-green/20">
+<span class="material-symbols-outlined text-brand-green text-sm" data-icon="check_circle">check_circle</span>
+<span class="font-label text-xs font-semibold text-brand-green tracking-wide">RELEASED</span>
+</div>
+</div>
+<!-- Question Row 3 (Released) -->
+<div class="bg-brand-navy-surface rounded-lg p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border border-transparent">
+<div class="flex flex-col gap-1">
+<span class="font-label text-sm text-brand-muted">Question 3</span>
+<p class="font-body text-base text-brand-cream font-medium">Who sang the theme song for the hit movie "Titanic"?</p>
+</div>
+<div class="flex items-center gap-2 bg-brand-navy-ground px-3 py-1.5 rounded-full self-start sm:self-auto border border-brand-green/20">
+<span class="material-symbols-outlined text-brand-green text-sm" data-icon="check_circle">check_circle</span>
+<span class="font-label text-xs font-semibold text-brand-green tracking-wide">RELEASED</span>
+</div>
+</div>
+<!-- Question Row 4 (Highlight to Release Next) -->
+<div class="bg-brand-navy-surface rounded-lg p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-2 border-brand-gold shadow-[0_0_15px_rgba(245,168,28,0.2)] relative overflow-hidden">
+<!-- Decorative glow -->
+<div class="absolute inset-0 bg-gradient-to-r from-brand-gold/10 to-transparent pointer-events-none"></div>
+<div class="flex flex-col gap-1 relative z-10">
+<span class="font-label text-sm text-brand-gold font-bold">Question 4</span>
+<p class="font-body text-base text-brand-cream font-medium">Which boy band member left Take That in 1995?</p>
+</div>
+<button class="relative z-10 bg-brand-gold hover:bg-brand-amber text-brand-navy-ground font-label font-bold py-2.5 px-5 rounded-full transition-colors active:scale-95 flex items-center justify-center gap-2 shadow-lg w-full sm:w-auto">
+<span class="material-symbols-outlined" data-icon="send">send</span>
+                            Release next
+                        </button>
+</div>
+<!-- Question Row 5 (Locked) -->
+<div class="bg-brand-navy-surface/50 rounded-lg p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border border-transparent opacity-60">
+<div class="flex flex-col gap-1">
+<span class="font-label text-sm text-brand-muted">Question 5</span>
+<div class="h-5 w-48 bg-brand-navy-raised rounded animate-pulse mt-1"></div>
+</div>
+<div class="flex items-center gap-2 bg-brand-navy-ground px-3 py-1.5 rounded-full self-start sm:self-auto">
+<span class="material-symbols-outlined text-brand-muted text-sm" data-icon="lock">lock</span>
+<span class="font-label text-xs font-semibold text-brand-muted tracking-wide">LOCKED</span>
+</div>
+</div>
+</div>
+<!-- Right Column (Submissions) 35% -->
+<div class="lg:col-span-4 flex flex-col gap-4">
+<h2 class="font-headline font-bold text-xl text-brand-cream mb-2">Submissions</h2>
+<div class="bg-brand-navy-surface rounded-lg p-6 border border-brand-navy-raised flex flex-col gap-6">
+<!-- Progress Header -->
+<div class="flex flex-col gap-3">
+<div class="flex justify-between items-end">
+<span class="font-label text-brand-muted text-sm uppercase tracking-wider font-semibold">Teams in</span>
+<span class="font-headline font-bold text-2xl text-brand-cream">2 <span class="text-brand-muted text-lg">/ 4</span></span>
+</div>
+<div class="w-full h-2 bg-brand-navy-ground rounded-full overflow-hidden">
+<div class="h-full bg-brand-green w-1/2 rounded-full transition-all duration-500 ease-out"></div>
+</div>
+</div>
+<!-- Team List -->
+<div class="flex flex-col gap-3">
+<!-- Team 1 -->
+<div class="flex items-center justify-between p-3 rounded-lg hover:bg-brand-navy-raised/50 transition-colors">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-brand-blue/20 flex items-center justify-center text-brand-blue font-bold font-headline">Q</div>
+<span class="font-body font-medium text-brand-cream">The Quizzly Bears</span>
+</div>
+<div class="flex items-center gap-1.5 text-brand-green">
+<span class="material-symbols-outlined text-[18px]" data-icon="task_alt">task_alt</span>
+<span class="font-label text-xs font-bold uppercase">Handed In</span>
+</div>
+</div>
+<!-- Team 2 -->
+<div class="flex items-center justify-between p-3 rounded-lg hover:bg-brand-navy-raised/50 transition-colors">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-brand-amber/20 flex items-center justify-center text-brand-amber font-bold font-headline">S</div>
+<span class="font-body font-medium text-brand-cream">Smarty Pants</span>
+</div>
+<div class="flex items-center gap-1.5 text-brand-muted">
+<span class="material-symbols-outlined text-[18px] animate-spin" data-icon="hourglass_empty" style="animation-duration: 3s;">hourglass_empty</span>
+<span class="font-label text-xs font-semibold uppercase">Still Writing</span>
+</div>
+</div>
+<!-- Team 3 -->
+<div class="flex items-center justify-between p-3 rounded-lg hover:bg-brand-navy-raised/50 transition-colors">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-brand-green/20 flex items-center justify-center text-brand-green font-bold font-headline">T</div>
+<span class="font-body font-medium text-brand-cream">Trivia Newton John</span>
+</div>
+<div class="flex items-center gap-1.5 text-brand-green">
+<span class="material-symbols-outlined text-[18px]" data-icon="task_alt">task_alt</span>
+<span class="font-label text-xs font-bold uppercase">Handed In</span>
+</div>
+</div>
+<!-- Team 4 -->
+<div class="flex items-center justify-between p-3 rounded-lg hover:bg-brand-navy-raised/50 transition-colors">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-brand-gold/20 flex items-center justify-center text-brand-gold font-bold font-headline">O</div>
+<span class="font-body font-medium text-brand-cream">Owl-stars</span>
+</div>
+<div class="flex items-center gap-1.5 text-brand-muted">
+<span class="material-symbols-outlined text-[18px] animate-spin" data-icon="hourglass_empty" style="animation-duration: 3s;">hourglass_empty</span>
+<span class="font-label text-xs font-semibold uppercase">Still Writing</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Bottom Action Bar (Contextual FAB area replacement) -->
+<div class="fixed bottom-0 left-0 w-full bg-brand-navy-surface border-t border-brand-navy-raised p-4 z-50 shadow-[0_-10px_30px_rgba(14,26,47,0.8)]">
+<div class="max-w-7xl mx-auto flex flex-col-reverse sm:flex-row justify-between items-center gap-4">
+<button class="w-full sm:w-auto px-6 py-3 rounded-full border border-brand-navy-raised text-brand-muted hover:text-brand-cream hover:bg-brand-navy-raised transition-colors font-label font-semibold flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[20px]" data-icon="arrow_back">arrow_back</span>
+                Back to dashboard
+            </button>
+<button class="w-full sm:w-auto px-8 py-3 rounded-full bg-brand-gold hover:bg-brand-amber text-brand-navy-ground font-label font-bold text-lg transition-colors active:scale-95 flex items-center justify-center gap-2 shadow-lg">
+<span class="material-symbols-outlined font-variation-fill" data-icon="visibility" data-weight="fill">visibility</span>
+                End round and reveal
+            </button>
+</div>
+</div>
+</body></html>

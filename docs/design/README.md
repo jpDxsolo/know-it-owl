@@ -9,6 +9,14 @@ artefact — open them in a browser; the `.png` thumbnails are small.
 | Join | [`join-mobile`](join-mobile.png) (error state) | [`join-desktop`](join-desktop.png) |
 | Lobby, filling up | [`lobby-waiting-mobile`](lobby-waiting-mobile.png) | [`lobby-waiting-desktop`](lobby-waiting-desktop.png) |
 | Lobby, teams drawn | [`lobby-teams-set-mobile`](lobby-teams-set-mobile.png) | [`lobby-teams-set-desktop`](lobby-teams-set-desktop.png) |
+| GM dashboard, before the quiz | [`gm-dashboard-mobile`](gm-dashboard-mobile.png) | [`gm-dashboard-desktop`](gm-dashboard-desktop.png) |
+| GM running a round | [`gm-round-active-mobile`](gm-round-active-mobile.png) | [`gm-round-active-desktop`](gm-round-active-desktop.png) |
+| Round builder | [`round-builder-mobile`](round-builder-mobile.png) | [`round-builder-desktop`](round-builder-desktop.png) |
+
+The GM screens carry two extras the generated mocks invented and we do not have:
+a left-hand app nav (Games / Library / Results) and a "Game Master" account
+identity. There are no accounts in this product — a host is whoever holds the
+GM token — so ignore both.
 
 ## Every screen ships two views
 

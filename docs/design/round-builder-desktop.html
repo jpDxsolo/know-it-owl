@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Round Builder - Know It Owl</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        navy: {
+                            ground: '#0E1A2F',
+                            surface: '#16294A',
+                            raised: '#1E3765'
+                        },
+                        gold: '#F5A81C',
+                        amber: '#F0821E',
+                        blue: '#2F7FE0',
+                        cream: '#F7EFE2',
+                        muted: '#9DB0CE',
+                        green: '#3FB27F',
+                        red: '#E5484D'
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                    fontFamily: {
+                        headline: ["Outfit", "sans-serif"],
+                        display: ["Outfit", "sans-serif"],
+                        body: ["Plus Jakarta Sans", "sans-serif"],
+                        label: ["Plus Jakarta Sans", "sans-serif"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.fill {
+            font-variation-settings: 'FILL' 1;
+        }
+    </style>
+</head>
+<body class="bg-navy-ground text-cream font-body min-h-screen flex flex-col pt-16 pb-20 md:pt-20">
+<!-- TopNavBar -->
+<nav class="fixed top-0 left-0 w-full z-50 bg-[#16294A] dark:bg-[#16294A] border-b border-[#1E3765] shadow-md flex justify-between items-center px-6 py-3 max-w-full docked full-width">
+<div class="flex items-center gap-8">
+<h1 class="text-2xl font-headline font-black text-[#F5A81C] tracking-tighter">Know It Owl</h1>
+<div class="hidden md:flex gap-6">
+<a class="text-[#9DB0CE] hover:text-[#F7EFE2] transition-colors font-headline font-bold uppercase tracking-wide" href="#">Dashboard</a>
+<a class="text-[#F5A81C] border-b-2 border-[#F5A81C] pb-1 font-headline font-bold uppercase tracking-wide" href="#">My Rounds</a>
+<a class="text-[#9DB0CE] hover:text-[#F7EFE2] transition-colors font-headline font-bold uppercase tracking-wide" href="#">Live Games</a>
+<a class="text-[#9DB0CE] hover:text-[#F7EFE2] transition-colors font-headline font-bold uppercase tracking-wide" href="#">Library</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-[#9DB0CE] hover:text-[#F7EFE2] hover:bg-[#1E3765] rounded-lg transition-all p-2 active:scale-95 duration-150">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+<button class="text-[#9DB0CE] hover:text-[#F7EFE2] hover:bg-[#1E3765] rounded-lg transition-all p-2 active:scale-95 duration-150">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+</button>
+<div class="w-8 h-8 rounded-full overflow-hidden bg-navy-raised border-2 border-gold">
+<img class="w-full h-full object-cover" data-alt="A small circular avatar of a stylized host character with a microphone, glowing softly against a dark navy background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDBxp2-ZW3FHJv6nj1AER2QVQHUPYAJ4J5x6GdxrUpPyon45KBmnupji2l5OFb8eVDP75rq7SG85hSR4yiRiKmtKj-vZ0OrEPmFR5tLy5uz7Mb-v2RMMRN35Uw0PdBrRz9tLAaEbWtcGKwz-mMi-pxqHP1um4CC-JJ2JuXnlZSnYFgvJ0A32CYENVN6qE1X9ueMIsRc9kl4aoF95fuAz4qlL-8JlEO47hJ7DeVnj_UG4SCFMzTYqu1rUh8uPZaI-CVXTHHKbujuVGs"/>
+</div>
+</div>
+</nav>
+<!-- Main Content -->
+<main class="flex-grow w-full max-w-5xl mx-auto px-4 md:px-6 py-8 flex flex-col gap-8">
+<!-- Header -->
+<header class="flex items-center justify-between">
+<div class="flex items-center gap-4">
+<button class="text-muted hover:text-cream transition-colors">
+<span class="material-symbols-outlined text-2xl">arrow_back</span>
+</button>
+<h2 class="text-3xl md:text-4xl font-headline font-black tracking-tight text-white">Round 2</h2>
+</div>
+</header>
+<!-- Category Section -->
+<section class="bg-navy-surface rounded-xl p-6 border border-navy-raised shadow-lg relative overflow-hidden group">
+<div class="absolute inset-0 bg-gradient-to-br from-navy-raised/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<label class="block text-sm font-label text-muted uppercase tracking-wider mb-2" for="round-category">Round Category</label>
+<input class="w-full bg-navy-ground border border-navy-raised rounded-lg px-4 py-3 text-lg font-body focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold placeholder:text-navy-raised text-white transition-all" id="round-category" placeholder="e.g., 90s Music, Science Fiction, General Knowledge..." type="text"/>
+</section>
+<!-- Question Cards Area -->
+<section class="flex flex-col gap-6">
+<!-- Question 1: Picture Style -->
+<article class="bg-navy-surface rounded-xl p-6 border border-navy-raised shadow-xl relative">
+<!-- Card Header -->
+<div class="flex justify-between items-start mb-6">
+<div class="flex items-center gap-3">
+<span class="bg-gold text-navy-ground font-headline font-black text-xl w-8 h-8 flex items-center justify-center rounded-lg shadow-[0_0_15px_rgba(245,168,28,0.4)]">1</span>
+<h3 class="text-xl font-headline font-bold text-cream">Picture Grid</h3>
+</div>
+<!-- Points Selector -->
+<div class="flex items-center bg-navy-ground border border-navy-raised rounded-lg p-1">
+<label class="text-xs text-muted font-label uppercase px-2 mr-1">Pts/Ans</label>
+<button class="w-6 h-6 rounded hover:bg-navy-raised text-muted flex items-center justify-center transition-colors"><span class="material-symbols-outlined text-sm">remove</span></button>
+<span class="w-6 text-center font-bold text-cream text-sm">1</span>
+<button class="w-6 h-6 rounded hover:bg-navy-raised text-muted flex items-center justify-center transition-colors"><span class="material-symbols-outlined text-sm">add</span></button>
+</div>
+</div>
+<!-- Split Layout -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-8">
+<!-- Left Column: Image -->
+<div class="md:col-span-4 flex flex-col gap-4">
+<div class="aspect-square rounded-lg border-2 border-dashed border-navy-raised bg-navy-ground overflow-hidden group relative flex items-center justify-center">
+<img alt="Preview Image" class="w-full h-full object-contain p-2" src="https://lh3.googleusercontent.com/aida/AEtjO1VI0HLn7IsZPX6y8SuYNRpg0wPynlweBRxjITHx4C_FlqmIvHCc57Q_AC5ee6LOiqxmPxftM9BwvstuZsQitdWfH5xFh8BolVZ5WojL9iwFBTp9LQDPMoRR-aeiWkBtW3ad5njCBqloUyboHXos6_oIvi8SLgRjVHDmpz7Zp1zNlmPlAI_6wbTBBx1YixTaI7uXwzTxvVIA5GhEy0pxeL9hxJGNKSUhSXjAW3WIqZwyLRocr1J7o7H7MAI"/>
+<div class="absolute inset-0 bg-navy-ground/80 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm">
+<span class="material-symbols-outlined text-4xl text-gold drop-shadow-lg">photo_camera</span>
+</div>
+</div>
+<button class="w-full py-2 bg-navy-raised hover:bg-navy-ground border border-navy-raised text-cream font-label rounded-lg transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-sm">swap_horiz</span> Replace Image
+                        </button>
+</div>
+<!-- Right Column: 10 Answers Grid -->
+<div class="md:col-span-8">
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+<!-- JS will generate these 10 inputs -->
+<script>
+                                for(let i=1; i<=10; i++) {
+                                    document.write(`
+                                        <div class="relative flex items-center group">
+                                            <span class="absolute left-3 text-gold font-headline font-black text-sm z-10 drop-shadow-sm">${i}.</span>
+                                            <input type="text" 
+                                                class="w-full bg-navy-ground border border-navy-raised rounded-lg pl-8 pr-3 py-2 text-sm font-body focus:outline-none focus:ring-1 focus:ring-gold focus:border-gold placeholder:text-navy-raised/50 text-white transition-all z-0"
+                                                placeholder="Answer ${i}">
+                                        </div>
+                                    `);
+                                }
+                            </script>
+</div>
+</div>
+</div>
+<!-- Card Actions (Hidden on default, shown on hover/focus maybe, keeping simple here) -->
+<button class="absolute top-6 right-6 text-muted hover:text-red transition-colors w-8 h-8 flex items-center justify-center rounded-lg hover:bg-navy-raised/50 -mt-1 -mr-1">
+<span class="material-symbols-outlined text-lg">delete</span>
+</button>
+</article>
+</section>
+<!-- Add Question Button -->
+<button class="w-full py-4 border-2 border-dashed border-navy-raised hover:border-gold hover:bg-gold/5 rounded-xl text-muted hover:text-gold transition-all flex flex-col items-center justify-center gap-2 group mt-4">
+<span class="material-symbols-outlined text-3xl group-hover:scale-110 transition-transform">add_circle</span>
+<span class="font-headline font-bold uppercase tracking-wider text-sm">Add Question</span>
+</button>
+</main>
+<!-- Footer Actions (Fixed Bottom) -->
+<div class="fixed bottom-0 left-0 w-full bg-[#0E1A2F]/90 backdrop-blur-md border-t border-[#1E3765] p-4 z-40 flex justify-between items-center md:px-8">
+<div class="text-xs text-muted font-label hidden sm:block">
+<span class="text-green flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-green inline-block animate-pulse"></span> Auto-saved just now</span>
+</div>
+<div class="flex gap-4 w-full sm:w-auto">
+<button class="flex-1 sm:flex-none px-6 py-3 rounded-full font-headline font-bold tracking-wide text-cream bg-navy-surface hover:bg-navy-raised transition-colors border border-navy-raised text-sm">
+                Preview
+            </button>
+<button class="flex-1 sm:flex-none px-8 py-3 rounded-full font-headline font-bold tracking-wide text-navy-ground bg-gold hover:bg-amber transition-colors shadow-[0_0_20px_rgba(245,168,28,0.3)] hover:shadow-[0_0_25px_rgba(240,130,30,0.5)] text-sm flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-sm">save</span> Save Round
+            </button>
+</div>
+</div>
+</body></html>
