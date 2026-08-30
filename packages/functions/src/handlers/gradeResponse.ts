@@ -39,8 +39,9 @@ function readPoints(value: unknown, expected: number): number[] {
 /**
  * Record the points a team earned for one question.
  *
- * The response update and the round's move into GRADING go in one transaction,
- * so a round can never show as graded without the grade that caused it. Both
+ * The response update and the move into GRADING — for both the round and the
+ * game — go in one transaction, so a round can never show as graded without
+ * the grade that caused it, and the two statuses cannot disagree. Both
  * writes are idempotent: re-grading a question overwrites the points, and a
  * round already in GRADING stays there.
  */
@@ -108,13 +109,25 @@ export async function gradeResponse(args: Record<string, unknown>): Promise<Team
           ExpressionAttributeValues: { ":grading": "GRADING", ":active": "ACTIVE" },
         },
       },
+      {
+        // The game follows the round: ROUND_ACTIVE -> GRADING. Without this the
+        // GRADING game status is declared by the schema and never reachable.
+        Update: {
+          TableName: table,
+          Key: keys.gameMeta(gameId),
+          UpdateExpression: "SET #status = :grading",
+          ConditionExpression: "#status IN (:roundActive, :grading)",
+          ExpressionAttributeNames: { "#status": "status" },
+          ExpressionAttributeValues: { ":grading": "GRADING", ":roundActive": "ROUND_ACTIVE" },
+        },
+      },
     ]);
   } catch (error) {
-    const [missingResponse, roundMoved] = cancellationCodes(error);
+    const [missingResponse, roundMoved, gameMoved] = cancellationCodes(error);
     if (missingResponse === CONDITION_FAILED) {
       throw new NotFoundError(`Team ${teamId} did not submit question ${questionNumber}`);
     }
-    if (roundMoved === CONDITION_FAILED) {
+    if (roundMoved === CONDITION_FAILED || gameMoved === CONDITION_FAILED) {
       throw new ConflictError(`Round ${roundNumber} is no longer being graded`);
     }
     throw error;
