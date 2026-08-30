@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { ValidationError } from "./errors.js";
-import * as keys from "./keys.js";
+import { ValidationError } from "@know-it-owl/functions/lib/errors";
+import * as keys from "@know-it-owl/functions/lib/keys";
 import {
   mapItems,
   toGame,
@@ -15,7 +15,7 @@ import {
   type ResponseItem,
   type RoundItem,
   type TeamItem,
-} from "./mappers.js";
+} from "@know-it-owl/functions/lib/mappers";
 
 const gameMeta: GameMetaItem = {
   ...keys.gameMeta("g1"),

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { newGameId, newGmToken, newJoinCode, newTeamId } from "./ids.js";
+import { newGameId, newGmToken, newJoinCode, newTeamId } from "@know-it-owl/functions/lib/ids";
 
 describe("id generators", () => {
   it("generates distinct uuid game and team ids", () => {

@@ -1,0 +1,19 @@
+{
+  "name": "@know-it-owl/test",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@know-it-owl/core": "*",
+    "@know-it-owl/functions": "*"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.1",
+    "aws-sdk-client-mock": "^4.1.0",
+    "vitest": "^2.1.8"
+  }
+}

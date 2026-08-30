@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import * as keys from "./keys.js";
+import * as keys from "@know-it-owl/functions/lib/keys";
 
 describe("key builders", () => {
   it("builds the game meta key", () => {

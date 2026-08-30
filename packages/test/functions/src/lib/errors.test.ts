@@ -5,7 +5,7 @@ import {
   ForbiddenError,
   NotFoundError,
   ValidationError,
-} from "./errors.js";
+} from "@know-it-owl/functions/lib/errors";
 
 describe("errors", () => {
   it("carries a code, a name and a message", () => {

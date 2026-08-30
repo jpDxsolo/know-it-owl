@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { ForbiddenError } from "./errors.js";
-import { assertGm, hashGmToken, verifyGmToken } from "./gmAuth.js";
-import { newGmToken } from "./ids.js";
+import { ForbiddenError } from "@know-it-owl/functions/lib/errors";
+import { assertGm, hashGmToken, verifyGmToken } from "@know-it-owl/functions/lib/gmAuth";
+import { newGmToken } from "@know-it-owl/functions/lib/ids";
 
 describe("gm auth", () => {
   it("hashes deterministically and never returns the raw token", () => {

@@ -19,8 +19,8 @@ import {
   tableName,
   transactWrite,
   updateItem,
-} from "./db.js";
-import * as keys from "./keys.js";
+} from "@know-it-owl/functions/lib/db";
+import * as keys from "@know-it-owl/functions/lib/keys";
 
 const ddbMock = mockClient(DynamoDBDocumentClient);
 const originalTableName = process.env.TABLE_NAME;

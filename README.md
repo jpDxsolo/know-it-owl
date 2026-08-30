@@ -14,6 +14,7 @@ See [PLAN.md](./PLAN.md) for the full product and architecture plan.
 - `packages/core` — shared domain logic and types (team randomization lives here)
 - `packages/functions` — Lambda resolver stubs for the AppSync API
 - `packages/frontend` — Vite React SPA (placeholder screens)
+- `packages/test` — all unit tests, in a tree mirroring the packages they cover
 - `graphql/schema.graphql` — GraphQL schema
 - `sst.config.ts` — SST v3 infrastructure definition
 
@@ -21,7 +22,7 @@ See [PLAN.md](./PLAN.md) for the full product and architecture plan.
 
 ```sh
 npm install            # install all workspaces
-npm test               # run core unit tests (vitest)
+npm test               # run all unit tests (vitest, packages/test)
 npm run typecheck      # typecheck all workspaces
 npm run build          # build the frontend
 npx sst dev            # live-develop against AWS (requires AWS credentials)
