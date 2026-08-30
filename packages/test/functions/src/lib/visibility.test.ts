@@ -25,9 +25,9 @@ function question(roundNumber: number, number: number): Question {
 }
 
 const rounds: Round[] = [
-  { number: 1, category: "History", status: "REVEALED" },
-  { number: 2, category: "Music", status: "ACTIVE" },
-  { number: 3, category: "Surprise", status: "DRAFT" },
+  { number: 1, category: "History", status: "REVEALED", releasedCount: 1 },
+  { number: 2, category: "Music", status: "ACTIVE", releasedCount: 2 },
+  { number: 3, category: "Surprise", status: "DRAFT", releasedCount: 0 },
 ];
 
 const questions = [question(1, 1), question(2, 1), question(2, 2), question(3, 1)];

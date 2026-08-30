@@ -60,8 +60,18 @@ describe("mappers", () => {
   });
 
   it("maps rounds and questions", () => {
-    const roundItem: RoundItem = { ...keys.round("g1", 3), category: "Film", status: "ACTIVE" };
-    expect(toRound(roundItem)).toEqual({ number: 3, category: "Film", status: "ACTIVE" });
+    const roundItem: RoundItem = {
+      ...keys.round("g1", 3),
+      category: "Film",
+      status: "ACTIVE",
+      releasedCount: 2,
+    };
+    expect(toRound(roundItem)).toEqual({
+      number: 3,
+      category: "Film",
+      status: "ACTIVE",
+      releasedCount: 2,
+    });
 
     const questionItem: QuestionItem = {
       ...keys.question("g1", 12, 4),
