@@ -127,6 +127,9 @@ export function subscribeToGame(options: SubscribeOptions): () => void {
     ws.onopen = () => ws.send(JSON.stringify({ type: "connection_init" }));
 
     ws.onmessage = (frame: MessageEvent<string>) => {
+      // A frame can arrive between `close()` and the socket actually closing,
+      // and after teardown the caller is gone.
+      if (closed || socket !== ws) return;
       let message: ServerMessage;
       try {
         message = JSON.parse(frame.data) as ServerMessage;
