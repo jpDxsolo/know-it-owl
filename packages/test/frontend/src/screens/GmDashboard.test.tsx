@@ -9,7 +9,7 @@ import { setGmToken } from "@know-it-owl/frontend/services/identity";
 
 class InertSocket {
   onopen: (() => void) | undefined;
-  onmessage: (() => void) | undefined;
+  onmessage: ((event: MessageEvent<string>) => void) | undefined;
   onclose: (() => void) | undefined;
   onerror: (() => void) | undefined;
   readyState = 0;
@@ -375,6 +375,127 @@ describe("running a round", () => {
     renderDashboard();
 
     await waitFor(() => expect(screen.getByText("Picture round")).toBeInTheDocument());
+  });
+});
+
+describe("submission tracking", () => {
+  it("ignores a slow read for a round that is no longer in play", async () => {
+    // The answer is stale by the time it lands, not merely late: showing round
+    // 1's hand-ins against round 2 would tell the host everyone was done.
+    //
+    // Racing this needs the round to change *while* a read is in flight, so the
+    // subscription is driven by hand rather than left inert.
+    setGmToken("g1", "token");
+    const teams = [
+      team("t1", "Owls", [player("p1", "Ada", "t1")]),
+      team("t2", "Bears", [player("p2", "Grace", "t2")]),
+    ];
+    const players = [player("p1", "Ada", "t1"), player("p2", "Grace", "t2")];
+    const round = (currentRound: number, category: string) =>
+      game({
+        status: "ROUND_ACTIVE",
+        currentRound,
+        players,
+        teams,
+        rounds: [
+          {
+            number: currentRound,
+            category,
+            status: "ACTIVE",
+            releasedCount: 1,
+            questions: [question(1)],
+          },
+        ],
+      });
+
+    let served = round(1, "One");
+    let release: (() => void) | undefined;
+    const roundOneStalls = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+
+    const sockets: DrivableSocket[] = [];
+    class DrivableSocket extends InertSocket {
+      constructor() {
+        super();
+        sockets.push(this);
+      }
+      override send(): void {}
+    }
+    vi.stubGlobal("WebSocket", DrivableSocket);
+
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (_url: string, init: RequestInit) => {
+        const body = JSON.parse(String(init.body)) as {
+          query: string;
+          variables: Record<string, unknown>;
+        };
+        if (body.query.includes("query RoundResults")) {
+          if (body.variables.roundNumber === 1) {
+            await roundOneStalls;
+            return {
+              ok: true,
+              status: 200,
+              json: async () => ({
+                data: {
+                  roundResults: {
+                    round: null,
+                    responses: teams.map((t) => ({
+                      roundNumber: 1,
+                      questionNumber: 1,
+                      teamId: t.id,
+                      answers: ["x"],
+                      doubled: false,
+                      graded: false,
+                      gradedPoints: null,
+                    })),
+                    standings: [],
+                  },
+                },
+              }),
+            };
+          }
+          return {
+            ok: true,
+            status: 200,
+            json: async () => ({
+              data: { roundResults: { round: null, responses: [], standings: [] } },
+            }),
+          };
+        }
+        return { ok: true, status: 200, json: async () => ({ data: { game: served } }) };
+      }),
+    );
+
+    renderDashboard();
+    await waitFor(() => expect(screen.getByText(/round 1 · one/i)).toBeInTheDocument());
+
+    // The host starts round 2 while round 1's read is still hanging.
+    served = round(2, "Two");
+    const socket = sockets[0];
+    socket.readyState = 1;
+    socket.onopen?.();
+    socket.onmessage?.({
+      data: JSON.stringify({ type: "connection_ack", payload: { connectionTimeoutMs: 300000 } }),
+    } as MessageEvent<string>);
+    socket.onmessage?.({ data: JSON.stringify({ type: "start_ack" }) } as MessageEvent<string>);
+    socket.onmessage?.({
+      data: JSON.stringify({
+        type: "data",
+        payload: { data: { onGameUpdated: { ...served, gameId: "g1", event: "ROUND_STARTED", game: served } } },
+      }),
+    } as MessageEvent<string>);
+
+    await waitFor(() => expect(screen.getByText(/round 2 · two/i)).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText(/0 of 2 teams in/i)).toBeInTheDocument());
+
+    release?.();
+    // Round 1's answer lands now, and must be thrown away rather than claiming
+    // both teams have handed in for round 2.
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    expect(screen.getByText(/0 of 2 teams in/i)).toBeInTheDocument();
+    expect(screen.queryByText(/2 of 2 teams in/i)).not.toBeInTheDocument();
   });
 });
 

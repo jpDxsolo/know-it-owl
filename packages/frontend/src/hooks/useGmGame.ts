@@ -10,7 +10,7 @@
  * What this adds is the host's own concerns: proof that this browser holds the
  * token, and who has handed in.
  */
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { execute, RoundResultsQuery } from "../services/api";
 import { gmToken as storedGmToken } from "../services/identity";
 import { useGame, type UseGameResult } from "./useGame";
@@ -39,10 +39,18 @@ export function useGmGame(gameId: string | undefined): UseGmGameResult {
   const status = game.game?.status;
   const tracking = status !== undefined && TRACKS_SUBMISSIONS.has(status) && roundNumber !== null;
 
+  /** The round we currently care about, readable from inside a resolved promise. */
+  const watchedRound = useRef<number | null>(null);
+  watchedRound.current = roundNumber;
+
   const readSubmissions = useCallback(async (): Promise<void> => {
     if (!gameId || !gmToken || roundNumber === null) return;
+    const forRound = roundNumber;
     try {
-      const data = await execute(RoundResultsQuery, { gameId, roundNumber, gmToken });
+      const data = await execute(RoundResultsQuery, { gameId, roundNumber: forRound, gmToken });
+      // A slow read for a finished round must not overwrite the one now in
+      // play — the answer is stale by the time it lands, not merely late.
+      if (watchedRound.current !== forRound) return;
       // A team appears here as soon as it has any response for the round, which
       // is exactly what "handed in" means — submitAnswers writes them together.
       setSubmittedTeamIds(
@@ -54,15 +62,27 @@ export function useGmGame(gameId: string | undefined): UseGmGameResult {
     }
   }, [gameId, gmToken, roundNumber]);
 
+  /**
+   * Counts hand-ins rather than events.
+   *
+   * ANSWERS_SUBMITTED is fanned out to us but carries no team id, so the list
+   * has to be re-read. Every *other* event — someone joining, a double being
+   * chosen — cannot change who has handed in, and re-reading on those would be
+   * a request per arrival for an answer we already have.
+   */
+  const [handIns, setHandIns] = useState(0);
+  const lastEvent = game.lastEvent;
+  useEffect(() => {
+    if (lastEvent?.event === "ANSWERS_SUBMITTED") setHandIns((count) => count + 1);
+  }, [lastEvent]);
+
   useEffect(() => {
     if (!tracking) {
       setSubmittedTeamIds(new Set());
       return;
     }
     void readSubmissions();
-    // `lastEvent` is the cue: ANSWERS_SUBMITTED is fanned out to us, but it
-    // carries no team id, so the list has to be re-read rather than patched.
-  }, [tracking, readSubmissions, game.lastEvent]);
+  }, [tracking, readSubmissions, handIns]);
 
   return { ...game, gmToken, isHost: gmToken !== null, submittedTeamIds };
 }

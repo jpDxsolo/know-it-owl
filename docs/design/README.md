@@ -18,6 +18,13 @@ a left-hand app nav (Games / Library / Results) and a "Game Master" account
 identity. There are no accounts in this product — a host is whoever holds the
 GM token — so ignore both.
 
+**The round builder is the exception to mobile-first.** A picture question is one
+image beside a ten-slot answer key, which is inherently two columns, so it was
+designed at desktop and folded down to a single column on a phone rather than
+the other way round. Expect the same of grading, for the same reason: a grid of
+every team's answers only makes sense with width. Reach for that order whenever
+a screen's *content* is two-dimensional; everything else stays mobile-first.
+
 ## Every screen ships two views
 
 **Mobile and desktop, both, every time.** The app is played on phones and run

@@ -88,7 +88,7 @@ export function Join() {
   /**
    * Start a game as its host.
    *
-   *  hands back the GM token exactly once and the server keeps only
+   * `createGame` hands back the GM token exactly once and the server keeps only
    * a hash of it, so it is written to storage before anything else can go wrong
    * — including before navigating. The dashboard says so out loud on arrival.
    */
@@ -104,8 +104,9 @@ export function Join() {
     } catch (cause) {
       const failure =
         cause instanceof ApiError ? cause : new ApiError(String(cause), "UNKNOWN");
+      // Hosting failed for reasons that have nothing to do with either field,
+      // so neither is marked — the message stands on its own.
       setError(messageFor(failure));
-      setErrorField("joinCode");
     } finally {
       setBusy(false);
     }
@@ -184,6 +185,10 @@ export function Join() {
             </p>
           )}
         </div>
+
+        {/* An error that belongs to neither field — hosting failed, or the
+            network did — still has to be seen. */}
+        {error && !errorField && <p className="kio-field-error">{error}</p>}
 
         <button className="kio-button kio-button--primary" type="submit" disabled={!canSubmit}>
           {busy ? "Joining…" : returning ? "Rejoin the quiz" : "Join the quiz"}

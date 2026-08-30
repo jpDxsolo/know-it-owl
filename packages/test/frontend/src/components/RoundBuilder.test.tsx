@@ -7,6 +7,8 @@ import { setApiConfig } from "@know-it-owl/frontend/services/config";
 /** Every GraphQL call made, so a test can assert what was actually sent. */
 let calls: { query: string; variables: Record<string, unknown> }[] = [];
 let uploads: RequestInit[] = [];
+/** Object URLs the component gave back, so leaks are visible. */
+let revoked: string[] = [];
 
 function mockNetwork(options: { uploadStatus?: number; createFails?: string } = {}): void {
   vi.stubGlobal(
@@ -76,7 +78,15 @@ beforeEach(() => {
   calls = [];
   uploads = [];
   // jsdom has no object URLs, and the builder makes one to preview the upload.
-  vi.stubGlobal("URL", Object.assign(globalThis.URL, { createObjectURL: () => "blob:preview" }));
+  revoked = [];
+  let issued = 0;
+  vi.stubGlobal(
+    "URL",
+    Object.assign(globalThis.URL, {
+      createObjectURL: () => `blob:preview-${(issued += 1)}`,
+      revokeObjectURL: (url: string) => revoked.push(url),
+    }),
+  );
   setApiConfig({ url: "https://api.test/graphql", realtimeUrl: "wss://rt.test", apiKey: "da2-x" });
   mockNetwork();
 });
@@ -279,6 +289,44 @@ describe("picture questions", () => {
     // Still offering to pick, rather than stuck on "Uploading…".
     expect(screen.getByText(/^Choose picture$/)).toBeInTheDocument();
     expect(screen.getByLabelText(/choose picture/i)).toBeEnabled();
+  });
+
+  it("releases the preview it replaces", async () => {
+    // createObjectURL pins the file in memory until revoked, and a host may
+    // swap the picture several times before settling.
+    renderBuilder();
+    await switchToPicture();
+    await userEvent.upload(screen.getByLabelText(/choose picture/i), file("a.png", "image/png"));
+    await waitFor(() => expect(screen.getByText(/^Replace$/)).toBeInTheDocument());
+    expect(revoked).toEqual([]);
+
+    await userEvent.upload(screen.getByLabelText(/replace/i), file("b.png", "image/png"));
+    await waitFor(() => expect(revoked).toEqual(["blob:preview-1"]));
+  });
+
+  it("releases the preview when the question is removed", async () => {
+    renderBuilder();
+    await userEvent.click(screen.getByRole("button", { name: /add question/i }));
+    const cards = screen.getAllByRole("listitem");
+    await userEvent.click(within(cards[1]).getByRole("button", { name: /picture \(10\)/i }));
+    await userEvent.upload(
+      within(cards[1]).getByLabelText(/choose picture/i),
+      file("a.png", "image/png"),
+    );
+    await waitFor(() => expect(within(cards[1]).getByText(/^Replace$/)).toBeInTheDocument());
+
+    await userEvent.click(within(cards[1]).getByRole("button", { name: /remove/i }));
+    expect(revoked).toEqual(["blob:preview-1"]);
+  });
+
+  it("releases anything still open when it unmounts", async () => {
+    const view = renderBuilder();
+    await switchToPicture();
+    await userEvent.upload(screen.getByLabelText(/choose picture/i), file("a.png", "image/png"));
+    await waitFor(() => expect(screen.getByText(/^Replace$/)).toBeInTheDocument());
+
+    view.unmount();
+    expect(revoked).toEqual(["blob:preview-1"]);
   });
 
   it("rebuilds the answer key when the type changes", async () => {

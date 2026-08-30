@@ -9,7 +9,7 @@
  * server is still the authority — this only exists so a host finds out about a
  * blank answer while looking at it, rather than after pressing Save.
  */
-import { useState, type ChangeEvent } from "react";
+import { useEffect, useRef, useState, type ChangeEvent } from "react";
 import { ApiError, CreateRoundMutation, execute } from "../services/api";
 import { uploadImage } from "../services/images";
 import type { QuestionInput, QuestionType } from "../gql/graphql";
@@ -96,6 +96,36 @@ export function RoundBuilder({ gameId, gmToken, roundNumber, onSaved, onCancel }
   /** Only mark fields red once the host has tried to save. */
   const [attempted, setAttempted] = useState(false);
 
+  /**
+   * Every object URL handed out for a preview.
+   *
+   * `createObjectURL` pins the file in memory until it is revoked, and a host
+   * writing a picture round may replace an image several times before settling
+   * — so each one is released as soon as it stops being shown, and any survivor
+   * is released on unmount.
+   */
+  const previews = useRef(new Set<string>());
+
+  const openPreview = (file: File): string => {
+    const url = URL.createObjectURL(file);
+    previews.current.add(url);
+    return url;
+  };
+
+  const closePreview = (url: string | null): void => {
+    if (!url) return;
+    URL.revokeObjectURL(url);
+    previews.current.delete(url);
+  };
+
+  useEffect(() => {
+    const outstanding = previews.current;
+    return () => {
+      for (const url of outstanding) URL.revokeObjectURL(url);
+      outstanding.clear();
+    };
+  }, []);
+
   const update = (id: string, change: Partial<Draft>): void =>
     setDrafts((current) =>
       current.map((draft) => (draft.id === id ? { ...draft, ...change } : draft)),
@@ -127,9 +157,11 @@ export function RoundBuilder({ gameId, gmToken, roundNumber, onSaved, onCancel }
     setProblem(undefined);
     try {
       const imageKey = await uploadImage(gameId, gmToken, file);
+      // The one it replaces is no longer on screen.
+      closePreview(draft.imagePreview);
       update(draft.id, {
         imageKey,
-        imagePreview: URL.createObjectURL(file),
+        imagePreview: openPreview(file),
         uploading: false,
       });
     } catch (cause) {
@@ -218,7 +250,10 @@ export function RoundBuilder({ gameId, gmToken, roundNumber, onSaved, onCancel }
                   <button
                     className="kio-button kio-button--ghost"
                     type="button"
-                    onClick={() => setDrafts((current) => current.filter((d) => d.id !== draft.id))}
+                    onClick={() => {
+                      closePreview(draft.imagePreview);
+                      setDrafts((current) => current.filter((d) => d.id !== draft.id));
+                    }}
                   >
                     Remove
                   </button>
@@ -238,6 +273,9 @@ export function RoundBuilder({ gameId, gmToken, roundNumber, onSaved, onCancel }
                     rows={2}
                     placeholder="Which band released Nevermind?"
                   />
+                  {/* One accepted answer per TEXT question for now. The API
+                      takes a list, so alternatives ("Nirvana" / "nirvana") are
+                      an additive change here rather than a schema one. */}
                   <label className="kio-label" htmlFor={`a-${draft.id}`}>
                     Answer
                   </label>
