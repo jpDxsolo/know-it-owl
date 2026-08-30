@@ -1,0 +1,229 @@
+.kio-builder {
+  display: flex;
+  flex-direction: column;
+  gap: var(--kio-space-4);
+}
+
+.kio-builder__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--kio-space-3);
+}
+
+.kio-builder__title {
+  font-size: 1.5rem;
+}
+
+.kio-builder__head .kio-button--ghost {
+  margin-left: auto;
+}
+
+.kio-builder__questions {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--kio-space-4);
+}
+
+.kio-question {
+  display: flex;
+  flex-direction: column;
+  gap: var(--kio-space-4);
+}
+
+/* Marked only after a save attempt — flagging a question the host has not
+   finished typing yet would be nagging, not helping. */
+.kio-question--invalid {
+  border-color: var(--kio-red);
+}
+
+.kio-question__head {
+  display: flex;
+  align-items: center;
+  gap: var(--kio-space-3);
+}
+
+.kio-question__number {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
+  background-color: var(--kio-gold);
+  color: var(--kio-gold-ink);
+  font-family: var(--kio-font-headline);
+  font-weight: 700;
+}
+
+.kio-question__head .kio-button--ghost {
+  margin-left: auto;
+}
+
+.kio-question__prompt {
+  resize: vertical;
+  margin-bottom: var(--kio-space-3);
+}
+
+.kio-question__foot {
+  display: flex;
+  align-items: center;
+  gap: var(--kio-space-3);
+  flex-wrap: wrap;
+}
+
+.kio-question__foot .kio-label {
+  margin-bottom: 0;
+}
+
+.kio-question__points {
+  width: 5rem;
+}
+
+.kio-question__foot .kio-field-error {
+  margin: 0 0 0 auto;
+}
+
+/* --- The type switch --- */
+
+.kio-segmented {
+  display: inline-flex;
+  padding: 0.1875rem;
+  background-color: var(--kio-navy-ground);
+  border: 1px solid var(--kio-hairline);
+  border-radius: var(--kio-radius-pill);
+}
+
+.kio-segmented__option {
+  padding: var(--kio-space-1) var(--kio-space-3);
+  border: none;
+  border-radius: var(--kio-radius-pill);
+  background: none;
+  color: var(--kio-muted);
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.kio-segmented__option--on {
+  background-color: var(--kio-navy-raised);
+  color: var(--kio-cream);
+}
+
+/* --- Picture questions --- */
+
+.kio-question__picture {
+  display: grid;
+  gap: var(--kio-space-4);
+}
+
+.kio-picture {
+  display: flex;
+  flex-direction: column;
+  gap: var(--kio-space-2);
+}
+
+.kio-picture__preview,
+.kio-picture__empty {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: var(--kio-radius);
+  object-fit: cover;
+  background-color: var(--kio-navy-ground);
+}
+
+.kio-picture__empty {
+  display: grid;
+  place-items: center;
+  border: 1px dashed var(--kio-hairline);
+  color: var(--kio-muted);
+  font-size: 0.875rem;
+}
+
+/* A label wrapping a hidden file input: the only way to style the control. */
+.kio-picture__pick {
+  cursor: pointer;
+}
+
+.kio-answers {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--kio-space-2);
+}
+
+.kio-answers__row {
+  display: flex;
+  align-items: center;
+  gap: var(--kio-space-2);
+}
+
+.kio-answers__number {
+  flex: none;
+  width: 1.5rem;
+  text-align: right;
+  color: var(--kio-gold);
+  font-family: var(--kio-font-headline);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* --- Foot --- */
+
+.kio-builder__add {
+  width: 100%;
+  padding: var(--kio-space-3);
+  border: 1px dashed var(--kio-hairline);
+  border-radius: var(--kio-radius);
+  background: none;
+  color: var(--kio-muted);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.kio-builder__add:hover {
+  border-color: var(--kio-gold);
+  color: var(--kio-cream);
+}
+
+.kio-builder__foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--kio-space-3);
+  padding-top: var(--kio-space-4);
+  border-top: 1px solid var(--kio-hairline);
+}
+
+.kio-builder__actions {
+  display: flex;
+  gap: var(--kio-space-2);
+  margin-left: auto;
+}
+
+/*
+ * The screen this rule was written for: a picture question is an image beside a
+ * ten-slot answer key, which is simply a two-column idea. On a phone it stacks;
+ * here it gets the shape it wanted all along.
+ */
+@media (min-width: 40rem) {
+  .kio-question__picture {
+    grid-template-columns: minmax(12rem, 18rem) 1fr;
+    align-items: start;
+  }
+
+  .kio-answers {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--kio-space-2) var(--kio-space-4);
+  }
+
+  .kio-builder__actions .kio-button {
+    min-width: 9rem;
+  }
+}

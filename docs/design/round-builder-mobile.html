@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>Know It Owl - Round Editor</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        navy: {
+                            ground: '#0E1A2F',
+                            surface: '#16294A',
+                            raised: '#1E3765'
+                        },
+                        gold: '#F5A81C',
+                        amber: '#F0821E',
+                        blue: {
+                            bright: '#2F7FE0'
+                        },
+                        cream: '#F7EFE2',
+                        muted: '#9DB0CE',
+                        green: '#3FB27F',
+                        red: '#E5484D'
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                    fontFamily: {
+                        "headline": ["Outfit", "sans-serif"],
+                        "display": ["Outfit", "sans-serif"],
+                        "body": ["Plus Jakarta Sans", "sans-serif"],
+                        "label": ["Plus Jakarta Sans", "sans-serif"]
+                    },
+                    boxShadow: {
+                        'glow': '0 0 15px rgba(245, 168, 28, 0.3)',
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        /* Hide scrollbar for a cleaner mobile look */
+        ::-webkit-scrollbar {
+            display: none;
+        }
+        body {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+        
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-navy-ground text-cream font-body antialiased selection:bg-gold selection:text-navy-ground h-screen flex flex-col pt-16 pb-20">
+<!-- TopAppBar from JSON -->
+<header class="bg-[#0E1A2F] border-b border-[#1E3765] docked full-width top-0 flat no shadows flex items-center justify-between px-4 h-16 w-full fixed top-0 z-50">
+<button class="text-[#F5A81C] hover:bg-[#1E3765] transition-colors active:scale-95 duration-150 p-2 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<h1 class="font-headline font-bold text-xl tracking-tight text-[#F7EFE2]">Round Editor</h1>
+<button class="text-[#F5A81C] hover:bg-[#1E3765] transition-colors active:scale-95 duration-150 p-2 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 overflow-y-auto px-4 py-6 space-y-6">
+<!-- Round Title Context -->
+<div>
+<h2 class="font-headline font-bold text-3xl text-cream tracking-tight mb-1">Round 2</h2>
+<p class="text-muted text-sm font-medium">Create your questions</p>
+</div>
+<!-- Round Category Input -->
+<div class="space-y-2">
+<label class="block font-label text-sm font-bold text-muted uppercase tracking-wider" for="category">Round Category</label>
+<div class="relative">
+<input class="w-full bg-navy-surface border-2 border-navy-raised rounded-xl px-4 py-3 text-cream placeholder:text-muted focus:border-gold focus:ring-0 focus:outline-none transition-colors font-medium text-lg" id="category" placeholder="e.g., 90s Music" type="text"/>
+<div class="absolute inset-y-0 right-4 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-muted">edit</span>
+</div>
+</div>
+</div>
+<!-- Question Cards List -->
+<div class="space-y-4 pb-24"> <!-- Extra padding for bottom button -->
+<!-- Question 1 Card -->
+<div class="bg-navy-surface rounded-xl p-5 border border-navy-raised relative group">
+<div class="flex justify-between items-center mb-4">
+<span class="font-headline font-bold text-gold text-lg">Q1</span>
+<button class="text-muted hover:text-red transition-colors">
+<span class="material-symbols-outlined text-sm">delete</span>
+</button>
+</div>
+<!-- Type Toggle -->
+<div class="flex bg-navy-ground rounded-lg p-1 mb-4">
+<button class="flex-1 py-1.5 rounded-md bg-navy-raised text-cream font-medium text-sm transition-colors shadow-sm text-center">Text</button>
+<button class="flex-1 py-1.5 rounded-md text-muted hover:text-cream font-medium text-sm transition-colors text-center">Picture</button>
+</div>
+<div class="space-y-4">
+<div>
+<label class="sr-only">Question</label>
+<textarea class="w-full bg-navy-ground border border-navy-raised rounded-lg px-3 py-2.5 text-cream placeholder:text-muted/70 focus:border-gold focus:ring-0 focus:outline-none transition-colors resize-none text-base" placeholder="What is the question?" rows="3"></textarea>
+</div>
+<div>
+<label class="sr-only">Answer</label>
+<input class="w-full bg-navy-ground border border-green/50 rounded-lg px-3 py-2.5 text-cream placeholder:text-muted/70 focus:border-green focus:ring-0 focus:outline-none transition-colors text-base font-medium" placeholder="Exact answer" type="text"/>
+<p class="text-xs text-muted mt-1.5 flex items-center gap-1">
+<span class="material-symbols-outlined" style="font-size: 14px;">info</span>
+                            Players must match this closely
+                        </p>
+</div>
+</div>
+</div>
+<!-- Add Question Button -->
+<button class="w-full py-4 border-2 border-dashed border-navy-raised rounded-xl text-muted font-medium flex items-center justify-center gap-2 hover:border-gold hover:text-gold transition-colors">
+<span class="material-symbols-outlined">add_circle</span>
+                Add Question
+            </button>
+</div>
+</main>
+<!-- Floating Primary Action (Sits above BottomNav) -->
+<div class="fixed bottom-24 left-0 w-full px-4 z-40">
+<button class="w-full bg-gold text-navy-ground font-headline font-bold text-lg py-4 rounded-full shadow-[0_4px_20px_rgba(245,168,28,0.4)] active:scale-95 transition-transform flex items-center justify-center gap-2">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">save</span>
+            Save Round
+        </button>
+</div>
+<!-- BottomNavBar from JSON -->
+<nav class="fixed bottom-0 left-0 w-full h-20 flex justify-around items-center px-4 pb-safe bg-[#16294A] border-t border-[#1E3765] shadow-[0_-4px_12px_rgba(0,0,0,0.3)] z-50 rounded-t-xl">
+<!-- Active Tab: Rounds -->
+<a class="flex flex-col items-center justify-center text-[#F5A81C] font-bold bg-[#1E3765] rounded-xl px-3 py-1 active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">edit_note</span>
+<span class="font-label text-xs font-medium uppercase tracking-wider mt-1">Rounds</span>
+</a>
+<!-- Inactive Tab: Preview -->
+<a class="flex flex-col items-center justify-center text-[#9DB0CE] hover:text-[#F7EFE2] transition-all active:scale-90 px-3 py-1" href="#">
+<span class="material-symbols-outlined">visibility</span>
+<span class="font-label text-xs font-medium uppercase tracking-wider mt-1">Preview</span>
+</a>
+<!-- Inactive Tab: Host -->
+<a class="flex flex-col items-center justify-center text-[#9DB0CE] hover:text-[#F7EFE2] transition-all active:scale-90 px-3 py-1" href="#">
+<span class="material-symbols-outlined">play_circle</span>
+<span class="font-label text-xs font-medium uppercase tracking-wider mt-1">Host</span>
+</a>
+<!-- Inactive Tab: Settings -->
+<a class="flex flex-col items-center justify-center text-[#9DB0CE] hover:text-[#F7EFE2] transition-all active:scale-90 px-3 py-1" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label text-xs font-medium uppercase tracking-wider mt-1">Settings</span>
+</a>
+</nav>
+<script>
+        // Simple auto-resize for textarea to keep it neat
+        const textareas = document.querySelectorAll('textarea');
+        textareas.forEach(textarea => {
+            textarea.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = (this.scrollHeight) + 'px';
+            });
+        });
+    </script>
+</body></html>

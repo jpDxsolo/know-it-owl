@@ -1,0 +1,196 @@
+.kio-gm {
+  gap: var(--kio-space-4);
+}
+
+/* The one-time "this browser is the host" note. Amber rather than red: it is a
+   thing to understand, not a thing that has gone wrong. */
+.kio-notice {
+  padding: var(--kio-space-4);
+  background-color: var(--kio-navy-surface);
+  border: 1px solid var(--kio-hairline);
+  border-left: 4px solid var(--kio-amber);
+  border-radius: var(--kio-radius);
+  display: flex;
+  flex-direction: column;
+  gap: var(--kio-space-2);
+  align-items: flex-start;
+}
+
+.kio-notice__title {
+  margin: 0;
+  font-family: var(--kio-font-headline);
+  font-weight: 700;
+}
+
+.kio-notice .kio-button {
+  width: auto;
+  min-width: 8rem;
+}
+
+/* --- Code --- */
+
+.kio-gm__code {
+  text-align: center;
+  padding: var(--kio-space-4);
+  border: 1px solid var(--kio-gold);
+  border-radius: var(--kio-radius-lg);
+}
+
+.kio-gm__codeRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--kio-space-2);
+}
+
+.kio-gm__codeValue {
+  margin: 0;
+  font-family: var(--kio-font-headline);
+  font-size: 2.5rem;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  text-indent: 0.2em;
+  color: var(--kio-gold);
+}
+
+/* --- Panels --- */
+
+.kio-gm__panels {
+  display: grid;
+  gap: var(--kio-space-5);
+}
+
+.kio-gm__panels > section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--kio-space-3);
+}
+
+.kio-gm__panelHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--kio-space-3);
+}
+
+.kio-gm__panelTitle {
+  font-size: 1.25rem;
+}
+
+.kio-gm__teams,
+.kio-gm__rounds,
+.kio-gm__questions {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--kio-space-2);
+}
+
+.kio-gm__teamName {
+  font-size: 1rem;
+  margin-bottom: var(--kio-space-2);
+}
+
+.kio-gm__draw {
+  display: flex;
+  align-items: center;
+  gap: var(--kio-space-3);
+}
+
+.kio-gm__draw .kio-label {
+  margin-bottom: 0;
+}
+
+.kio-gm__teamCount {
+  width: 5rem;
+}
+
+.kio-round,
+.kio-submission,
+.kio-liveq {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--kio-space-3);
+}
+
+.kio-round__name,
+.kio-liveq__text {
+  margin: 0;
+  font-weight: 600;
+}
+
+/* --- Tags --- */
+
+.kio-tag {
+  flex: none;
+  padding: 0.125rem var(--kio-space-2);
+  border-radius: var(--kio-radius-pill);
+  background-color: var(--kio-navy-raised);
+  color: var(--kio-muted);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.kio-tag--released,
+.kio-tag--draft {
+  background-color: color-mix(in srgb, var(--kio-green) 20%, transparent);
+  color: var(--kio-green);
+}
+
+.kio-tag--active {
+  background-color: color-mix(in srgb, var(--kio-gold) 20%, transparent);
+  color: var(--kio-gold);
+}
+
+/* --- The round in play --- */
+
+.kio-liveq__body {
+  min-width: 0;
+}
+
+/* The next question is the only thing on this screen the host has to act on. */
+.kio-liveq--next {
+  border-color: var(--kio-gold);
+}
+
+.kio-liveq--locked {
+  opacity: 0.55;
+}
+
+.kio-liveq__release {
+  width: auto;
+  flex: none;
+}
+
+.kio-gm__foot {
+  display: flex;
+  flex-direction: column;
+  gap: var(--kio-space-2);
+  align-items: center;
+  margin-top: auto;
+  padding-top: var(--kio-space-4);
+  border-top: 1px solid var(--kio-hairline);
+}
+
+/*
+ * A laptop, which is where a host almost always is. Teams and rounds sit
+ * side by side rather than one scrolling past the other, and the live round
+ * puts the questions next to who has handed in — the two things the host is
+ * looking between all evening.
+ */
+@media (min-width: 48rem) {
+  .kio-gm__panels {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--kio-space-6);
+    align-items: start;
+  }
+
+  .kio-gm__codeValue {
+    font-size: 3.5rem;
+  }
+}
