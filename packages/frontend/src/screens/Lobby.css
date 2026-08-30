@@ -1,0 +1,232 @@
+.kio-lobby {
+  gap: var(--kio-space-4);
+}
+
+/* --- The code, while it still matters --- */
+
+.kio-lobby__code {
+  text-align: center;
+}
+
+.kio-lobby__codeRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--kio-space-2);
+}
+
+.kio-lobby__codeValue {
+  margin: 0;
+  font-family: var(--kio-font-headline);
+  font-size: 2.25rem;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  text-indent: 0.2em;
+  color: var(--kio-gold);
+}
+
+/* Once the teams exist the code has done its job, so it stops shouting. */
+.kio-lobby__codeQuiet {
+  margin: 0;
+  text-align: center;
+}
+
+.kio-lobby__sectionHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--kio-space-3);
+  margin-bottom: var(--kio-space-3);
+}
+
+.kio-lobby__title {
+  font-size: 1.25rem;
+}
+
+/* --- Arrivals --- */
+
+.kio-lobby__players,
+.kio-lobby__teams {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--kio-space-2);
+}
+
+.kio-player {
+  display: flex;
+  align-items: center;
+  gap: var(--kio-space-3);
+  padding: var(--kio-space-3);
+  /* Each arrival is a live event, so it should feel like one — but only the
+     first time it renders, never on every re-render of the list. */
+  animation: kio-arrive 260ms ease-out;
+}
+
+@keyframes kio-arrive {
+  from {
+    opacity: 0;
+    transform: translateY(0.375rem);
+  }
+}
+
+.kio-player__avatar,
+.kio-chip__avatar {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background-color: var(--kio-navy-raised);
+  color: var(--kio-cream);
+  font-family: var(--kio-font-headline);
+  font-weight: 700;
+}
+
+.kio-player__name {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.kio-player__badge {
+  flex: none;
+  padding: 0.125rem var(--kio-space-2);
+  border-radius: var(--kio-radius-pill);
+  background-color: var(--kio-gold);
+  color: var(--kio-gold-ink);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* --- Teams --- */
+
+.kio-team__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--kio-space-2);
+  margin-bottom: var(--kio-space-3);
+}
+
+.kio-team__name {
+  font-size: 1.125rem;
+}
+
+/* Your team is the one you need to find at a glance in a dark room, so it is
+   the only card carrying gold. */
+.kio-team--mine {
+  border-color: var(--kio-gold);
+}
+
+.kio-team__badge {
+  flex: none;
+  color: var(--kio-gold);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.kio-team__players {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--kio-space-2);
+}
+
+.kio-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--kio-space-2);
+  padding: 0.25rem var(--kio-space-3) 0.25rem 0.25rem;
+  background-color: var(--kio-navy-raised);
+  border-radius: var(--kio-radius-pill);
+  font-size: 0.875rem;
+}
+
+.kio-chip__avatar {
+  width: 1.5rem;
+  height: 1.5rem;
+  font-size: 0.75rem;
+  background-color: var(--kio-navy-surface);
+}
+
+/* --- Host panel --- */
+
+.kio-lobby__host {
+  margin-top: auto;
+  padding-top: var(--kio-space-4);
+  border-top: 1px solid var(--kio-hairline);
+  display: flex;
+  flex-direction: column;
+  gap: var(--kio-space-3);
+}
+
+.kio-lobby__hostLabel {
+  margin: 0;
+  color: var(--kio-gold);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.kio-stepper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--kio-space-3);
+  padding: var(--kio-space-2) var(--kio-space-2) var(--kio-space-2) var(--kio-space-4);
+  background-color: var(--kio-navy-surface);
+  border: 1px solid var(--kio-hairline);
+  border-radius: var(--kio-radius-pill);
+}
+
+.kio-stepper__controls {
+  display: flex;
+  align-items: center;
+  gap: var(--kio-space-2);
+}
+
+.kio-stepper__button {
+  width: var(--kio-touch);
+  height: var(--kio-touch);
+  border: none;
+  border-radius: 50%;
+  background-color: var(--kio-navy-raised);
+  color: var(--kio-cream);
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.kio-stepper__button:disabled {
+  color: var(--kio-muted);
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.kio-stepper__value {
+  min-width: 1.5rem;
+  text-align: center;
+  font-family: var(--kio-font-headline);
+  font-size: 1.125rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Players get the same bottom-anchored slot the host panel occupies, so the
+   layout does not jump between the two viewers. */
+.kio-lobby__waiting {
+  margin: auto 0 0;
+  padding-top: var(--kio-space-4);
+  text-align: center;
+}
