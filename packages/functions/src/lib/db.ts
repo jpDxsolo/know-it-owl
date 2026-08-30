@@ -9,7 +9,7 @@ import {
   UpdateCommand,
   type TransactWriteCommandInput,
 } from "@aws-sdk/lib-dynamodb";
-import type { TableKey } from "./keys.js";
+import type { SkRange, TableKey } from "./keys.js";
 
 /** Any item stored in the single table. */
 export type Item = Record<string, unknown> & TableKey;
@@ -106,30 +106,77 @@ export async function deleteItem(key: TableKey): Promise<void> {
 }
 
 /**
- * Query one partition, optionally restricted to a sort-key prefix. Pages until
- * DynamoDB stops returning a continuation key — game partitions are small.
+ * Guards against an unbounded paging loop. A game partition holds a few hundred
+ * items at most, so needing more pages than this means the caller is querying
+ * something it should be narrowing instead.
  */
-export async function queryPrefix<T extends Item = Item>(
-  pk: string,
-  skPrefix?: string,
+const DEFAULT_MAX_PAGES = 20;
+
+export interface QueryOptions {
+  /** Stop after this many pages and throw. Defaults to 20. */
+  maxPages?: number;
+}
+
+async function queryPages<T extends Item>(
+  keyCondition: string,
+  values: Record<string, unknown>,
+  options: QueryOptions,
 ): Promise<T[]> {
+  const maxPages = options.maxPages ?? DEFAULT_MAX_PAGES;
   const items: T[] = [];
   let startKey: Record<string, unknown> | undefined;
+  let pages = 0;
   do {
+    if (pages >= maxPages) {
+      throw new Error(
+        `Query exceeded ${maxPages} pages (${keyCondition}); narrow the query or raise maxPages`,
+      );
+    }
     const result = await getClient().send(
       new QueryCommand({
         TableName: tableName(),
-        KeyConditionExpression: skPrefix
-          ? "pk = :pk AND begins_with(sk, :sk)"
-          : "pk = :pk",
-        ExpressionAttributeValues: skPrefix ? { ":pk": pk, ":sk": skPrefix } : { ":pk": pk },
+        KeyConditionExpression: keyCondition,
+        ExpressionAttributeValues: values,
         ...(startKey ? { ExclusiveStartKey: startKey } : {}),
       }),
     );
     items.push(...((result.Items ?? []) as T[]));
     startKey = result.LastEvaluatedKey;
+    pages += 1;
   } while (startKey);
   return items;
+}
+
+/**
+ * Query one partition, optionally restricted to a sort-key prefix. Pages until
+ * DynamoDB stops returning a continuation key, up to `maxPages`.
+ */
+export async function queryPrefix<T extends Item = Item>(
+  pk: string,
+  skPrefix?: string,
+  options: QueryOptions = {},
+): Promise<T[]> {
+  return queryPages<T>(
+    skPrefix ? "pk = :pk AND begins_with(sk, :sk)" : "pk = :pk",
+    skPrefix ? { ":pk": pk, ":sk": skPrefix } : { ":pk": pk },
+    options,
+  );
+}
+
+/**
+ * Query one partition over an inclusive sort-key range — for access patterns a
+ * `begins_with` prefix cannot express unambiguously (see `keys.ranges`).
+ */
+export async function queryRange<T extends Item = Item>(
+  pk: string,
+  range: SkRange,
+  options: QueryOptions = {},
+): Promise<T[]> {
+  return queryPages<T>(
+    "pk = :pk AND sk BETWEEN :start AND :end",
+    { ":pk": pk, ":start": range.start, ":end": range.end },
+    options,
+  );
 }
 
 /** Write several items atomically (e.g. the game META item and its join-code item). */

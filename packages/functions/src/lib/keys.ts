@@ -53,7 +53,14 @@ export function joinCode(code: string): TableKey {
   return { pk: `JOINCODE#${code}`, sk: "META" };
 }
 
-/** `begins_with` prefixes for the query access patterns. */
+/**
+ * `begins_with` prefixes for the query access patterns.
+ *
+ * Every prefix here ends at a `#` separator. That matters: round and question
+ * numbers are not zero-padded, so a prefix of `ROUND#1` would also match
+ * `ROUND#10`. Use `ranges.roundWithQuestions()` when a query needs the round
+ * item and its questions together.
+ */
 export const prefixes = {
   players(): string {
     return "PLAYER#";
@@ -61,12 +68,9 @@ export const prefixes = {
   teams(): string {
     return "TEAM#";
   },
+  /** Every round item AND every question item in the game. */
   rounds(): string {
     return "ROUND#";
-  },
-  /** The round item plus all of its question items. */
-  round(roundNumber: number): string {
-    return `ROUND#${roundNumber}`;
   },
   questions(roundNumber: number): string {
     return `ROUND#${roundNumber}#Q#`;
@@ -76,5 +80,28 @@ export const prefixes = {
   },
   questionResponses(roundNumber: number, questionNumber: number): string {
     return `RESP#${roundNumber}#${questionNumber}#TEAM#`;
+  },
+} as const;
+
+/** An inclusive sort-key range for a `BETWEEN` key condition. */
+export interface SkRange {
+  start: string;
+  end: string;
+}
+
+/**
+ * Sort-key ranges for the access patterns that a prefix cannot express safely.
+ */
+export const ranges = {
+  /**
+   * The `ROUND#<n>` item plus its `ROUND#<n>#Q#<qn>` questions, and nothing
+   * else. `#` (0x23) sorts below every digit, so this range stops before
+   * `ROUND#<n>0` — i.e. round 1 does not pick up round 10.
+   */
+  roundWithQuestions(roundNumber: number): SkRange {
+    return {
+      start: `ROUND#${roundNumber}`,
+      end: `ROUND#${roundNumber}#Q#\uffff`,
+    };
   },
 } as const;

@@ -35,7 +35,33 @@ describe("key builders", () => {
     ).toBe(true);
   });
 
-  it("does not match a sibling round with the same prefix digits", () => {
+  it("does not match a sibling round with the same leading digits", () => {
     expect(keys.question("g1", 12, 1).sk.startsWith(keys.prefixes.questions(1))).toBe(false);
+    expect(keys.response("g1", 12, 1, "t1").sk.startsWith(keys.prefixes.responses(1))).toBe(false);
+  });
+
+  describe("ranges.roundWithQuestions", () => {
+    const inRange = (sk: string, r: { start: string; end: string }) =>
+      sk >= r.start && sk <= r.end;
+
+    it("covers the round item and its questions", () => {
+      const range = keys.ranges.roundWithQuestions(1);
+      expect(inRange(keys.round("g1", 1).sk, range)).toBe(true);
+      expect(inRange(keys.question("g1", 1, 1).sk, range)).toBe(true);
+      expect(inRange(keys.question("g1", 1, 10).sk, range)).toBe(true);
+    });
+
+    it("excludes rounds whose number merely starts with the same digits", () => {
+      const range = keys.ranges.roundWithQuestions(1);
+      expect(inRange(keys.round("g1", 10).sk, range)).toBe(false);
+      expect(inRange(keys.question("g1", 10, 1).sk, range)).toBe(false);
+      expect(inRange(keys.round("g1", 2).sk, range)).toBe(false);
+    });
+
+    it("excludes items of other kinds", () => {
+      const range = keys.ranges.roundWithQuestions(1);
+      expect(inRange(keys.gameMeta("g1").sk, range)).toBe(false);
+      expect(inRange(keys.response("g1", 1, 1, "t1").sk, range)).toBe(false);
+    });
   });
 });

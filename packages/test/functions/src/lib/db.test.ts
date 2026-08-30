@@ -15,6 +15,7 @@ import {
   getItem,
   putItem,
   queryPrefix,
+  queryRange,
   setClient,
   tableName,
   transactWrite,
@@ -148,6 +149,42 @@ describe("db helpers", () => {
       pk: "GAME#g1",
       sk: "PLAYER#p1",
     });
+  });
+
+  it("queries an inclusive sort-key range", async () => {
+    ddbMock.on(QueryCommand).resolves({ Items: [] });
+    await queryRange(keys.gamePk("g1"), keys.ranges.roundWithQuestions(1));
+    const input = ddbMock.commandCalls(QueryCommand)[0].args[0].input;
+    expect(input.KeyConditionExpression).toBe("pk = :pk AND sk BETWEEN :start AND :end");
+    expect(input.ExpressionAttributeValues).toEqual({
+      ":pk": "GAME#g1",
+      ":start": "ROUND#1",
+      ":end": "ROUND#1#Q#\uffff",
+    });
+  });
+
+  it("throws rather than paging forever when a query never terminates", async () => {
+    ddbMock.on(QueryCommand).resolves({
+      Items: [{ ...keys.player("g1", "p1"), displayName: "Ada" }],
+      LastEvaluatedKey: { pk: "GAME#g1", sk: "PLAYER#p1" },
+    });
+
+    await expect(queryPrefix(keys.gamePk("g1"), keys.prefixes.players())).rejects.toThrow(
+      /exceeded 20 pages/,
+    );
+    expect(ddbMock.commandCalls(QueryCommand)).toHaveLength(20);
+  });
+
+  it("honours a caller-supplied page cap", async () => {
+    ddbMock.on(QueryCommand).resolves({
+      Items: [],
+      LastEvaluatedKey: { pk: "GAME#g1", sk: "PLAYER#p1" },
+    });
+
+    await expect(
+      queryPrefix(keys.gamePk("g1"), keys.prefixes.players(), { maxPages: 2 }),
+    ).rejects.toThrow(/exceeded 2 pages/);
+    expect(ddbMock.commandCalls(QueryCommand)).toHaveLength(2);
   });
 
   it("writes several items in one transaction", async () => {
