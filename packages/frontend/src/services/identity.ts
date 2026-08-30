@@ -17,6 +17,7 @@
 const PLAYER_ID_KEY = "kio.playerId";
 const DISPLAY_NAME_KEY = "kio.displayName";
 const GM_TOKEN_PREFIX = "kio.gmToken.";
+const LAST_GAME_KEY = "kio.lastGame";
 
 /**
  * Reading storage can throw, not just return null: Safari in private mode and
@@ -121,10 +122,52 @@ export function gmGameIds(): string[] {
   }
 }
 
+/**
+ * The game this browser last joined.
+ *
+ * Remembered so a player who closes the tab, locks their phone, or wanders off
+ * to the bar mid-round can be offered their way back in rather than being asked
+ * for a code they no longer have. Since `joinGame` is idempotent on the player
+ * id, rejoining is genuinely a return to the same seat, not a second player.
+ */
+export interface LastGame {
+  gameId: string;
+  joinCode: string;
+  displayName: string;
+}
+
+export function lastGame(): LastGame | null {
+  const raw = read(LAST_GAME_KEY);
+  if (!raw) return null;
+  try {
+    const parsed: unknown = JSON.parse(raw);
+    if (!parsed || typeof parsed !== "object") return null;
+    const { gameId, joinCode, displayName } = parsed as Record<string, unknown>;
+    if (typeof gameId !== "string" || typeof joinCode !== "string") return null;
+    return {
+      gameId,
+      joinCode,
+      displayName: typeof displayName === "string" ? displayName : "",
+    };
+  } catch {
+    // Something else wrote this key, or it was truncated. Not worth a crash.
+    return null;
+  }
+}
+
+export function setLastGame(game: LastGame): void {
+  write(LAST_GAME_KEY, JSON.stringify(game));
+}
+
+export function clearLastGame(): void {
+  remove(LAST_GAME_KEY);
+}
+
 /** Drop everything this module owns. For a "start over" affordance. */
 export function clearIdentity(): void {
   for (const gameId of gmGameIds()) clearGmToken(gameId);
   remove(PLAYER_ID_KEY);
   remove(DISPLAY_NAME_KEY);
+  remove(LAST_GAME_KEY);
   sessionPlayerId = undefined;
 }

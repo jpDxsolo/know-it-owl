@@ -1,0 +1,61 @@
+.kio-join {
+  justify-content: center;
+  gap: var(--kio-space-4);
+  text-align: center;
+}
+
+.kio-join__tagline {
+  margin: 0;
+  color: var(--kio-muted);
+}
+
+.kio-join__returning {
+  margin: 0;
+  color: var(--kio-gold);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.kio-join__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--kio-space-4);
+  text-align: left;
+}
+
+/*
+ * The one piece of type on the whole app that is sized to be read across a
+ * room rather than at arm's length, because that is exactly what happens to it.
+ */
+.kio-join__code {
+  font-family: var(--kio-font-headline);
+  font-size: 2rem;
+  font-weight: 800;
+  text-align: center;
+  letter-spacing: 0.28em;
+  /* The tracking adds a trailing gap on the last character; nudge it back so
+     the string still looks centred. */
+  text-indent: 0.28em;
+  padding-block: var(--kio-space-4);
+}
+
+.kio-join__code::placeholder {
+  letter-spacing: 0.15em;
+  text-indent: 0;
+}
+
+.kio-join__nameRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.kio-join__counter {
+  color: var(--kio-muted);
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.kio-join__footer {
+  margin: 0;
+}
