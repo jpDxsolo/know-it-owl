@@ -1,15 +1,7 @@
-import type { Question, Round } from "@know-it-owl/core";
 import { optionalString, requiredString } from "../lib/args.js";
-import { getItem, queryPrefix } from "../lib/db.js";
-import * as keys from "../lib/keys.js";
-import { isQuestionKey, toGame, toPlayer, toQuestion, toRound, toTeam } from "../lib/mappers.js";
-import { viewerRole, visibleRounds } from "../lib/visibility.js";
-import { assembleGame, type GameView } from "../lib/views.js";
-
-function byNumber<T extends { number: number }>(items: T[]): T[] {
-  // A ROUND# query comes back in sort-key order, where ROUND#10 precedes ROUND#2.
-  return [...items].sort((a, b) => a.number - b.number);
-}
+import { loadGameState, snapshot } from "../lib/gameState.js";
+import { viewerRole } from "../lib/visibility.js";
+import type { GameView } from "../lib/views.js";
 
 /**
  * Load a game as the schema's `Game` type, filtered for whoever is asking.
@@ -25,36 +17,9 @@ export async function loadGameView(
   gameId: string,
   gmToken?: string,
 ): Promise<GameView | undefined> {
-  const meta = await getItem(keys.gameMeta(gameId));
-  if (!meta) return undefined;
-
-  const storedHash = typeof meta.gmTokenHash === "string" ? meta.gmTokenHash : undefined;
-  const role = viewerRole(gmToken, storedHash);
-
-  const pk = keys.gamePk(gameId);
-  const [playerItems, teamItems, roundItems] = await Promise.all([
-    queryPrefix(pk, keys.prefixes.players()),
-    queryPrefix(pk, keys.prefixes.teams()),
-    queryPrefix(pk, keys.prefixes.rounds()),
-  ]);
-
-  // One ROUND# query returns rounds and their questions interleaved.
-  const rounds: Round[] = byNumber(
-    roundItems.filter((item) => !isQuestionKey(item.sk)).map(toRound),
-  );
-  const questions: Question[] = byNumber(
-    roundItems.filter((item) => isQuestionKey(item.sk)).map(toQuestion),
-  );
-
-  return assembleGame(
-    toGame(meta),
-    playerItems.map(toPlayer),
-    teamItems.map(toTeam),
-    // Answer keys are in memory for the length of this call; visibleRounds is
-    // the only thing standing between them and the response, which is why it
-    // lives in one module rather than being re-derived per handler.
-    visibleRounds(rounds, questions, role),
-  );
+  const state = await loadGameState(gameId);
+  if (!state) return undefined;
+  return snapshot(state, viewerRole(gmToken, state.gmTokenHash));
 }
 
 /** `Query.game(gameId, gmToken)` — nullable in the schema, so a missing game is null, not an error. */
