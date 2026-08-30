@@ -1,7 +1,22 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "types": ["node", "vitest/globals"]
+    "types": [
+      "node",
+      "vitest/globals",
+      "vite/client",
+      "@testing-library/jest-dom/vitest"
+    ],
+    "jsx": "react-jsx",
+    "lib": [
+      "ES2022",
+      "DOM",
+      "DOM.Iterable"
+    ]
   },
-  "include": ["core", "functions"]
+  "include": [
+    "core",
+    "functions",
+    "frontend"
+  ]
 }

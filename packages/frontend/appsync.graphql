@@ -1,0 +1,4 @@
+# Directives AppSync defines for us, declared here so tooling can read
+# graphql/schema.graphql. AppSync accepts @aws_subscribe without a declaration;
+# graphql-js does not, and codegen would reject the schema as invalid.
+directive @aws_subscribe(mutations: [String!]!) on FIELD_DEFINITION
