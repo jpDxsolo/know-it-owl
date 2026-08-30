@@ -63,9 +63,10 @@ subscription-per-entity complexity.
 | `GAME#<id>`  | `META`                          | status (LOBBY \| TEAMS_SET \| ROUND_ACTIVE \| GRADING \| REVEAL \| FINISHED), gmTokenHash, joinCode, currentRound, createdAt |
 | `GAME#<id>`  | `PLAYER#<playerId>`             | displayName, teamId |
 | `GAME#<id>`  | `TEAM#<teamId>`                 | name, score, doubleUsedRound (null until used) |
-| `GAME#<id>`  | `ROUND#<n>`                     | category, status |
+| `GAME#<id>`  | `ROUND#<n>`                     | category, status, releasedCount |
 | `GAME#<id>`  | `ROUND#<n>#Q#<qn>`              | type (TEXT \| PICTURE_10), text, imageKey, correctAnswers[], defaultPoints |
 | `GAME#<id>`  | `RESP#<round>#<qn>#TEAM#<tid>`  | answers[] (1 for TEXT, 10 for PICTURE_10), doubled, gradedPoints[], graded |
+| `GAME#<id>`  | `RESP#<round>#SUBMIT#TEAM#<tid>`| teamId, submittedAt, doubled — one per team per round; written with the answers under `attribute_not_exists` so a double submit is impossible |
 
 All access patterns are `Query pk = GAME#<id>` with an `sk` prefix (`begins_with`), so no GSIs
 are needed for v1.

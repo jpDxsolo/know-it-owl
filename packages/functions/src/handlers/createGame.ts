@@ -1,4 +1,4 @@
-import { tableName, transactWrite } from "../lib/db.js";
+import { isTransactionCancelled, tableName, transactWrite } from "../lib/db.js";
 import { ConflictError } from "../lib/errors.js";
 import { hashGmToken } from "../lib/gmAuth.js";
 import { newGameId, newGmToken, newJoinCode } from "../lib/ids.js";
@@ -14,10 +14,6 @@ import type { CreateGamePayload } from "../lib/views.js";
 const MAX_JOIN_CODE_ATTEMPTS = 5;
 
 const IF_ABSENT = "attribute_not_exists(pk)";
-
-function isTransactionCancelled(error: unknown): boolean {
-  return error instanceof Error && error.name === "TransactionCanceledException";
-}
 
 /**
  * Create a game in LOBBY and return it with the one-time GM token. The token
