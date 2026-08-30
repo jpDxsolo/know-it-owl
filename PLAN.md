@@ -95,8 +95,10 @@ Result: team sizes differ by at most 1 (e.g., 20 / 3 → 7, 7, 6). Unit-tested w
 - A team flags "double" for the current round **before** submitting its answers
   (`chooseDouble` mutation, or the `doubled` flag on `submitAnswers`).
 - Server rejects the flag if `doubleUsedRound` is already set for that team.
-- On `endRound`, each team's graded points for the round are summed; doubled teams get ×2;
-  `doubleUsedRound` is recorded.
+- `doubleUsedRound` is recorded when the team commits to the double, not at grading time.
+- The **GM applies the double when entering points**. On `endRound` the server sums the entered
+  numbers and adds them to each team's score — it never multiplies. Every scoring judgement
+  (partial credit, a contested answer, the double itself) stays somewhere a human can explain it.
 
 ## Future work
 
