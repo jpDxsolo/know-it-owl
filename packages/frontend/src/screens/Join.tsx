@@ -88,7 +88,7 @@ export function Join() {
 
   return (
     <main className="kio-page kio-join">
-      <Logo size={160} variant="hero" />
+      <Logo size={256} variant="hero" />
       <p className="kio-join__tagline">Pub quiz night, on your phone.</p>
 
       {returning && (

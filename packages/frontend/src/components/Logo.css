@@ -4,6 +4,13 @@
   height: auto;
 }
 
+/*
+ * As big as the screen sensibly allows, because the detail is the point: the
+ * glasses, the book, the lightbulb. Scales with the viewport rather than being
+ * pinned, so it fills a phone without overwhelming a desktop column.
+ */
 .kio-logo--hero {
   margin: 0 auto;
+  width: clamp(11rem, 62vw, 17rem);
+  height: auto;
 }
