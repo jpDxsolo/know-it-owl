@@ -155,6 +155,14 @@ function numberFrom(value: string, sk: string): number {
   return parsed;
 }
 
+/**
+ * A `ROUND#` query returns the round items and their question items together.
+ * `ROUND#<n>` has no `#Q#` segment; `ROUND#<n>#Q#<qn>` does.
+ */
+export function isQuestionKey(sk: string): boolean {
+  return sk.includes("#Q#");
+}
+
 /** `GAME#<id>` → `<id>`. */
 export function gameIdFromPk(pk: string): string {
   return suffixAfter(pk, "GAME#");

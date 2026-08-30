@@ -10,10 +10,20 @@ import { submitAnswers } from "./handlers/submitAnswers.js";
 import { gradeResponse } from "./handlers/gradeResponse.js";
 import { endRound } from "./handlers/endRound.js";
 import { getImageUploadUrl } from "./handlers/getImageUploadUrl.js";
+import { getGame } from "./handlers/getGame.js";
+import { myTeam } from "./handlers/myTeam.js";
+import { roundResults } from "./handlers/roundResults.js";
+import { standings } from "./handlers/standings.js";
 
 type Handler = (args: Record<string, unknown>) => Promise<unknown>;
 
+/**
+ * One entry per field in `graphql/schema.graphql`, because sst.config.ts points
+ * every mutation and query resolver at this single Lambda. The keys are schema
+ * field names, not handler names — `Query.game` is served by `getGame`.
+ */
 const handlers: Record<string, Handler> = {
+  // Mutation
   createGame,
   joinGame,
   randomizeTeams,
@@ -25,6 +35,11 @@ const handlers: Record<string, Handler> = {
   gradeResponse,
   endRound,
   getImageUploadUrl,
+  // Query
+  game: getGame,
+  myTeam,
+  roundResults,
+  standings,
 };
 
 export async function handler(

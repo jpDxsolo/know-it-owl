@@ -32,6 +32,8 @@ type Game {
   currentRound: Int
   players: [Player!]!
   teams: [Team!]!
+  "Rounds this viewer may see. Players never see DRAFT rounds."
+  rounds: [Round!]!
 }
 
 type Player {
@@ -139,7 +141,8 @@ input GradeResponseInput {
 }
 
 type Query {
-  game(gameId: ID!): Game
+  "Pass the GM token to get the authoring view; without it the result is the player view."
+  game(gameId: ID!, gmToken: String): Game
   myTeam(gameId: ID!, playerId: ID!): Team
   roundResults(gameId: ID!, roundNumber: Int!): RoundResult
   standings(gameId: ID!): [Team!]!
