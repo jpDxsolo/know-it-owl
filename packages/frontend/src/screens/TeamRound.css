@@ -1,0 +1,431 @@
+/*
+ * The team's round screen.
+ *
+ * Mobile first, with one deliberate exception: the team context — roster and
+ * standings — is a collapsed summary row on a phone and a permanent sidebar in
+ * a browser window. On a phone it is the answer that matters and everything
+ * else is a distraction under a table; on a laptop the width is free.
+ */
+
+.kio-round__layout {
+  display: flex;
+  flex-direction: column;
+  gap: var(--kio-space-5);
+}
+
+.kio-round__main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--kio-space-4);
+  min-width: 0;
+}
+
+.kio-round__head {
+  text-align: center;
+}
+
+.kio-round__title {
+  font-size: 1.75rem;
+}
+
+/* --- Team context --- */
+
+.kio-round__panelToggle {
+  display: flex;
+  flex-direction: column;
+  gap: var(--kio-space-1);
+  width: 100%;
+  min-height: var(--kio-touch);
+  padding: var(--kio-space-3) var(--kio-space-4);
+  background-color: var(--kio-navy-surface);
+  border: 1px solid var(--kio-hairline);
+  border-radius: var(--kio-radius-lg);
+  color: var(--kio-cream);
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.kio-round__panelToggle:focus-visible {
+  outline: 2px solid var(--kio-gold);
+  outline-offset: 2px;
+}
+
+.kio-round__panelTeam {
+  font-family: var(--kio-font-headline);
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--kio-gold);
+}
+
+.kio-round__panelBody {
+  display: none;
+  flex-direction: column;
+  gap: var(--kio-space-5);
+  padding: var(--kio-space-4) 0 0;
+}
+
+.kio-round__panelBody--open {
+  display: flex;
+}
+
+.kio-round__panelName {
+  font-family: var(--kio-font-headline);
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--kio-gold);
+  margin: 0 0 var(--kio-space-3);
+}
+
+.kio-round__standings {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--kio-space-2);
+}
+
+.kio-round__standing {
+  display: grid;
+  grid-template-columns: 1.5rem 1fr auto;
+  align-items: center;
+  gap: var(--kio-space-3);
+  padding: var(--kio-space-2) var(--kio-space-3);
+  background-color: var(--kio-navy-surface);
+  border: 1px solid transparent;
+  border-radius: var(--kio-radius);
+}
+
+/* Your own row, so a team finds itself without reading every name. */
+.kio-round__standing--mine {
+  border-color: var(--kio-gold);
+}
+
+.kio-round__place {
+  color: var(--kio-muted);
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.kio-round__standingName {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.kio-round__score {
+  font-family: var(--kio-font-headline);
+  font-weight: 700;
+}
+
+/* --- The pager --- */
+
+.kio-pager {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--kio-space-3);
+}
+
+.kio-pager__step {
+  width: var(--kio-touch);
+  height: var(--kio-touch);
+  flex: none;
+  background-color: var(--kio-navy-surface);
+  border: 1px solid var(--kio-hairline);
+  border-radius: var(--kio-radius-pill);
+  color: var(--kio-cream);
+  font-size: 1.25rem;
+  cursor: pointer;
+}
+
+.kio-pager__step:disabled {
+  color: var(--kio-navy-raised);
+  cursor: not-allowed;
+}
+
+.kio-pager__step:focus-visible {
+  outline: 2px solid var(--kio-gold);
+  outline-offset: 2px;
+}
+
+.kio-pager__count {
+  margin: 0;
+  font-family: var(--kio-font-headline);
+  font-weight: 700;
+}
+
+.kio-pager__dots {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--kio-space-2);
+  margin: 0;
+  padding: 0;
+}
+
+.kio-pager__dot {
+  min-width: 2rem;
+  height: 2rem;
+  padding: 0 var(--kio-space-2);
+  background-color: var(--kio-navy-surface);
+  border: 1px solid var(--kio-hairline);
+  border-radius: var(--kio-radius);
+  color: var(--kio-muted);
+  font-family: var(--kio-font-headline);
+  font-size: 0.875rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* Answered, so a team can see at a glance what is still blank. */
+.kio-pager__dot--answered {
+  background-color: var(--kio-navy-raised);
+  color: var(--kio-cream);
+}
+
+.kio-pager__dot--locked {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.kio-pager__dot--current {
+  border-color: var(--kio-gold);
+  color: var(--kio-gold);
+}
+
+.kio-pager__dot:focus-visible {
+  outline: 2px solid var(--kio-gold);
+  outline-offset: 2px;
+}
+
+/* --- The question --- */
+
+.kio-question {
+  display: flex;
+  flex-direction: column;
+  gap: var(--kio-space-3);
+}
+
+.kio-question__prompt {
+  margin: 0;
+  font-size: 1.25rem;
+  line-height: 1.4;
+}
+
+.kio-question__answer {
+  resize: vertical;
+  font-size: 1.125rem;
+}
+
+.kio-question__image {
+  width: 100%;
+  height: auto;
+  border-radius: var(--kio-radius);
+  background-color: var(--kio-navy-ground);
+}
+
+.kio-answers {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--kio-space-2);
+  margin: 0;
+  padding: 0;
+}
+
+.kio-answers__row {
+  display: flex;
+  align-items: center;
+  gap: var(--kio-space-3);
+}
+
+.kio-answers__number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  flex: none;
+  background-color: var(--kio-navy-raised);
+  border: 1px solid var(--kio-gold);
+  border-radius: var(--kio-radius-pill);
+  color: var(--kio-gold);
+  font-family: var(--kio-font-headline);
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+/* --- The double --- */
+
+.kio-double {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--kio-space-4);
+  border-color: var(--kio-amber);
+}
+
+.kio-double--on {
+  background-color: var(--kio-navy-raised);
+}
+
+.kio-double__title {
+  font-size: 1rem;
+  color: var(--kio-amber);
+}
+
+.kio-switch {
+  position: relative;
+  width: 3.25rem;
+  height: 1.875rem;
+  flex: none;
+  padding: 0;
+  background-color: var(--kio-navy-ground);
+  border: 1px solid var(--kio-hairline);
+  border-radius: var(--kio-radius-pill);
+  cursor: pointer;
+}
+
+.kio-switch[aria-checked="true"] {
+  background-color: var(--kio-amber);
+  border-color: var(--kio-amber);
+}
+
+.kio-switch:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.kio-switch:focus-visible {
+  outline: 2px solid var(--kio-amber);
+  outline-offset: 2px;
+}
+
+.kio-switch__knob {
+  position: absolute;
+  top: 50%;
+  left: 0.1875rem;
+  width: 1.375rem;
+  height: 1.375rem;
+  transform: translateY(-50%);
+  background-color: var(--kio-muted);
+  border-radius: var(--kio-radius-pill);
+  transition: left 0.15s ease-in-out, background-color 0.15s ease-in-out;
+}
+
+.kio-switch[aria-checked="true"] .kio-switch__knob {
+  left: calc(100% - 1.5625rem);
+  background-color: var(--kio-gold-ink);
+}
+
+/* --- Handed in, and the way out --- */
+
+.kio-round__locked {
+  margin: 0;
+  padding: var(--kio-space-3) var(--kio-space-4);
+  background-color: var(--kio-navy-raised);
+  border-left: 3px solid var(--kio-green);
+  border-radius: var(--kio-radius);
+  font-size: 0.9375rem;
+}
+
+.kio-round__foot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--kio-space-2);
+  text-align: center;
+}
+
+/* --- The double confirmation --- */
+
+.kio-confirm {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--kio-space-4);
+  background-color: rgb(14 26 47 / 0.8);
+}
+
+.kio-confirm__box {
+  display: flex;
+  flex-direction: column;
+  gap: var(--kio-space-3);
+  width: 100%;
+  max-width: 24rem;
+}
+
+.kio-confirm__title {
+  font-size: 1.25rem;
+}
+
+.kio-confirm__actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--kio-space-2);
+}
+
+/* --- Desktop: the context becomes a sidebar, the action stops being a slab --- */
+
+@media (min-width: 40rem) {
+  .kio-round__layout {
+    display: grid;
+    grid-template-columns: 18rem 1fr;
+    align-items: start;
+    gap: var(--kio-space-6);
+  }
+
+  /* No summary row to tap: there is room for the whole panel. */
+  .kio-round__panelToggle {
+    display: none;
+  }
+
+  .kio-round__panelBody {
+    display: flex;
+    padding: var(--kio-space-4);
+    background-color: var(--kio-navy-surface);
+    border: 1px solid var(--kio-hairline);
+    border-radius: var(--kio-radius-lg);
+  }
+
+  .kio-round__head {
+    text-align: left;
+  }
+
+  .kio-round__title {
+    font-size: 2rem;
+  }
+
+  .kio-round__foot {
+    flex-direction: row-reverse;
+    justify-content: flex-start;
+    gap: var(--kio-space-4);
+  }
+
+  .kio-round__foot .kio-button {
+    align-self: auto;
+  }
+
+  .kio-confirm__actions {
+    flex-direction: row-reverse;
+    justify-content: flex-start;
+  }
+
+  /* A picture question is one image beside its answer key, as in the builder. */
+  .kio-question__image {
+    max-height: 24rem;
+    object-fit: contain;
+  }
+
+  .kio-answers {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: var(--kio-space-4);
+  }
+}
