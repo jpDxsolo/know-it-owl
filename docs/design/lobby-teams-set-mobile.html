@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Know It Owl - Lobby</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=Public+Sans:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        navy: {
+                            ground: '#0E1A2F',
+                            surface: '#16294A',
+                            raised: '#1E3765',
+                        },
+                        brand: {
+                            gold: '#F5A81C',
+                            amber: '#F0821E',
+                            blue: '#2F7FE0',
+                            cream: '#F7EFE2',
+                            muted: '#9DB0CE',
+                            green: '#3FB27F',
+                            red: '#E5484D',
+                        }
+                    },
+                    fontFamily: {
+                        headline: ["Public Sans", "sans-serif"],
+                        display: ["Public Sans", "sans-serif"],
+                        body: ["Plus Jakarta Sans", "sans-serif"],
+                        label: ["Plus Jakarta Sans", "sans-serif"]
+                    },
+                    borderRadius: {
+                        DEFAULT: "0.5rem",
+                        lg: "1rem",
+                        xl: "1.5rem",
+                        full: "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            background-color: theme('colors.navy.ground');
+            color: theme('colors.brand.cream');
+            font-family: theme('fontFamily.body');
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .glass-surface {
+            background: linear-gradient(180deg, rgba(30, 55, 101, 0.4) 0%, rgba(22, 41, 74, 0.4) 100%);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col relative pb-32">
+<!-- TopAppBar from JSON -->
+<header class="fixed top-0 w-full z-50 border-b border-[#1E3765] bg-[#0E1A2F] flex items-center justify-between px-6 h-16 w-full">
+<div class="flex items-center gap-3">
+<!-- Used image-6 here instead of icon as requested in prompt, but kept JSON structure -->
+<img alt="Know It Owl Logo" class="w-8 h-8 rounded-full object-cover border border-navy-raised" src="https://lh3.googleusercontent.com/aida/AEtjO1VI0HLn7IsZPX6y8SuYNRpg0wPynlweBRxjITHx4C_FlqmIvHCc57Q_AC5ee6LOiqxmPxftM9BwvstuZsQitdWfH5xFh8BolVZ5WojL9iwFBTp9LQDPMoRR-aeiWkBtW3ad5njCBqloUyboHXos6_oIvi8SLgRjVHDmpz7Zp1zNlmPlAI_6wbTBBx1YixTaI7uXwzTxvVIA5GhEy0pxeL9hxJGNKSUhSXjAW3WIqZwyLRocr1J7o7H7MAI"/>
+<h1 class="text-2xl font-headline font-black text-[#F5A81C] tracking-tighter">Know It Owl</h1>
+</div>
+<div class="flex items-center gap-1.5 bg-navy-surface px-2.5 py-1 rounded-full border border-navy-raised shadow-inner">
+<div class="w-2 h-2 rounded-full bg-brand-green animate-pulse"></div>
+<span class="font-label text-xs font-bold text-brand-green uppercase tracking-wider">Live</span>
+</div>
+</header>
+<!-- Main Content Area (padding-top accounts for fixed header) -->
+<main class="flex-1 px-4 pt-20 flex flex-col max-w-md mx-auto w-full">
+<!-- Game Code Sub-header -->
+<div class="text-center mt-2 mb-6">
+<p class="font-body text-sm font-medium text-brand-muted tracking-wide">
+                Game code <span class="font-display font-bold text-brand-cream uppercase tracking-widest text-base">OWL842</span>
+</p>
+</div>
+<!-- Section Header -->
+<div class="flex items-baseline justify-between mb-3 px-1">
+<h2 class="font-headline font-bold text-lg text-brand-cream">Teams are set</h2>
+<span class="font-label text-xs font-semibold text-brand-muted uppercase tracking-wider">2 teams · 6 players</span>
+</div>
+<!-- Teams List -->
+<div class="flex flex-col gap-4">
+<!-- Team 1 (YOUR TEAM) -->
+<div class="bg-[#16294A] rounded-xl border-2 border-[#F5A81C] overflow-hidden relative shadow-[0_4px_20px_rgba(245,168,28,0.1)] transition-transform duration-200 active:scale-[0.98]">
+<!-- Gold Accent Header -->
+<div class="bg-brand-gold/10 px-4 py-2 border-b border-brand-gold/20 flex justify-between items-center">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-brand-gold" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-label text-[10px] font-bold text-brand-gold uppercase tracking-widest">Your Team</span>
+</div>
+</div>
+<div class="p-4 pt-3">
+<div class="flex justify-between items-start mb-4">
+<h3 class="font-headline font-bold text-xl text-brand-cream leading-tight">The Quizzly Bears</h3>
+<button class="flex items-center gap-1 text-brand-muted hover:text-brand-cream transition-colors text-xs font-medium px-2 py-1 rounded bg-navy-ground/50">
+<span class="material-symbols-outlined text-[14px]">edit</span>
+                            Rename
+                        </button>
+</div>
+<!-- Player Pills Wrap -->
+<div class="flex flex-wrap gap-2 mt-2">
+<!-- Player 1 -->
+<div class="flex items-center gap-2 bg-navy-ground/80 rounded-full pl-1 pr-3 py-1 border border-navy-raised shadow-inner">
+<div class="w-6 h-6 rounded-full bg-gradient-to-br from-brand-amber to-brand-gold flex items-center justify-center text-navy-ground font-bold text-[10px]">A</div>
+<span class="font-body text-sm font-medium text-brand-cream">Alex P.</span>
+</div>
+<!-- Player 2 -->
+<div class="flex items-center gap-2 bg-navy-ground/80 rounded-full pl-1 pr-3 py-1 border border-navy-raised shadow-inner">
+<div class="w-6 h-6 rounded-full bg-navy-raised flex items-center justify-center text-brand-cream font-bold text-[10px]">S</div>
+<span class="font-body text-sm font-medium text-brand-muted">Sam G.</span>
+</div>
+<!-- Player 3 -->
+<div class="flex items-center gap-2 bg-navy-ground/80 rounded-full pl-1 pr-3 py-1 border border-navy-raised shadow-inner">
+<div class="w-6 h-6 rounded-full bg-navy-raised flex items-center justify-center text-brand-cream font-bold text-[10px]">M</div>
+<span class="font-body text-sm font-medium text-brand-muted">Mia T.</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Team 2 -->
+<div class="bg-[#16294A] rounded-xl border border-[#1E3765] overflow-hidden shadow-sm transition-transform duration-200 active:scale-[0.98]">
+<div class="p-4">
+<div class="flex justify-between items-start mb-4">
+<h3 class="font-headline font-semibold text-lg text-brand-cream leading-tight">The Smarty Pants</h3>
+</div>
+<!-- Player Pills Wrap -->
+<div class="flex flex-wrap gap-2">
+<!-- Player 1 -->
+<div class="flex items-center gap-2 bg-navy-ground/50 rounded-full pl-1 pr-3 py-1 border border-navy-raised/50">
+<div class="w-6 h-6 rounded-full bg-navy-raised flex items-center justify-center text-brand-cream font-bold text-[10px] opacity-80">D</div>
+<span class="font-body text-sm text-brand-muted">David R.</span>
+</div>
+<!-- Player 2 -->
+<div class="flex items-center gap-2 bg-navy-ground/50 rounded-full pl-1 pr-3 py-1 border border-navy-raised/50">
+<div class="w-6 h-6 rounded-full bg-navy-raised flex items-center justify-center text-brand-cream font-bold text-[10px] opacity-80">E</div>
+<span class="font-body text-sm text-brand-muted">Elena V.</span>
+</div>
+<!-- Player 3 -->
+<div class="flex items-center gap-2 bg-navy-ground/50 rounded-full pl-1 pr-3 py-1 border border-navy-raised/50">
+<div class="w-6 h-6 rounded-full bg-navy-raised flex items-center justify-center text-brand-cream font-bold text-[10px] opacity-80">C</div>
+<span class="font-body text-sm text-brand-muted">Chris B.</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Bottom Pinned Panel (Host Controls) -->
+<!-- Note: Suppressed BottomNavBar JSON component as this is a specific transactional/lobby state where global nav is irrelevant -->
+<div class="fixed bottom-0 left-0 w-full glass-surface border-t border-navy-raised/50 z-40 pb-safe pt-4 px-4 sm:px-6 shadow-[0_-8px_30px_rgba(14,26,47,0.8)]">
+<div class="max-w-md mx-auto w-full">
+<!-- Host Label & Divider -->
+<div class="flex items-center gap-3 mb-4">
+<div class="h-px bg-navy-raised/50 flex-1"></div>
+<div class="flex items-center gap-1.5 px-2">
+<span class="material-symbols-outlined text-[14px] text-brand-gold" style="font-variation-settings: 'FILL' 1;">admin_panel_settings</span>
+<span class="font-label text-[10px] font-bold text-brand-gold uppercase tracking-widest">Host Controls</span>
+</div>
+<div class="h-px bg-navy-raised/50 flex-1"></div>
+</div>
+<!-- Action Buttons -->
+<div class="flex gap-3 mb-3">
+<button class="flex-1 bg-transparent border-2 border-brand-muted text-brand-cream font-headline font-bold text-sm rounded-full py-3.5 px-4 active:bg-navy-surface transition-all active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-brand-blue flex justify-center items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">shuffle</span>
+                    Re-draw
+                </button>
+<button class="flex-[1.5] bg-[#F5A81C] text-navy-ground font-headline font-black text-sm rounded-full py-3.5 px-4 active:bg-brand-amber transition-all active:scale-[0.98] shadow-[0_4px_14px_rgba(245,168,28,0.3)] focus:outline-none focus:ring-2 focus:ring-brand-gold flex justify-center items-center gap-2">
+                    Start round 1
+                    <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</button>
+</div>
+<p class="text-center font-body text-xs text-brand-muted/70 pb-2">Sit tight — your host is about to start.</p>
+</div>
+</div>
+</body></html>

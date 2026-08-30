@@ -1,0 +1,24 @@
+.kio-logo {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+/*
+ * As big as the screen sensibly allows, because the detail is the point.
+ * Scales with the viewport on a phone; on anything desktop-sized it settles at
+ * a fixed 20rem rather than growing without limit.
+ *
+ * Keep in step with HERO_SIZES in Logo.tsx.
+ */
+.kio-logo--hero {
+  margin: 0 auto;
+  width: clamp(11rem, 62vw, 17rem);
+  height: auto;
+}
+
+@media (min-width: 40rem) {
+  .kio-logo--hero {
+    width: 20rem;
+  }
+}

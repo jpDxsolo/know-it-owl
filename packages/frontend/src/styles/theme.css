@@ -1,0 +1,260 @@
+/*
+ * Know It Owl — design tokens and the handful of primitives every screen uses.
+ *
+ * The palette is taken from the owl logo: navy from the mortarboard, gold from
+ * the tassel and wordmark, bright blue from the outline. It is dark on purpose.
+ * The app is used in a dim pub at night, on a phone held under a table, so a
+ * bright screen is both glare for the holder and a giveaway to the next table.
+ *
+ * Gold is the brand: exactly one gold action per screen. If everything is gold,
+ * nothing is.
+ */
+
+:root {
+  /* Ground and surfaces */
+  --kio-navy-ground: #0e1a2f;
+  --kio-navy-surface: #16294a;
+  --kio-navy-raised: #1e3765;
+  --kio-hairline: #22406f;
+
+  /* Brand and accents */
+  --kio-gold: #f5a81c;
+  --kio-gold-ink: #2a1a00; /* Text on gold. Dark, never white. */
+  --kio-amber: #f0821e;
+  --kio-blue: #2f7fe0;
+
+  /* Text */
+  --kio-cream: #f7efe2;
+  --kio-muted: #9db0ce;
+
+  /* State */
+  --kio-green: #3fb27f;
+  --kio-red: #e5484d;
+
+  /* Type. Outfit is chunky and round, echoing the logo's lettering. */
+  --kio-font-headline: "Outfit", "Trebuchet MS", system-ui, sans-serif;
+  --kio-font-body: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+
+  /* Spacing, on a 4px grid */
+  --kio-space-1: 0.25rem;
+  --kio-space-2: 0.5rem;
+  --kio-space-3: 0.75rem;
+  --kio-space-4: 1rem;
+  --kio-space-5: 1.5rem;
+  --kio-space-6: 2rem;
+  --kio-space-7: 3rem;
+
+  --kio-radius: 0.75rem;
+  --kio-radius-lg: 1rem;
+  --kio-radius-pill: 9999px;
+
+  /* Designed at 390px. A form stays a comfortable column at any size, but a
+     list of people has no reason to — see --kio-measure-wide. */
+  --kio-measure: 30rem;
+  --kio-measure-wide: 64rem;
+
+  /* Where a screen stops being a phone and starts being a browser window. */
+  --kio-bp-wide: 40rem;
+
+  /* Smallest comfortable touch target. */
+  --kio-touch: 2.75rem;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  background-color: var(--kio-navy-ground);
+  color: var(--kio-cream);
+  font-family: var(--kio-font-body);
+  font-size: 1rem;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  /* Keeps content clear of the notch and the home indicator. */
+  padding: env(safe-area-inset-top) env(safe-area-inset-right)
+    env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--kio-font-headline);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+/* The column every screen lives in. */
+.kio-page {
+  max-width: var(--kio-measure);
+  margin: 0 auto;
+  padding: var(--kio-space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--kio-space-5);
+  min-height: 100vh;
+}
+
+/*
+ * Screens that are mostly a list of people, which should use the width a
+ * browser window actually has rather than pretending to be a phone.
+ */
+.kio-page--wide {
+  max-width: var(--kio-measure-wide);
+}
+
+@media (min-width: 40rem) {
+  .kio-page {
+    padding: var(--kio-space-6) var(--kio-space-5);
+    gap: var(--kio-space-6);
+  }
+
+  /* A full-width button is right under a thumb and absurd on a laptop. */
+  .kio-button {
+    width: auto;
+    min-width: 14rem;
+    align-self: center;
+  }
+}
+
+/* --- Primitives shared by more than one screen --- */
+
+.kio-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--kio-muted);
+  margin-bottom: var(--kio-space-2);
+}
+
+.kio-input {
+  width: 100%;
+  min-height: var(--kio-touch);
+  padding: var(--kio-space-3) var(--kio-space-4);
+  background-color: var(--kio-navy-surface);
+  color: var(--kio-cream);
+  border: 1px solid var(--kio-hairline);
+  border-radius: var(--kio-radius);
+  font-family: inherit;
+  font-size: 1rem;
+}
+
+.kio-input::placeholder {
+  color: var(--kio-muted);
+  opacity: 0.7;
+}
+
+.kio-input:focus-visible {
+  outline: 2px solid var(--kio-gold);
+  outline-offset: 2px;
+}
+
+/* Applied to the offending field alone, never to the form around it — a wrong
+   join code must not make a perfectly good name look rejected too. */
+.kio-input--invalid {
+  border-color: var(--kio-red);
+}
+
+.kio-field-error {
+  display: flex;
+  gap: var(--kio-space-2);
+  color: var(--kio-red);
+  font-size: 0.875rem;
+  margin-top: var(--kio-space-2);
+}
+
+.kio-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--kio-space-2);
+  width: 100%;
+  min-height: var(--kio-touch);
+  padding: var(--kio-space-3) var(--kio-space-5);
+  border: 1px solid transparent;
+  border-radius: var(--kio-radius-pill);
+  font-family: var(--kio-font-headline);
+  font-size: 1.0625rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.kio-button--primary {
+  background-color: var(--kio-gold);
+  color: var(--kio-gold-ink);
+}
+
+.kio-button--secondary {
+  background-color: transparent;
+  border-color: var(--kio-hairline);
+  color: var(--kio-cream);
+}
+
+.kio-button--ghost {
+  width: auto;
+  min-height: auto;
+  padding: var(--kio-space-1) var(--kio-space-2);
+  background: none;
+  color: var(--kio-muted);
+  font-family: var(--kio-font-body);
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.kio-button:disabled {
+  background-color: var(--kio-navy-raised);
+  color: var(--kio-muted);
+  cursor: not-allowed;
+}
+
+.kio-button:focus-visible {
+  outline: 2px solid var(--kio-cream);
+  outline-offset: 2px;
+}
+
+.kio-card {
+  background-color: var(--kio-navy-surface);
+  border: 1px solid var(--kio-hairline);
+  border-radius: var(--kio-radius-lg);
+  padding: var(--kio-space-4);
+}
+
+.kio-muted {
+  color: var(--kio-muted);
+  font-size: 0.875rem;
+}
+
+/* Visible to screen readers only. */
+.kio-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

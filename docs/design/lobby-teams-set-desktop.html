@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Know It Owl - Teams Lobby</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=Public+Sans:wght@400;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary": "#F5A81C",
+                        "accent": "#F0821E",
+                        "secondary": "#2F7FE0",
+                        "ground": "#0E1A2F",
+                        "surface": "#16294A",
+                        "raised": "#1E3765",
+                        "text-primary": "#F7EFE2",
+                        "text-muted": "#9DB0CE",
+                        "success": "#3FB27F",
+                        "danger": "#E5484D"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Public Sans", "sans-serif"],
+                        "display": ["Public Sans", "sans-serif"],
+                        "body": ["Plus Jakarta Sans", "sans-serif"],
+                        "label": ["Plus Jakarta Sans", "sans-serif"],
+                        "mono": ["ui-monospace", "SFMono-Regular", "Menlo", "Monaco", "Consolas", "Liberation Mono", "Courier New", "monospace"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        
+        .pulse-dot {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(63, 178, 127, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(63, 178, 127, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(63, 178, 127, 0); }
+        }
+    </style>
+</head>
+<body class="bg-ground text-text-primary font-body antialiased min-h-screen flex flex-col items-center">
+<!-- Top Bar -->
+<header class="w-full max-w-[1024px] flex items-center justify-between px-6 py-4">
+<div class="flex items-center gap-3">
+<img alt="Know It Owl Logo" class="w-12 h-12 rounded-lg object-cover border border-raised" src="https://lh3.googleusercontent.com/aida/AEtjO1VI0HLn7IsZPX6y8SuYNRpg0wPynlweBRxjITHx4C_FlqmIvHCc57Q_AC5ee6LOiqxmPxftM9BwvstuZsQitdWfH5xFh8BolVZ5WojL9iwFBTp9LQDPMoRR-aeiWkBtW3ad5njCBqloUyboHXos6_oIvi8SLgRjVHDmpz7Zp1zNlmPlAI_6wbTBBx1YixTaI7uXwzTxvVIA5GhEy0pxeL9hxJGNKSUhSXjAW3WIqZwyLRocr1J7o7H7MAI"/>
+<span class="font-headline font-black text-xl text-primary tracking-tighter">Know It Owl</span>
+</div>
+<div class="flex items-center gap-2 bg-surface px-3 py-1.5 rounded-full border border-raised">
+<div class="w-2.5 h-2.5 rounded-full bg-success pulse-dot"></div>
+<span class="font-label text-xs font-bold text-success uppercase tracking-wider">Live</span>
+</div>
+</header>
+<!-- Main Container -->
+<main class="flex-1 w-full max-w-[1024px] px-6 py-8 flex flex-col">
+<!-- Sub-header (Game Code) -->
+<div class="text-center mb-10">
+<p class="font-label text-sm font-semibold text-text-muted uppercase tracking-widest">Game Code</p>
+<p class="font-mono text-3xl font-black text-primary tracking-[0.2em] mt-1">OWL842</p>
+</div>
+<!-- Main Header Row -->
+<div class="flex flex-col md:flex-row items-baseline justify-between border-b border-raised pb-4 mb-8">
+<h1 class="font-headline font-black text-3xl tracking-tight text-text-primary">Teams are set</h1>
+<span class="font-body text-sm text-text-muted mt-2 md:mt-0 font-medium">2 teams · 6 players</span>
+</div>
+<!-- Team Cards Bento Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- Team 1 (YOUR TEAM) -->
+<div class="bg-surface rounded-xl p-6 border-2 border-primary relative flex flex-col shadow-lg">
+<div class="absolute -top-3 right-6 bg-primary text-ground font-label text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-md">
+                    Your Team
+                </div>
+<div class="flex justify-between items-start mb-6">
+<h2 class="font-headline font-bold text-2xl text-text-primary">The Quizzly Bears</h2>
+<button class="text-text-muted hover:text-primary transition-colors flex items-center gap-1 group">
+<span class="material-symbols-outlined text-lg">edit</span>
+<span class="font-label text-xs font-semibold group-hover:underline">Rename</span>
+</button>
+</div>
+<div class="flex flex-wrap gap-3 mt-auto">
+<!-- Member Pill -->
+<div class="flex items-center gap-2 bg-raised rounded-full pl-1 pr-4 py-1 border border-raised/50">
+<div class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-sm">
+                            A
+                        </div>
+<span class="font-label text-sm font-medium">Alex P.</span>
+</div>
+<!-- Member Pill -->
+<div class="flex items-center gap-2 bg-raised rounded-full pl-1 pr-4 py-1 border border-raised/50">
+<div class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-sm">
+                            S
+                        </div>
+<span class="font-label text-sm font-medium">Sam G.</span>
+</div>
+<!-- Member Pill -->
+<div class="flex items-center gap-2 bg-raised rounded-full pl-1 pr-4 py-1 border border-raised/50">
+<div class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-sm">
+                            M
+                        </div>
+<span class="font-label text-sm font-medium">Mia T.</span>
+</div>
+</div>
+</div>
+<!-- Team 2 -->
+<div class="bg-surface rounded-xl p-6 border border-raised flex flex-col shadow-md">
+<div class="flex justify-between items-start mb-6">
+<h2 class="font-headline font-bold text-2xl text-text-primary">The Smarty Pants</h2>
+<button class="text-text-muted hover:text-text-primary transition-colors flex items-center gap-1 group">
+<span class="material-symbols-outlined text-lg">edit</span>
+<span class="font-label text-xs font-semibold group-hover:underline">Rename</span>
+</button>
+</div>
+<div class="flex flex-wrap gap-3 mt-auto">
+<!-- Member Pill -->
+<div class="flex items-center gap-2 bg-raised rounded-full pl-1 pr-4 py-1">
+<div class="w-8 h-8 rounded-full bg-ground flex items-center justify-center text-text-muted font-bold text-sm">
+                            D
+                        </div>
+<span class="font-label text-sm font-medium text-text-muted">David R.</span>
+</div>
+<!-- Member Pill -->
+<div class="flex items-center gap-2 bg-raised rounded-full pl-1 pr-4 py-1">
+<div class="w-8 h-8 rounded-full bg-ground flex items-center justify-center text-text-muted font-bold text-sm">
+                            E
+                        </div>
+<span class="font-label text-sm font-medium text-text-muted">Elena V.</span>
+</div>
+<!-- Member Pill -->
+<div class="flex items-center gap-2 bg-raised rounded-full pl-1 pr-4 py-1">
+<div class="w-8 h-8 rounded-full bg-ground flex items-center justify-center text-text-muted font-bold text-sm">
+                            C
+                        </div>
+<span class="font-label text-sm font-medium text-text-muted">Chris B.</span>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Host Control Footer -->
+<footer class="w-full border-t border-raised bg-ground py-4 px-6 fixed bottom-0 z-40">
+<div class="max-w-[1024px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-xl">admin_panel_settings</span>
+<span class="font-label text-[10px] font-black text-primary uppercase tracking-widest bg-primary/10 px-2 py-0.5 rounded-sm">Host View</span>
+</div>
+<div class="flex w-full sm:w-auto items-center gap-4">
+<button class="flex-1 sm:flex-none px-5 py-2.5 rounded-full border border-raised text-text-muted font-label font-bold text-sm hover:bg-surface hover:text-text-primary transition-colors flex justify-center items-center gap-2 active:scale-95 duration-100">
+<span class="material-symbols-outlined text-sm">shuffle</span>
+                    Re-draw teams
+                </button>
+<button class="flex-1 sm:flex-none px-6 py-2.5 rounded-full bg-primary text-ground font-headline font-bold text-base hover:bg-accent transition-colors flex justify-center items-center gap-2 active:scale-95 duration-100 shadow-[0_4px_14px_rgba(245,168,28,0.39)]">
+                    Start round 1
+                    <span class="material-symbols-outlined text-base">arrow_forward</span>
+</button>
+</div>
+</div>
+</footer>
+<!-- padding for fixed footer -->
+<div class="h-24"></div>
+</body></html>

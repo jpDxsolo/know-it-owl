@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Know It Owl - Join Quiz</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=Public+Sans:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        navy: {
+                            ground: '#0E1A2F',
+                            surface: '#16294A',
+                            raised: '#1E3765'
+                        },
+                        brand: {
+                            gold: '#F5A81C',
+                            amber: '#F0821E',
+                            blue: '#2F7FE0',
+                            cream: '#F7EFE2',
+                            muted: '#9DB0CE',
+                            green: '#3FB27F',
+                            red: '#E5484D'
+                        }
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                    fontFamily: {
+                        "headline": ["Public Sans", "sans-serif"],
+                        "display": ["Public Sans", "sans-serif"],
+                        "body": ["Plus Jakarta Sans", "sans-serif"],
+                        "label": ["Plus Jakarta Sans", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: theme('colors.navy.ground');
+            color: theme('colors.brand.cream');
+            font-family: theme('fontFamily.body');
+        }
+        .join-code {
+            font-variant-numeric: tabular-nums;
+            letter-spacing: 0.2em;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+<!-- Suppress Nav: Transactional/Join intent -->
+<!-- Suppress TopAppBar and BottomNavBar as per Source of Truth hierarchy (Linear/Transactional) -->
+<main class="w-full max-w-[420px] flex flex-col items-center gap-8 animate-fade-in">
+<!-- Logo Section -->
+<div class="flex flex-col items-center gap-2 text-center w-full">
+<img alt="Know It Owl Logo" class="w-[320px] h-auto object-contain mx-auto mix-blend-screen drop-shadow-[0_0_15px_rgba(245,168,28,0.2)]" src="https://lh3.googleusercontent.com/aida/AEtjO1VI0HLn7IsZPX6y8SuYNRpg0wPynlweBRxjITHx4C_FlqmIvHCc57Q_AC5ee6LOiqxmPxftM9BwvstuZsQitdWfH5xFh8BolVZ5WojL9iwFBTp9LQDPMoRR-aeiWkBtW3ad5njCBqloUyboHXos6_oIvi8SLgRjVHDmpz7Zp1zNlmPlAI_6wbTBBx1YixTaI7uXwzTxvVIA5GhEy0pxeL9hxJGNKSUhSXjAW3WIqZwyLRocr1J7o7H7MAI"/>
+<p class="font-body text-brand-muted text-lg mt-2">Pub quiz night, on your phone.</p>
+</div>
+<!-- Form Section -->
+<div class="w-full flex flex-col gap-6">
+<!-- Game Code -->
+<div class="flex flex-col gap-2">
+<label class="font-label text-xs font-bold text-brand-muted uppercase tracking-widest pl-1">Game Code</label>
+<div class="bg-navy-surface border-2 border-navy-raised rounded-xl h-24 flex items-center justify-center shadow-inner relative overflow-hidden group hover:border-brand-gold transition-colors duration-300">
+<div class="absolute inset-0 bg-gradient-to-t from-navy-raised/20 to-transparent pointer-events-none"></div>
+<span class="font-display font-black text-5xl text-brand-cream join-code tracking-[0.25em] ml-[0.25em]">OWL842</span>
+</div>
+</div>
+<!-- Player Name -->
+<div class="flex flex-col gap-2">
+<div class="flex justify-between items-end px-1">
+<label class="font-label text-xs font-bold text-brand-muted uppercase tracking-widest">Your Name</label>
+<span class="font-label text-xs text-brand-muted/70">0/30</span>
+</div>
+<input class="w-full bg-navy-surface border border-navy-raised rounded-lg px-4 py-4 text-brand-cream placeholder-brand-muted/50 focus:outline-none focus:border-brand-blue focus:ring-1 focus:ring-brand-blue transition-all font-body text-lg shadow-sm" placeholder="e.g. Trivia Newton John" type="text"/>
+</div>
+<!-- Join Action -->
+<button class="w-full bg-brand-gold hover:bg-brand-amber text-navy-ground font-headline font-black text-xl py-5 rounded-full flex items-center justify-center gap-3 transition-all duration-200 active:scale-[0.98] shadow-[0_4px_14px_0_rgba(245,168,28,0.39)] hover:shadow-[0_6px_20px_rgba(245,168,28,0.23)] mt-2">
+                Join the quiz
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">arrow_forward</span>
+</button>
+</div>
+<!-- Footer Note -->
+<div class="text-center mt-4">
+<p class="font-body text-sm text-brand-muted">Don't have a code? Ask your host.</p>
+</div>
+</main>
+<!-- Footer Component (Shared) - rendered as per instructions, but kept minimal to match transactional intent -->
+<footer class="w-full flex flex-col items-center gap-2 px-8 py-4 opacity-60 fixed bottom-0 left-0 bg-transparent mb-4 hidden md:flex">
+<div class="flex gap-4">
+<a class="font-body text-[10px] uppercase tracking-widest text-[#9DB0CE] hover:text-[#2F7FE0] transition-colors" href="#">Support</a>
+<a class="font-body text-[10px] uppercase tracking-widest text-[#9DB0CE] hover:text-[#2F7FE0] transition-colors" href="#">Rules</a>
+<a class="font-body text-[10px] uppercase tracking-widest text-[#9DB0CE] hover:text-[#2F7FE0] transition-colors" href="#">Privacy</a>
+</div>
+<p class="font-body text-[10px] uppercase tracking-widest text-[#9DB0CE]">© 2024 Know It Owl. Drink responsibly.</p>
+</footer>
+<script>
+        // Simple micro-interaction for the input field to simulate typing focus
+        const input = document.querySelector('input');
+        const charCount = document.querySelector('span.text-brand-muted\\/70');
+        
+        if(input && charCount) {
+            input.addEventListener('input', (e) => {
+                const len = e.target.value.length;
+                charCount.textContent = `${len}/30`;
+                if(len > 0) {
+                    charCount.classList.add('text-brand-gold');
+                    charCount.classList.remove('text-brand-muted/70');
+                } else {
+                    charCount.classList.remove('text-brand-gold');
+                    charCount.classList.add('text-brand-muted/70');
+                }
+            });
+        }
+    </script>
+</body></html>

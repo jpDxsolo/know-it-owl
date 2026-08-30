@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Know It Owl - Join Game</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=Public+Sans:wght@700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        navy: {
+                            ground: '#0E1A2F',
+                            surface: '#16294A',
+                            raised: '#1E3765'
+                        },
+                        gold: '#F5A81C',
+                        amber: '#F0821E',
+                        brightBlue: '#2F7FE0',
+                        cream: '#F7EFE2',
+                        muted: '#9DB0CE',
+                        green: '#3FB27F',
+                        red: '#E5484D'
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                    fontFamily: {
+                        "headline": ["Public Sans", "sans-serif"],
+                        "display": ["Public Sans", "sans-serif"],
+                        "body": ["Plus Jakarta Sans", "sans-serif"],
+                        "label": ["Plus Jakarta Sans", "sans-serif"]
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            background-color: #0E1A2F; /* navy-ground */
+            color: #F7EFE2; /* cream */
+        }
+        /* Custom styles for the join code input */
+        .join-code-input {
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+        }
+        .join-code-input::placeholder {
+            letter-spacing: normal;
+            text-transform: none;
+        }
+    </style>
+</head>
+<body class="font-body min-h-screen flex flex-col items-center justify-center p-6 relative overflow-hidden bg-navy-ground">
+<!-- Main Content Container -->
+<main class="w-full max-w-sm flex flex-col items-center z-10 space-y-8">
+<!-- Header Section -->
+<header class="flex flex-col items-center space-y-3 w-full">
+<!-- Logo Image -->
+<div class="w-48 h-48 rounded-full overflow-hidden flex items-center justify-center bg-navy-surface shadow-[0_0_40px_rgba(245,168,28,0.1)] mb-2">
+<img alt="Know It Owl Logo" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida/AEtjO1VI0HLn7IsZPX6y8SuYNRpg0wPynlweBRxjITHx4C_FlqmIvHCc57Q_AC5ee6LOiqxmPxftM9BwvstuZsQitdWfH5xFh8BolVZ5WojL9iwFBTp9LQDPMoRR-aeiWkBtW3ad5njCBqloUyboHXos6_oIvi8SLgRjVHDmpz7Zp1zNlmPlAI_6wbTBBx1YixTaI7uXwzTxvVIA5GhEy0pxeL9hxJGNKSUhSXjAW3WIqZwyLRocr1J7o7H7MAI"/>
+</div>
+<!-- Subtitle -->
+<p class="text-muted font-body text-sm font-medium text-center">Pub quiz night, on your phone.</p>
+</header>
+<!-- Form Section -->
+<form class="w-full flex flex-col space-y-6" onsubmit="event.preventDefault();">
+<!-- Game Code Group -->
+<div class="flex flex-col space-y-2">
+<label class="text-muted font-label text-xs font-bold uppercase tracking-widest" for="game_code">Game Code</label>
+<div class="relative">
+<input autocomplete="off" class="w-full bg-navy-surface border-2 border-red text-cream font-display text-4xl font-black rounded-xl py-4 text-center join-code-input focus:outline-none focus:ring-0 transition-colors" id="game_code" spellcheck="false" type="text" value="OWL842"/>
+</div>
+<!-- Error Message -->
+<div class="flex items-start space-x-2 text-red mt-2">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">error</span>
+<p class="font-body text-sm font-medium leading-tight pt-0.5">That code didn't match a game — check with your host.</p>
+</div>
+</div>
+<!-- Name Group -->
+<div class="flex flex-col space-y-2 pt-2">
+<div class="flex justify-between items-center">
+<label class="text-muted font-label text-xs font-bold uppercase tracking-widest" for="player_name">Your Name</label>
+<span class="text-muted font-label text-xs">0/30</span>
+</div>
+<input class="w-full bg-navy-surface border-2 border-navy-raised text-cream font-body text-lg rounded-xl px-4 py-3 focus:border-gold focus:outline-none focus:ring-0 transition-colors placeholder:text-muted/50" id="player_name" maxlength="30" placeholder="e.g. Trivia Newton John" type="text"/>
+</div>
+<!-- Spacer for bottom positioning -->
+<div class="pt-8 w-full flex flex-col space-y-6">
+<!-- Submit Button -->
+<button class="w-full bg-gold hover:bg-amber text-navy-ground font-headline font-bold text-lg rounded-full py-4 px-6 transition-all active:scale-95 shadow-[0_0_20px_rgba(245,168,28,0.2)] flex justify-center items-center gap-2 touch-manipulation" type="submit">
+<span>Join the quiz</span>
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">login</span>
+</button>
+<!-- Footer Text -->
+<p class="text-muted font-body text-xs text-center opacity-80">Don't have a code? Ask your host.</p>
+</div>
+</form>
+</main>
+</body></html>
