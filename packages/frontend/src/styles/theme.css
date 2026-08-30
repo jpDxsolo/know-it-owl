@@ -48,9 +48,13 @@
   --kio-radius-lg: 1rem;
   --kio-radius-pill: 9999px;
 
-  /* The widest the content ever gets. Designed at 390px; on a laptop it stays
-     a phone-shaped column rather than stretching into an unreadable line. */
+  /* Designed at 390px. A form stays a comfortable column at any size, but a
+     list of people has no reason to — see --kio-measure-wide. */
   --kio-measure: 30rem;
+  --kio-measure-wide: 64rem;
+
+  /* Where a screen stops being a phone and starts being a browser window. */
+  --kio-bp-wide: 40rem;
 
   /* Smallest comfortable touch target. */
   --kio-touch: 2.75rem;
@@ -90,7 +94,7 @@ h3 {
   margin: 0;
 }
 
-/* The phone-shaped column every screen lives in. */
+/* The column every screen lives in. */
 .kio-page {
   max-width: var(--kio-measure);
   margin: 0 auto;
@@ -99,6 +103,28 @@ h3 {
   flex-direction: column;
   gap: var(--kio-space-5);
   min-height: 100vh;
+}
+
+/*
+ * Screens that are mostly a list of people, which should use the width a
+ * browser window actually has rather than pretending to be a phone.
+ */
+.kio-page--wide {
+  max-width: var(--kio-measure-wide);
+}
+
+@media (min-width: 40rem) {
+  .kio-page {
+    padding: var(--kio-space-6) var(--kio-space-5);
+    gap: var(--kio-space-6);
+  }
+
+  /* A full-width button is right under a thumb and absurd on a laptop. */
+  .kio-button {
+    width: auto;
+    min-width: 14rem;
+    align-self: center;
+  }
 }
 
 /* --- Primitives shared by more than one screen --- */

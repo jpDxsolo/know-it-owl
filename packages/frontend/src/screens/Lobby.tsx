@@ -106,7 +106,7 @@ export function Lobby() {
   const players = game.players;
 
   return (
-    <main className="kio-page kio-lobby">
+    <main className="kio-page kio-page--wide kio-lobby">
       <AppHeader realtime={realtime} />
 
       {teamsDrawn ? (

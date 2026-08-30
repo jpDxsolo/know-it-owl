@@ -230,3 +230,64 @@
   padding-top: var(--kio-space-4);
   text-align: center;
 }
+
+/*
+ * A browser window, most often the host's laptop.
+ *
+ * The lobby is the one screen where extra width genuinely helps: a list of
+ * fourteen people down a phone-shaped column means scrolling to find out who is
+ * here, when the whole question is "is everyone in yet?". So the roster becomes
+ * columns and the teams sit side by side, which is also how they are arranged
+ * in the room.
+ */
+@media (min-width: 40rem) {
+  .kio-lobby__codeValue {
+    font-size: 3.5rem;
+  }
+
+  .kio-lobby__title {
+    font-size: 1.5rem;
+  }
+
+  .kio-lobby__players {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+    gap: var(--kio-space-3);
+  }
+
+  .kio-lobby__teams {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+    gap: var(--kio-space-4);
+    align-items: start;
+  }
+
+  /*
+   * The host panel stops being a pinned bottom bar. On a phone it sits under a
+   * thumb; on a laptop it is just the last thing on the page, laid out in a row
+   * so the stepper and the action are side by side.
+   */
+  .kio-lobby__host {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--kio-space-4);
+  }
+
+  .kio-lobby__hostLabel {
+    flex-basis: 100%;
+  }
+
+  .kio-lobby__host .kio-button {
+    align-self: auto;
+    min-width: 12rem;
+  }
+
+  .kio-stepper {
+    flex: 0 1 16rem;
+  }
+
+  .kio-lobby__waiting {
+    font-size: 1rem;
+  }
+}
