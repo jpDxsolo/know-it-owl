@@ -29,6 +29,8 @@
     "./services/*": "./src/services/*.ts",
     "./hooks/*": "./src/hooks/*.ts",
     "./gql": "./src/gql/index.ts",
-    "./gql/graphql": "./src/gql/graphql.ts"
+    "./gql/graphql": "./src/gql/graphql.ts",
+    "./screens/*": "./src/screens/*.tsx",
+    "./components/*": "./src/components/*.tsx"
   }
 }

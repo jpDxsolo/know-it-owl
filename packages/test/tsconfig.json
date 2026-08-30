@@ -4,7 +4,8 @@
     "types": [
       "node",
       "vitest/globals",
-      "vite/client"
+      "vite/client",
+      "@testing-library/jest-dom/vitest"
     ],
     "jsx": "react-jsx",
     "lib": [

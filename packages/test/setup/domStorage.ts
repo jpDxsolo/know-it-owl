@@ -1,3 +1,5 @@
+import "@testing-library/jest-dom/vitest";
+
 /**
  * Give DOM suites a working `localStorage`.
  *
