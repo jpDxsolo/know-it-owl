@@ -60,6 +60,7 @@ export type GameEvent =
   | "TEAMS_SET"
   | "TEAM_RENAMED"
   | "ROUND_STARTED"
+  | "QUESTION_RELEASED"
   | "ROUND_REVEALED";
 
 export interface GameUpdate {
