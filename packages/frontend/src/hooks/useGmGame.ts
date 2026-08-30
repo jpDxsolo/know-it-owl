@@ -29,7 +29,10 @@ export interface UseGmGameResult extends UseGameResult {
 
 export function useGmGame(gameId: string | undefined): UseGmGameResult {
   const gmToken = useMemo(() => (gameId ? storedGmToken(gameId) : null), [gameId]);
-  const game = useGame(gameId);
+  // Without the token the dashboard refuses to render, so there is nothing to
+  // read and nothing to subscribe to — asking anyway would open a websocket for
+  // a screen that is about to say no.
+  const game = useGame(gmToken ? gameId : undefined);
   const [submittedTeamIds, setSubmittedTeamIds] = useState<ReadonlySet<string>>(new Set());
 
   const roundNumber = game.game?.currentRound ?? null;
