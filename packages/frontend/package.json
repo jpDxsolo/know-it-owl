@@ -24,5 +24,11 @@
     "@vitejs/plugin-react": "^4.3.4",
     "graphql": "^16.14.2",
     "vite": "^5.4.11"
+  },
+  "exports": {
+    "./services/*": "./src/services/*.ts",
+    "./hooks/*": "./src/hooks/*.ts",
+    "./gql": "./src/gql/index.ts",
+    "./gql/graphql": "./src/gql/graphql.ts"
   }
 }
