@@ -292,13 +292,48 @@ describe("recovering from a dropped connection", () => {
     stop();
   });
 
-  it("treats a silent socket as dead once the keep-alive lapses", () => {
+  it("recovers a half-open socket that never fires onclose", () => {
+    // The important one. A dropped network leaves the socket in CLOSING for
+    // good — the peer is gone, so the handshake never completes and `onclose`
+    // never arrives. A client that waits for that event sits there believing it
+    // is live while receiving nothing at all.
+    const stop = watch({ gameId: "g1", onEvent: () => {} });
+    FakeSocket.latest.goLive();
+    const dead = FakeSocket.latest;
+    dead.close = () => {
+      dead.readyState = 2; // CLOSING, and it will stay there.
+    };
+
+    vi.advanceTimersByTime(300_000);
+    vi.advanceTimersByTime(500);
+
+    expect(FakeSocket.instances).toHaveLength(2);
+    stop();
+  });
+
+  it("redials on the online event even when it still believes it is live", () => {
+    // Same half-open case, but the browser tells us the network changed before
+    // the keep-alive lapses. The socket we hold cannot be trusted.
     const stop = watch({ gameId: "g1", onEvent: () => {} });
     FakeSocket.latest.goLive();
 
-    // The server acked with a 300s timeout and then said nothing at all.
-    vi.advanceTimersByTime(300_000);
-    expect(FakeSocket.latest.readyState).toBe(FakeSocket.CLOSED);
+    globalThis.dispatchEvent(new Event("online"));
+
+    expect(FakeSocket.instances).toHaveLength(2);
+    stop();
+  });
+
+  it("treats a silent socket as dead once the keep-alive lapses", () => {
+    const stop = watch({ gameId: "g1", onEvent: () => {} });
+    FakeSocket.latest.goLive();
+    const silent = FakeSocket.latest;
+
+    // The server acked offering 300s, but sends `ka` every ~60s — so we hold it
+    // to the shorter grace rather than waiting five minutes to notice.
+    vi.advanceTimersByTime(149_999);
+    expect(silent.readyState).toBe(FakeSocket.OPEN);
+    vi.advanceTimersByTime(1);
+    expect(silent.readyState).toBe(FakeSocket.CLOSED);
 
     vi.advanceTimersByTime(500);
     expect(FakeSocket.instances).toHaveLength(2);
@@ -347,6 +382,25 @@ describe("recovering from a dropped connection", () => {
     globalThis.dispatchEvent(new Event("online"));
     expect(FakeSocket.instances).toHaveLength(before + 1);
 
+    // And the backoff is reset, so a further failure retries promptly.
+    FakeSocket.latest.close();
+    vi.advanceTimersByTime(500);
+    expect(FakeSocket.instances).toHaveLength(before + 2);
+
+    stop();
+  });
+
+  it("does not queue two reconnects when a late onclose follows a give-up", () => {
+    const stop = watch({ gameId: "g1", onEvent: () => {} });
+    FakeSocket.latest.goLive();
+    const dropped = FakeSocket.latest;
+
+    dropped.deliver({ type: "error", payload: {} });
+    // The socket gets round to announcing its own close afterwards.
+    dropped.onclose?.();
+
+    vi.advanceTimersByTime(500);
+    expect(FakeSocket.instances).toHaveLength(2);
     stop();
   });
 });

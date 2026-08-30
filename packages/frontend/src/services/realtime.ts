@@ -94,15 +94,40 @@ export function subscribeToGame(options: SubscribeOptions): () => void {
     keepAliveTimer = undefined;
   };
 
+  /**
+   * Give up on a socket and queue a fresh one.
+   *
+   * Deliberately does not wait for `close()` to produce an `onclose`. A dropped
+   * network leaves the socket in CLOSING indefinitely — the peer is gone, so
+   * the closing handshake never completes — and a client that waits for that
+   * event sits there believing it is live while receiving nothing. Detaching
+   * the handlers first also means a late `onclose` cannot queue a second retry.
+   */
+  const dropAndRetry = (ws: WebSocket | undefined): void => {
+    if (!ws || ws !== socket) return;
+    socket = undefined;
+    ws.onopen = null;
+    ws.onmessage = null;
+    ws.onclose = null;
+    ws.onerror = null;
+    try {
+      ws.close();
+    } catch {
+      // Already closing or closed; the retry below is what matters.
+    }
+    scheduleRetry();
+  };
+
   const armKeepAlive = (timeoutMs: number): void => {
     if (keepAliveTimer !== undefined) clearTimeout(keepAliveTimer);
     keepAliveTimer = setTimeout(() => {
-      // Silent socket. `close()` runs our onclose, which schedules the retry.
-      socket?.close();
+      // Silence past the grace period means the socket is dead, whether or not
+      // it will ever admit it.
+      dropAndRetry(socket);
     }, timeoutMs);
   };
 
-  const scheduleRetry = (): void => {
+  function scheduleRetry(): void {
     if (closed || retryTimer !== undefined) return;
     setStatus("offline");
     const delay = backoff(attempt);
@@ -111,7 +136,7 @@ export function subscribeToGame(options: SubscribeOptions): () => void {
       retryTimer = undefined;
       connect();
     }, delay);
-  };
+  }
 
   function connect(): void {
     if (closed) return;
@@ -139,7 +164,12 @@ export function subscribeToGame(options: SubscribeOptions): () => void {
 
       switch (message.type) {
         case "connection_ack": {
-          armKeepAlive(message.payload?.connectionTimeoutMs ?? KEEP_ALIVE_GRACE_MS);
+          // AppSync offers 300s here, but it also sends `ka` every ~60s, so
+          // waiting five minutes to notice a dead socket helps nobody. Take
+          // whichever is sooner.
+          armKeepAlive(
+            Math.min(message.payload?.connectionTimeoutMs ?? KEEP_ALIVE_GRACE_MS, KEEP_ALIVE_GRACE_MS),
+          );
           ws.send(
             JSON.stringify({
               id: subscriptionId,
@@ -176,7 +206,7 @@ export function subscribeToGame(options: SubscribeOptions): () => void {
           // Includes a rejected handshake. Retrying is right for an expired
           // connection and harmless-but-futile for a bad key, which the
           // backoff keeps cheap.
-          ws.close();
+          dropAndRetry(ws);
           break;
         }
         default:
@@ -184,21 +214,31 @@ export function subscribeToGame(options: SubscribeOptions): () => void {
       }
     };
 
-    ws.onclose = () => {
-      if (socket === ws) socket = undefined;
-      if (keepAliveTimer !== undefined) clearTimeout(keepAliveTimer);
-      keepAliveTimer = undefined;
-      scheduleRetry();
-    };
-
-    // `onclose` always follows `onerror`, so the retry is scheduled there.
-    ws.onerror = () => {};
+    ws.onclose = () => dropAndRetry(ws);
+    // A socket that errors may never close cleanly, so do not wait for it to.
+    ws.onerror = () => dropAndRetry(ws);
   }
 
   // The browser knows about a reconnection before any timer does; jumping the
   // backoff queue turns a 15-second wait into an instant one.
   const onOnline = (): void => {
-    if (closed || status === "live") return;
+    if (closed) return;
+    // Any socket that predates the network coming back is suspect, including
+    // one we still believe is live: a half-open connection reports no error and
+    // simply stops delivering. Cheaper to redial than to trust it.
+    const stale = socket;
+    socket = undefined;
+    if (stale) {
+      stale.onopen = null;
+      stale.onmessage = null;
+      stale.onclose = null;
+      stale.onerror = null;
+      try {
+        stale.close();
+      } catch {
+        // Nothing to do; we are replacing it regardless.
+      }
+    }
     if (retryTimer !== undefined) {
       clearTimeout(retryTimer);
       retryTimer = undefined;
