@@ -179,6 +179,36 @@ export async function queryRange<T extends Item = Item>(
   );
 }
 
+/** DynamoDB's name for a transaction rejected by one of its conditions. */
+const TRANSACTION_CANCELLED = "TransactionCanceledException";
+
+/** A single-item write rejected by its ConditionExpression. */
+export const CONDITION_FAILED = "ConditionalCheckFailedException";
+
+export function isTransactionCancelled(error: unknown): boolean {
+  return error instanceof Error && error.name === TRANSACTION_CANCELLED;
+}
+
+export function isConditionFailure(error: unknown): boolean {
+  return error instanceof Error && error.name === CONDITION_FAILED;
+}
+
+/**
+ * Per-item outcome codes from a cancelled transaction, positionally aligned
+ * with the items that were sent. Lets a handler say which invariant it lost on
+ * instead of reporting a generic conflict.
+ */
+export function cancellationCodes(error: unknown): (string | undefined)[] {
+  if (!isTransactionCancelled(error)) return [];
+  const reasons = (error as { CancellationReasons?: unknown }).CancellationReasons;
+  if (!Array.isArray(reasons)) return [];
+  return reasons.map((reason) => {
+    if (typeof reason !== "object" || reason === null) return undefined;
+    const code = (reason as { Code?: unknown }).Code;
+    return typeof code === "string" ? code : undefined;
+  });
+}
+
 /** Write several items atomically (e.g. the game META item and its join-code item). */
 export async function transactWrite(
   items: NonNullable<TransactWriteCommandInput["TransactItems"]>,

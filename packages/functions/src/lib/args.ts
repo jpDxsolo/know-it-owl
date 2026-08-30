@@ -65,3 +65,15 @@ export function requiredInt(
   }
   return value;
 }
+
+/** Read a required nested input object, e.g. the `input` of `submitAnswers`. */
+export function requiredObject(
+  args: Record<string, unknown>,
+  name: string,
+): Record<string, unknown> {
+  const value = args[name];
+  if (typeof value !== "object" || value === null || Array.isArray(value)) {
+    throw new ValidationError(`"${name}" is required and must be an object`);
+  }
+  return value as Record<string, unknown>;
+}

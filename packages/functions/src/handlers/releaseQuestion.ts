@@ -1,17 +1,10 @@
 import { requiredInt, requiredString } from "../lib/args.js";
-import { updateItem } from "../lib/db.js";
+import { isConditionFailure, updateItem } from "../lib/db.js";
 import { ConflictError, NotFoundError } from "../lib/errors.js";
 import { loadGameState, snapshot } from "../lib/gameState.js";
 import { assertGm } from "../lib/gmAuth.js";
 import * as keys from "../lib/keys.js";
 import { gameUpdate, type GameUpdate } from "../lib/views.js";
-
-/** DynamoDB's name for a failed ConditionExpression on a single-item write. */
-const CONDITION_FAILED = "ConditionalCheckFailedException";
-
-function isConditionFailure(error: unknown): boolean {
-  return error instanceof Error && error.name === CONDITION_FAILED;
-}
 
 /**
  * Unveil the next question in the active round.

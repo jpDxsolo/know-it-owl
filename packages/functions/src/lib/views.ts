@@ -61,6 +61,8 @@ export type GameEvent =
   | "TEAM_RENAMED"
   | "ROUND_STARTED"
   | "QUESTION_RELEASED"
+  | "DOUBLE_CHOSEN"
+  | "ANSWERS_SUBMITTED"
   | "ROUND_REVEALED";
 
 export interface GameUpdate {
