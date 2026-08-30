@@ -1,0 +1,242 @@
+/*
+ * Marking a round.
+ *
+ * Desktop-shaped first, like the round builder and for the same reason: a grid
+ * of every team's answers against the key only makes sense with width. On a
+ * phone it folds into one column — the host can still mark from a phone, just
+ * more slowly, and that is the honest trade.
+ */
+
+.kio-grading__head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--kio-space-2);
+}
+
+.kio-grading__title {
+  font-size: 1.5rem;
+}
+
+.kio-grading__progress {
+  width: 100%;
+  height: 0.375rem;
+  appearance: none;
+  border: none;
+  border-radius: var(--kio-radius-pill);
+  background-color: var(--kio-navy-surface);
+  overflow: hidden;
+}
+
+.kio-grading__progress::-webkit-progress-bar {
+  background-color: var(--kio-navy-surface);
+}
+
+.kio-grading__progress::-webkit-progress-value {
+  background-color: var(--kio-gold);
+}
+
+.kio-grading__progress::-moz-progress-bar {
+  background-color: var(--kio-gold);
+}
+
+.kio-grading__questions,
+.kio-marking__teams,
+.kio-marking__slots {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.kio-grading__questions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--kio-space-4);
+}
+
+.kio-marking {
+  display: flex;
+  flex-direction: column;
+  gap: var(--kio-space-4);
+}
+
+.kio-marking__head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--kio-space-1);
+}
+
+.kio-marking__prompt {
+  margin: 0;
+  font-size: 1.125rem;
+  line-height: 1.4;
+}
+
+/* The key sits beside every answer being judged against it. */
+.kio-marking__key {
+  display: flex;
+  align-items: baseline;
+  gap: var(--kio-space-2);
+  margin: 0;
+  color: var(--kio-green);
+  font-weight: 600;
+}
+
+.kio-marking__key .kio-label {
+  margin: 0;
+}
+
+.kio-marking__teams {
+  display: flex;
+  flex-direction: column;
+  gap: var(--kio-space-3);
+}
+
+.kio-marking__team {
+  display: flex;
+  flex-direction: column;
+  gap: var(--kio-space-2);
+  padding: var(--kio-space-3);
+  background-color: var(--kio-navy-ground);
+  border: 1px solid var(--kio-hairline);
+  border-radius: var(--kio-radius);
+}
+
+/*
+ * A doubled team is the one thing on this screen the host cannot afford to
+ * skim past: nothing is multiplied for them, so the doubling only happens if
+ * they type it. Hence the whole row changes, not just a badge.
+ */
+.kio-marking__team--doubled {
+  border-color: var(--kio-amber);
+  border-width: 2px;
+}
+
+.kio-marking__who {
+  display: flex;
+  align-items: center;
+  gap: var(--kio-space-3);
+}
+
+.kio-marking__teamName {
+  font-family: var(--kio-font-headline);
+  font-weight: 700;
+}
+
+.kio-marking__doubled {
+  padding: var(--kio-space-1) var(--kio-space-3);
+  background-color: var(--kio-amber);
+  border-radius: var(--kio-radius-pill);
+  color: var(--kio-gold-ink);
+  font-family: var(--kio-font-headline);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+.kio-marking__doubledNote {
+  margin: 0;
+  color: var(--kio-amber);
+  font-size: 0.8125rem;
+}
+
+.kio-marking__answer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--kio-space-2);
+}
+
+/* What the team actually wrote, which is the thing being read. */
+.kio-marking__said {
+  margin: 0;
+  font-size: 1.125rem;
+  color: var(--kio-cream);
+  overflow-wrap: anywhere;
+}
+
+.kio-marking__quick {
+  display: flex;
+  align-items: center;
+  gap: var(--kio-space-2);
+}
+
+.kio-marking__points {
+  width: 5rem;
+  flex: none;
+  text-align: center;
+}
+
+.kio-marking__slots {
+  display: flex;
+  flex-direction: column;
+  gap: var(--kio-space-2);
+}
+
+.kio-marking__slot {
+  display: grid;
+  grid-template-columns: 1.75rem 1fr 5rem;
+  align-items: center;
+  gap: var(--kio-space-3);
+}
+
+.kio-marking__slotNumber {
+  color: var(--kio-muted);
+  font-family: var(--kio-font-headline);
+  font-size: 0.875rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.kio-grading__foot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--kio-space-2);
+  text-align: center;
+}
+
+@media (min-width: 40rem) {
+  .kio-grading__title {
+    font-size: 2rem;
+  }
+
+  /* The row a host works down: who, what they said, what it is worth. */
+  .kio-marking__team {
+    display: grid;
+    grid-template-columns: 12rem 1fr;
+    align-items: start;
+    column-gap: var(--kio-space-4);
+  }
+
+  .kio-marking__who {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--kio-space-2);
+  }
+
+  .kio-marking__doubledNote {
+    grid-column: 2;
+  }
+
+  .kio-marking__answer {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--kio-space-4);
+  }
+
+  .kio-marking__slots {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: var(--kio-space-5);
+  }
+
+  .kio-grading__foot {
+    flex-direction: row-reverse;
+    justify-content: flex-start;
+    gap: var(--kio-space-4);
+  }
+
+  .kio-grading__foot .kio-button {
+    align-self: auto;
+  }
+}
