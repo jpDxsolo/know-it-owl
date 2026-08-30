@@ -28,11 +28,6 @@ export interface CreateGamePayload {
   gmToken: string;
 }
 
-export interface JoinGamePayload {
-  game: GameView;
-  player: Player;
-}
-
 /** Group players onto their teams, preserving the order each list arrives in. */
 export function assembleGame(
   game: Game,
@@ -71,6 +66,14 @@ export interface GameUpdate {
   currentRound: number | null;
   event: GameEvent;
   game: GameView;
+  /**
+   * The player the event is about, set only on PLAYER_JOINED. `joinGame` has to
+   * return a `GameUpdate` to be fanned out at all — AppSync only delivers a
+   * mutation's own return type to `@aws_subscribe` — so the seat the joiner was
+   * given rides along here instead of in a payload of its own. Nothing secret:
+   * `game.players` already carries every player to every subscriber.
+   */
+  player: Player | null;
 }
 
 /**
@@ -80,12 +83,17 @@ export interface GameUpdate {
  * included, so `game` must always be a player-view snapshot — never the GM
  * view, however privileged the caller who triggered the mutation was.
  */
-export function gameUpdate(game: GameView, event: GameEvent): GameUpdate {
+export function gameUpdate(
+  game: GameView,
+  event: GameEvent,
+  player: Player | null = null,
+): GameUpdate {
   return {
     gameId: game.id,
     status: game.status,
     currentRound: game.currentRound,
     event,
     game,
+    player,
   };
 }

@@ -91,11 +91,6 @@ type CreateGamePayload {
   gmToken: String!
 }
 
-type JoinGamePayload {
-  game: Game!
-  player: Player!
-}
-
 type UploadUrlPayload {
   uploadUrl: String!
   imageKey: String!
@@ -109,6 +104,8 @@ type GameUpdate {
   "Event hint, e.g. PLAYER_JOINED, TEAMS_SET, ROUND_STARTED, ROUND_REVEALED."
   event: String!
   game: Game!
+  "The player this event is about. Only set on PLAYER_JOINED, so the joiner can read back the seat it was given."
+  player: Player
 }
 
 input QuestionInput {
@@ -153,7 +150,7 @@ type Query {
 
 type Mutation {
   createGame: CreateGamePayload!
-  joinGame(joinCode: String!, playerId: ID!, displayName: String!): JoinGamePayload!
+  joinGame(joinCode: String!, playerId: ID!, displayName: String!): GameUpdate!
   randomizeTeams(gameId: ID!, gmToken: String!, teamCount: Int!): GameUpdate!
   setTeamName(gameId: ID!, playerId: ID!, teamId: ID!, name: String!): GameUpdate!
   createRound(gameId: ID!, gmToken: String!, category: String!, questions: [QuestionInput!]!): Round!
@@ -172,6 +169,7 @@ type Subscription {
   onGameUpdated(gameId: ID!): GameUpdate
     @aws_subscribe(
       mutations: [
+        "joinGame"
         "randomizeTeams"
         "setTeamName"
         "startRound"

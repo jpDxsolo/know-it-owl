@@ -75,6 +75,20 @@ describe("joinGame", () => {
     });
   });
 
+  it("returns a PLAYER_JOINED update so subscribers see the join", async () => {
+    stubGame();
+    const update = await joinGame(args);
+
+    // joinGame is in the onGameUpdated @aws_subscribe list, and AppSync only
+    // fans out a mutation's own return type — so this shape is the fan-out.
+    expect(update).toMatchObject({
+      gameId: "g1",
+      status: "LOBBY",
+      currentRound: null,
+      event: "PLAYER_JOINED",
+    });
+  });
+
   it("normalises the join code before looking it up", async () => {
     stubGame();
     await joinGame({ ...args, joinCode: ` ${JOIN_CODE.toLowerCase()} ` });
@@ -85,7 +99,7 @@ describe("joinGame", () => {
   it("trims the display name", async () => {
     stubGame();
     const { player } = await joinGame({ ...args, displayName: "  Ada  " });
-    expect(player.displayName).toBe("Ada");
+    expect(player?.displayName).toBe("Ada");
   });
 
   it("is idempotent for a repeated join, preserving the assigned team", async () => {
