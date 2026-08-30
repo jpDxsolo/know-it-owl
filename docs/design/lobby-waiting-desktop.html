@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Know It Owl - Lobby</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;700;800;900&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        'brand-navy-ground': '#0E1A2F',
+                        'brand-navy-surface': '#16294A',
+                        'brand-navy-raised': '#1E3765',
+                        'brand-gold': '#F5A81C',
+                        'brand-amber': '#F0821E',
+                        'brand-blue': '#2F7FE0',
+                        'brand-cream': '#F7EFE2',
+                        'brand-muted': '#9DB0CE',
+                        'brand-green': '#3FB27F',
+                        'brand-red': '#E5484D',
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                    fontFamily: {
+                        "headline": ["Public Sans", "sans-serif"],
+                        "display": ["Public Sans", "sans-serif"],
+                        "body": ["Plus Jakarta Sans", "sans-serif"],
+                        "label": ["Plus Jakarta Sans", "sans-serif"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            background-color: #0E1A2F; /* brand-navy-ground */
+            color: #F7EFE2; /* brand-cream */
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        
+        /* Join code specific styling based on rules */
+        .join-code {
+            font-family: monospace, "Public Sans", sans-serif; /* Fallback to headline if monospace isn't preferred over rules, but rules say monospace-feeling */
+            letter-spacing: 0.15em;
+        }
+    </style>
+</head>
+<body class="font-body min-h-screen flex flex-col relative pb-24">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-[#0E1A2F] border-b border-[#1E3765] flat no shadows flex items-center justify-between px-6 h-16 w-full">
+<div class="flex items-center gap-3 group hover:bg-[#16294A] transition-colors p-2 rounded-lg cursor-pointer active:scale-95 duration-100">
+<img alt="Know It Owl Logo" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida/AEtjO1VI0HLn7IsZPX6y8SuYNRpg0wPynlweBRxjITHx4C_FlqmIvHCc57Q_AC5ee6LOiqxmPxftM9BwvstuZsQitdWfH5xFh8BolVZ5WojL9iwFBTp9LQDPMoRR-aeiWkBtW3ad5njCBqloUyboHXos6_oIvi8SLgRjVHDmpz7Zp1zNlmPlAI_6wbTBBx1YixTaI7uXwzTxvVIA5GhEy0pxeL9hxJGNKSUhSXjAW3WIqZwyLRocr1J7o7H7MAI"/>
+<h1 class="font-headline font-black tracking-tight text-2xl text-[#F5A81C] tracking-tighter">Know It Owl</h1>
+</div>
+<div class="flex items-center gap-2 bg-[#16294A] px-3 py-1 rounded-full border border-[#1E3765]">
+<span class="w-2 h-2 rounded-full bg-[#3FB27F] animate-pulse"></span>
+<span class="font-label text-xs font-bold text-[#F7EFE2] uppercase tracking-wider">Live</span>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-grow pt-24 px-4 w-full max-w-[1024px] mx-auto flex flex-col">
+<!-- Hero Section: Game Code -->
+<section class="flex flex-col items-center justify-center py-12 mb-8">
+<span class="font-label text-sm font-bold text-[#9DB0CE] uppercase tracking-widest mb-2">Game Code</span>
+<div class="flex items-center gap-4 bg-[#16294A] px-8 py-4 rounded-xl border border-[#1E3765] shadow-lg relative group">
+<h2 class="font-headline font-black text-6xl md:text-7xl text-[#F5A81C] join-code uppercase">OWL842</h2>
+<button class="absolute -right-12 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity p-2 text-[#9DB0CE] hover:text-[#F7EFE2] bg-[#16294A] rounded-full hover:bg-[#1E3765]" title="Copy code">
+<span class="material-symbols-outlined text-xl">content_copy</span>
+</button>
+</div>
+<p class="text-[#9DB0CE] font-body text-sm mt-4 text-center">Tell your friends to enter this code.</p>
+</section>
+<!-- Player List Section -->
+<section class="flex flex-col flex-grow w-full">
+<div class="flex justify-between items-end mb-6 border-b border-[#1E3765] pb-2">
+<h3 class="font-headline font-bold text-2xl text-[#F7EFE2]">In the lobby</h3>
+<span class="font-label text-sm text-[#9DB0CE] font-medium">6 players</span>
+</div>
+<!-- Player Grid (Bento-ish/Glassmorphism-ish cards) -->
+<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+<!-- Player 1 (You) -->
+<div class="bg-[#16294A] p-4 rounded-xl flex items-center justify-between border-2 border-[#F5A81C] shadow-[0_0_15px_rgba(245,168,28,0.15)] relative overflow-hidden group">
+<div class="absolute inset-0 bg-gradient-to-br from-[#F5A81C]/10 to-transparent pointer-events-none"></div>
+<div class="flex items-center gap-4 relative z-10">
+<div class="w-12 h-12 rounded-full bg-[#1E3765] flex items-center justify-center font-headline font-bold text-xl text-[#F7EFE2]">
+                            A
+                        </div>
+<span class="font-body font-semibold text-lg text-[#F7EFE2]">Alex P.</span>
+</div>
+<span class="bg-[#F5A81C] text-[#0E1A2F] font-label text-xs font-bold px-2 py-1 rounded-full uppercase tracking-wider relative z-10">You</span>
+</div>
+<!-- Player 2 -->
+<div class="bg-[#16294A] p-4 rounded-xl flex items-center justify-between border border-[#1E3765] hover:border-[#F5A81C]/50 transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-[#1E3765] flex items-center justify-center font-headline font-bold text-xl text-[#F7EFE2]">
+                            S
+                        </div>
+<span class="font-body font-semibold text-lg text-[#F7EFE2]">Sarah M.</span>
+</div>
+</div>
+<!-- Player 3 -->
+<div class="bg-[#16294A] p-4 rounded-xl flex items-center justify-between border border-[#1E3765] hover:border-[#F5A81C]/50 transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-[#1E3765] flex items-center justify-center font-headline font-bold text-xl text-[#F7EFE2]">
+                            J
+                        </div>
+<span class="font-body font-semibold text-lg text-[#F7EFE2]">James D.</span>
+</div>
+</div>
+<!-- Player 4 -->
+<div class="bg-[#16294A] p-4 rounded-xl flex items-center justify-between border border-[#1E3765] hover:border-[#F5A81C]/50 transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-[#1E3765] flex items-center justify-center font-headline font-bold text-xl text-[#F7EFE2]">
+                            L
+                        </div>
+<span class="font-body font-semibold text-lg text-[#F7EFE2]">Liam K.</span>
+</div>
+</div>
+<!-- Player 5 -->
+<div class="bg-[#16294A] p-4 rounded-xl flex items-center justify-between border border-[#1E3765] hover:border-[#F5A81C]/50 transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-[#1E3765] flex items-center justify-center font-headline font-bold text-xl text-[#F7EFE2]">
+                            E
+                        </div>
+<span class="font-body font-semibold text-lg text-[#F7EFE2]">Emma W.</span>
+</div>
+</div>
+<!-- Player 6 -->
+<div class="bg-[#16294A] p-4 rounded-xl flex items-center justify-between border border-[#1E3765] hover:border-[#F5A81C]/50 transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-[#1E3765] flex items-center justify-center font-headline font-bold text-xl text-[#F7EFE2]">
+                            O
+                        </div>
+<span class="font-body font-semibold text-lg text-[#F7EFE2]">Oliver T.</span>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Host Bar (Bottom) - Contextual FAB replacement for desktop view -->
+<div class="fixed bottom-0 left-0 w-full z-40 bg-[#0E1A2F]/95 backdrop-blur-sm border-t border-[#1E3765] shadow-[0_-10px_30px_rgba(14,26,47,0.8)] py-4 px-6 md:px-12">
+<div class="max-w-[1024px] mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+<div class="flex items-center gap-4 w-full md:w-auto justify-between md:justify-start">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[#F5A81C]">campaign</span>
+<span class="font-label text-xs font-bold text-[#F5A81C] uppercase tracking-wider">Host Controls</span>
+</div>
+<div class="h-8 w-px bg-[#1E3765] hidden md:block mx-2"></div>
+<div class="flex items-center gap-3 bg-[#16294A] p-1.5 rounded-full border border-[#1E3765]">
+<span class="font-label text-sm text-[#9DB0CE] pl-3 pr-1">Teams:</span>
+<button class="w-8 h-8 rounded-full bg-[#1E3765] flex items-center justify-center text-[#F7EFE2] hover:bg-[#F5A81C] hover:text-[#0E1A2F] transition-colors">
+<span class="material-symbols-outlined text-sm">remove</span>
+</button>
+<span class="font-headline font-bold text-xl w-6 text-center text-[#F7EFE2]">2</span>
+<button class="w-8 h-8 rounded-full bg-[#1E3765] flex items-center justify-center text-[#F7EFE2] hover:bg-[#F5A81C] hover:text-[#0E1A2F] transition-colors">
+<span class="material-symbols-outlined text-sm">add</span>
+</button>
+</div>
+</div>
+<button class="w-full md:w-auto bg-[#F5A81C] hover:bg-[#F0821E] text-[#0E1A2F] font-headline font-black text-lg py-3 px-8 rounded-full transition-all active:scale-95 shadow-[0_0_20px_rgba(245,168,28,0.3)] hover:shadow-[0_0_25px_rgba(245,168,28,0.5)]">
+                Draw the teams
+            </button>
+</div>
+</div>
+</body></html>
