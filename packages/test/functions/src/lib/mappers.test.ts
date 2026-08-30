@@ -100,6 +100,33 @@ describe("mappers", () => {
     });
   });
 
+  it("throws ValidationError when an attribute has the wrong type", () => {
+    expect(() => toTeam({ ...keys.team("g1", "t1"), name: "Owls", score: "7" })).toThrow(
+      ValidationError,
+    );
+    expect(() =>
+      toGame({ ...gameMeta, status: "NOT_A_STATUS" as unknown as GameMetaItem["status"] }),
+    ).toThrow(/invalid "status"/);
+    expect(() =>
+      toTeamResponse({
+        ...keys.response("g1", 1, 1, "t1"),
+        answers: ["a", 2],
+        doubled: false,
+        graded: false,
+        gradedPoints: null,
+      }),
+    ).toThrow(/invalid "answers"/);
+  });
+
+  it("throws ValidationError when a required attribute is missing", () => {
+    expect(() => toPlayer({ ...keys.player("g1", "p1") })).toThrow(/invalid "displayName"/);
+  });
+
+  it("treats a missing nullable attribute as null", () => {
+    expect(toTeam({ ...keys.team("g1", "t1"), name: "Owls", score: 0 }).doubleUsedRound).toBeNull();
+    expect(toPlayer({ ...keys.player("g1", "p1"), displayName: "Ada" }).teamId).toBeNull();
+  });
+
   it("throws ValidationError on a sort key of the wrong kind", () => {
     const wrong = { ...keys.team("g1", "t1"), displayName: "Ada", teamId: null };
     expect(() => toPlayer(wrong)).toThrow(ValidationError);
@@ -115,11 +142,7 @@ describe("mappers", () => {
       { ...keys.player("g1", "p2"), displayName: "Bo", teamId: null },
       { ...keys.team("g1", "t1"), name: "Owls", score: 0, doubleUsedRound: null },
     ];
-    const players = mapItems<PlayerItem, ReturnType<typeof toPlayer>>(
-      items,
-      keys.prefixes.players(),
-      toPlayer,
-    );
+    const players = mapItems(items, keys.prefixes.players(), toPlayer);
     expect(players.map((p) => p.id)).toEqual(["p1", "p2"]);
   });
 });

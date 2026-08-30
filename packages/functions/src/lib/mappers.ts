@@ -12,7 +12,11 @@ import type {
 import type { Item } from "./db.js";
 import { ValidationError } from "./errors.js";
 
-/** Stored shapes, exactly as written to the single table. */
+/**
+ * Stored shapes, exactly as written to the single table. Handlers use these when
+ * building items to write; the mappers below re-validate on the way back out,
+ * because what DynamoDB returns is only ever `unknown` in practice.
+ */
 export interface GameMetaItem extends Item {
   status: GameStatus;
   gmTokenHash: string;
@@ -56,12 +60,91 @@ export interface ResponseItem extends Item {
   gradedPoints: number[] | null;
 }
 
-/** Pull the id out of a sort key such as `PLAYER#<id>`, failing loudly on a malformed key. */
-function suffixAfter(sk: string, prefix: string): string {
-  if (!sk.startsWith(prefix)) {
-    throw new ValidationError(`Unexpected sort key "${sk}" (expected prefix "${prefix}")`);
+const GAME_STATUSES: readonly GameStatus[] = [
+  "LOBBY",
+  "TEAMS_SET",
+  "ROUND_ACTIVE",
+  "GRADING",
+  "REVEAL",
+  "FINISHED",
+];
+const ROUND_STATUSES: readonly RoundStatus[] = ["DRAFT", "ACTIVE", "GRADING", "REVEALED"];
+const QUESTION_TYPES: readonly QuestionType[] = ["TEXT", "PICTURE_10"];
+
+/* ---------- attribute readers: narrow `unknown` or throw ---------- */
+
+function invalid(item: Item, field: string, expected: string): never {
+  throw new ValidationError(
+    `Item ${item.pk}/${item.sk} has an invalid "${field}" (expected ${expected})`,
+  );
+}
+
+function str(item: Item, field: string): string {
+  const value = item[field];
+  return typeof value === "string" ? value : invalid(item, field, "a string");
+}
+
+function optStr(item: Item, field: string): string | undefined {
+  const value = item[field];
+  if (value === undefined || value === null) return undefined;
+  return typeof value === "string" ? value : invalid(item, field, "a string");
+}
+
+function num(item: Item, field: string): number {
+  const value = item[field];
+  return typeof value === "number" && Number.isFinite(value)
+    ? value
+    : invalid(item, field, "a number");
+}
+
+function nullableNum(item: Item, field: string): number | null {
+  const value = item[field];
+  if (value === undefined || value === null) return null;
+  return typeof value === "number" && Number.isFinite(value)
+    ? value
+    : invalid(item, field, "a number or null");
+}
+
+function nullableStr(item: Item, field: string): string | null {
+  const value = item[field];
+  if (value === undefined || value === null) return null;
+  return typeof value === "string" ? value : invalid(item, field, "a string or null");
+}
+
+function bool(item: Item, field: string): boolean {
+  const value = item[field];
+  return typeof value === "boolean" ? value : invalid(item, field, "a boolean");
+}
+
+function strList(item: Item, field: string): string[] {
+  const value = item[field];
+  return Array.isArray(value) && value.every((entry) => typeof entry === "string")
+    ? [...value]
+    : invalid(item, field, "an array of strings");
+}
+
+function nullableNumList(item: Item, field: string): number[] | null {
+  const value = item[field];
+  if (value === undefined || value === null) return null;
+  return Array.isArray(value) && value.every((entry) => typeof entry === "number")
+    ? [...value]
+    : invalid(item, field, "an array of numbers or null");
+}
+
+function oneOf<T extends string>(item: Item, field: string, allowed: readonly T[]): T {
+  const value = item[field];
+  const match = allowed.find((candidate) => candidate === value);
+  return match ?? invalid(item, field, `one of ${allowed.join(", ")}`);
+}
+
+/* ---------- sort-key parsing ---------- */
+
+/** Pull the id out of a key such as `PLAYER#<id>`, failing loudly on a malformed key. */
+function suffixAfter(key: string, prefix: string): string {
+  if (!key.startsWith(prefix)) {
+    throw new ValidationError(`Unexpected key "${key}" (expected prefix "${prefix}")`);
   }
-  return sk.slice(prefix.length);
+  return key.slice(prefix.length);
 }
 
 function numberFrom(value: string, sk: string): number {
@@ -77,57 +160,61 @@ export function gameIdFromPk(pk: string): string {
   return suffixAfter(pk, "GAME#");
 }
 
-export function toGame(item: GameMetaItem): Game {
+/* ---------- item → domain type ---------- */
+
+export function toGame(item: Item): Game {
   return {
     id: gameIdFromPk(item.pk),
-    joinCode: item.joinCode,
-    status: item.status,
-    currentRound: item.currentRound,
+    joinCode: str(item, "joinCode"),
+    status: oneOf(item, "status", GAME_STATUSES),
+    currentRound: nullableNum(item, "currentRound"),
   };
 }
 
-export function toPlayer(item: PlayerItem): Player {
+export function toPlayer(item: Item): Player {
   return {
     id: suffixAfter(item.sk, "PLAYER#"),
-    displayName: item.displayName,
-    teamId: item.teamId,
+    displayName: str(item, "displayName"),
+    teamId: nullableStr(item, "teamId"),
   };
 }
 
-export function toTeam(item: TeamItem): Team {
+export function toTeam(item: Item): Team {
   return {
     id: suffixAfter(item.sk, "TEAM#"),
-    name: item.name,
-    score: item.score,
-    doubleUsedRound: item.doubleUsedRound,
+    name: str(item, "name"),
+    score: num(item, "score"),
+    doubleUsedRound: nullableNum(item, "doubleUsedRound"),
   };
 }
 
-export function toRound(item: RoundItem): Round {
+export function toRound(item: Item): Round {
   return {
     number: numberFrom(suffixAfter(item.sk, "ROUND#"), item.sk),
-    category: item.category,
-    status: item.status,
+    category: str(item, "category"),
+    status: oneOf(item, "status", ROUND_STATUSES),
   };
 }
 
-export function toQuestion(item: QuestionItem): Question {
+export function toQuestion(item: Item): Question {
   const [roundPart, questionPart] = suffixAfter(item.sk, "ROUND#").split("#Q#");
   if (questionPart === undefined) {
     throw new ValidationError(`Unexpected question sort key "${item.sk}"`);
   }
+  const text = optStr(item, "text");
+  const imageKey = optStr(item, "imageKey");
   return {
     roundNumber: numberFrom(roundPart, item.sk),
     number: numberFrom(questionPart, item.sk),
-    type: item.type,
-    ...(item.text !== undefined ? { text: item.text } : {}),
-    ...(item.imageKey !== undefined ? { imageKey: item.imageKey } : {}),
-    correctAnswers: item.correctAnswers,
-    defaultPoints: item.defaultPoints,
+    type: oneOf(item, "type", QUESTION_TYPES),
+    ...(text !== undefined ? { text } : {}),
+    ...(imageKey !== undefined ? { imageKey } : {}),
+    correctAnswers: strList(item, "correctAnswers"),
+    defaultPoints: num(item, "defaultPoints"),
   };
 }
 
-export function toTeamResponse(item: ResponseItem): TeamResponse {
+export function toTeamResponse(item: Item): TeamResponse {
   const [roundPart, questionPart, teamPart] = suffixAfter(item.sk, "RESP#").split("#");
   if (roundPart === undefined || questionPart === undefined || teamPart !== "TEAM") {
     throw new ValidationError(`Unexpected response sort key "${item.sk}"`);
@@ -136,18 +223,18 @@ export function toTeamResponse(item: ResponseItem): TeamResponse {
     roundNumber: numberFrom(roundPart, item.sk),
     questionNumber: numberFrom(questionPart, item.sk),
     teamId: suffixAfter(item.sk, `RESP#${roundPart}#${questionPart}#TEAM#`),
-    answers: item.answers,
-    doubled: item.doubled,
-    graded: item.graded,
-    gradedPoints: item.gradedPoints,
+    answers: strList(item, "answers"),
+    doubled: bool(item, "doubled"),
+    graded: bool(item, "graded"),
+    gradedPoints: nullableNumList(item, "gradedPoints"),
   };
 }
 
-/** Map every item in a query result, skipping items that are not of the wanted kind. */
-export function mapItems<I extends Item, T>(
-  items: Item[],
-  prefix: string,
-  map: (item: I) => T,
-): T[] {
-  return items.filter((item) => item.sk.startsWith(prefix)).map((item) => map(item as I));
+/**
+ * Map every item in a query result that is of the wanted kind, ignoring the
+ * rest — a game partition query returns players, teams, rounds and responses
+ * together. The mapper validates each item it is handed, so no cast is needed.
+ */
+export function mapItems<T>(items: Item[], prefix: string, map: (item: Item) => T): T[] {
+  return items.filter((item) => item.sk.startsWith(prefix)).map(map);
 }
