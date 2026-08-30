@@ -7,12 +7,13 @@
 import { useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { Logo } from "../components/Logo";
-import { ApiError, execute, JoinGameMutation } from "../services/api";
+import { ApiError, CreateGameMutation, execute, JoinGameMutation } from "../services/api";
 import {
   displayName as storedName,
   lastGame,
   playerId,
   setDisplayName,
+  setGmToken,
   setLastGame,
 } from "../services/identity";
 import "./Join.css";
@@ -79,6 +80,32 @@ export function Join() {
       // A taken name and a bad code are both CONFLICT-ish to the server but
       // very different to the player: mark the field they can actually fix.
       setErrorField(failure.code === "CONFLICT" ? "name" : "joinCode");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  /**
+   * Start a game as its host.
+   *
+   *  hands back the GM token exactly once and the server keeps only
+   * a hash of it, so it is written to storage before anything else can go wrong
+   * — including before navigating. The dashboard says so out loud on arrival.
+   */
+  async function host(): Promise<void> {
+    setBusy(true);
+    setError(undefined);
+    setErrorField(undefined);
+    try {
+      const data = await execute(CreateGameMutation);
+      const created = data.createGame;
+      setGmToken(created.game.id, created.gmToken);
+      navigate(`/game/${created.game.id}/gm`, { state: { justCreated: true } });
+    } catch (cause) {
+      const failure =
+        cause instanceof ApiError ? cause : new ApiError(String(cause), "UNKNOWN");
+      setError(messageFor(failure));
+      setErrorField("joinCode");
     } finally {
       setBusy(false);
     }
@@ -164,6 +191,15 @@ export function Join() {
       </form>
 
       <p className="kio-join__footer kio-muted">Don't have a code? Ask your host.</p>
+
+      {/* Quiet on purpose. Nearly everyone arriving here is a player; the one
+          person hosting knows they are hosting. */}
+      <p className="kio-join__host">
+        Running the quiz tonight?{" "}
+        <button className="kio-join__hostLink" type="button" onClick={host} disabled={busy}>
+          Start a game
+        </button>
+      </p>
     </main>
   );
 }

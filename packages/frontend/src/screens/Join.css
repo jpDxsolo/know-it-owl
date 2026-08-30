@@ -87,3 +87,27 @@
     max-width: 26rem;
   }
 }
+
+/* The host's way in. Deliberately understated — almost everyone here is a
+   player, and the one person hosting already knows it. */
+.kio-join__host {
+  margin: 0;
+  color: var(--kio-muted);
+  font-size: 0.875rem;
+}
+
+.kio-join__hostLink {
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--kio-blue);
+  font: inherit;
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.kio-join__hostLink:disabled {
+  color: var(--kio-muted);
+  cursor: not-allowed;
+}
