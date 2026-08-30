@@ -3,6 +3,9 @@
 How to deploy a stage and prove the whole game works on it — including the parts
 unit tests cannot reach: real subscription fan-out, real presigned S3 uploads.
 
+For poking at the API by hand instead — Postman, curl, the AppSync console, and
+a list of things worth trying — see [manual-testing.md](./manual-testing.md).
+
 ## 1. Deploy
 
 ```sh
