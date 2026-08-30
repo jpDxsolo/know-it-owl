@@ -29,7 +29,7 @@ export async function createGame(): Promise<CreateGamePayload> {
   const gmTokenHash = hashGmToken(gmToken);
   const createdAt = new Date().toISOString();
 
-  for (let attempt = 1; attempt <= MAX_JOIN_CODE_ATTEMPTS; attempt += 1) {
+  for (let attempt = 1; ; attempt += 1) {
     const code = newJoinCode();
     const meta: GameMetaItem = {
       ...keys.gameMeta(gameId),
@@ -47,15 +47,16 @@ export async function createGame(): Promise<CreateGamePayload> {
         { Put: { TableName: tableName(), Item: meta, ConditionExpression: IF_ABSENT } },
       ]);
     } catch (error) {
-      if (isTransactionCancelled(error) && attempt < MAX_JOIN_CODE_ATTEMPTS) continue;
-      throw error;
+      if (!isTransactionCancelled(error)) throw error;
+      if (attempt >= MAX_JOIN_CODE_ATTEMPTS) {
+        throw new ConflictError(
+          `Could not allocate a free join code after ${MAX_JOIN_CODE_ATTEMPTS} attempts`,
+        );
+      }
+      continue;
     }
 
     // toGame drops gmTokenHash, so the payload carries the raw token and nothing else.
     return { game: { ...toGame(meta), players: [], teams: [] }, gmToken };
   }
-
-  throw new ConflictError(
-    `Could not allocate a free join code after ${MAX_JOIN_CODE_ATTEMPTS} attempts`,
-  );
 }
