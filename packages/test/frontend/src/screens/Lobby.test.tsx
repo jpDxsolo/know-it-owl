@@ -208,7 +208,14 @@ describe("once the teams are drawn", () => {
     serve({
       ...drawn(),
       rounds: [
-        { number: 1, category: "Capitals", status: "DRAFT", releasedCount: 0, questions: [] },
+        {
+          number: 1,
+          category: "Capitals",
+          status: "DRAFT",
+          releasedCount: 0,
+          questionCount: 0,
+          questions: [],
+        },
       ],
     });
     renderLobby();

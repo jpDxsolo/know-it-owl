@@ -29,6 +29,8 @@ export interface Team {
   score: number;
   /** Round number the team used its double on; null until used. */
   doubleUsedRound: number | null;
+  /** Most recent round this team handed in for; null until they submit one. */
+  lastSubmittedRound: number | null;
 }
 
 export interface Round {

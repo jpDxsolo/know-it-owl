@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>Team round — text question (mobile) | Know It Owl</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=Public+Sans:wght@700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        navy: {
+                            ground: '#0E1A2F',
+                            surface: '#16294A',
+                            raised: '#1E3765'
+                        },
+                        gold: '#F5A81C',
+                        amber: '#F0821E',
+                        brandBlue: '#2F7FE0',
+                        cream: '#F7EFE2',
+                        muted: '#9DB0CE',
+                        green: '#3FB27F',
+                        red: '#E5484D'
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                    fontFamily: {
+                        "headline": ["Public Sans", "sans-serif"],
+                        "display": ["Public Sans", "sans-serif"],
+                        "body": ["Plus Jakarta Sans", "sans-serif"],
+                        "label": ["Plus Jakarta Sans", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        /* Hide scrollbar for cleaner look on mobile */
+        ::-webkit-scrollbar {
+            display: none;
+        }
+        body {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+        .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+        .pt-safe { padding-top: env(safe-area-inset-top); }
+    </style>
+</head>
+<body class="bg-navy-ground text-cream font-body antialiased min-h-screen flex flex-col pt-safe overflow-x-hidden">
+<!-- TopAppBar (Semantic Shell mapping based on TopAppBar JSON, overridden per prompt logic for linear task) -->
+<!-- Note: TopAppBar nav buttons hidden as this is a focused task, but brand/status remains -->
+<header class="fixed top-0 w-full z-50 bg-navy-ground border-b border-navy-raised flex justify-between items-center px-4 h-16 pt-safe">
+<div class="flex items-center gap-2 h-full">
+<img alt="Know It Owl Logo" class="h-10 w-10 object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1VI0HLn7IsZPX6y8SuYNRpg0wPynlweBRxjITHx4C_FlqmIvHCc57Q_AC5ee6LOiqxmPxftM9BwvstuZsQitdWfH5xFh8BolVZ5WojL9iwFBTp9LQDPMoRR-aeiWkBtW3ad5njCBqloUyboHXos6_oIvi8SLgRjVHDmpz7Zp1zNlmPlAI_6wbTBBx1YixTaI7uXwzTxvVIA5GhEy0pxeL9hxJGNKSUhSXjAW3WIqZwyLRocr1J7o7H7MAI"/>
+</div>
+<div class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-navy-surface border border-green/30">
+<div class="w-2 h-2 rounded-full bg-green animate-pulse"></div>
+<span class="text-green font-label text-xs font-bold tracking-wide uppercase">Live</span>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 flex flex-col px-4 pt-20 pb-32 gap-6 max-w-md mx-auto w-full">
+<!-- Context Panel (Collapsed) -->
+<button class="w-full flex items-center justify-between bg-navy-surface px-4 py-3 rounded-[12px] active:scale-[0.98] transition-transform text-left">
+<div class="flex flex-col">
+<span class="text-gold font-bold text-lg font-headline">The Night Owls</span>
+<span class="text-muted text-sm font-label">3 players · 2nd of 4 · 24 pts</span>
+</div>
+<span class="material-symbols-outlined text-muted" style="font-variation-settings: 'FILL' 0;">expand_more</span>
+</button>
+<!-- Round Info -->
+<div class="flex flex-col gap-1 text-center mt-2">
+<span class="text-muted font-label text-xs uppercase tracking-widest font-semibold">ROUND 2</span>
+<h1 class="text-cream font-headline font-black text-2xl tracking-tight">Capitals &amp; flags</h1>
+</div>
+<!-- Question Pager -->
+<div class="flex flex-col gap-4 mt-2">
+<!-- Navigation Row -->
+<div class="flex items-center justify-between px-2">
+<button aria-label="Previous question" class="w-11 h-11 rounded-full bg-navy-surface flex items-center justify-center text-cream hover:bg-navy-raised active:bg-navy-raised transition-colors focus:outline-none focus:ring-2 focus:ring-gold">
+<span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 0;">arrow_back</span>
+</button>
+<span class="text-cream font-semibold text-base font-body tracking-wide">Question 3 of 5</span>
+<button aria-label="Next question disabled" class="w-11 h-11 rounded-full bg-navy-ground border border-navy-raised flex items-center justify-center text-navy-raised cursor-not-allowed" disabled="">
+<span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 0;">arrow_forward</span>
+</button>
+</div>
+<!-- Progress Indicator -->
+<div class="flex items-center gap-1.5 h-1.5 px-4 w-full">
+<div class="flex-1 h-full rounded-full bg-green"></div>
+<div class="flex-1 h-full rounded-full bg-green"></div>
+<div class="flex-1 h-full rounded-full bg-navy-ground border-2 border-gold -my-0.5"></div>
+<div class="flex-1 h-full rounded-full bg-navy-surface"></div>
+<div class="flex-1 h-full rounded-full bg-navy-surface flex items-center justify-center overflow-visible relative">
+<span class="material-symbols-outlined text-navy-raised absolute text-[10px]" style="font-variation-settings: 'FILL' 1;">lock</span>
+</div>
+</div>
+</div>
+<!-- Question Card -->
+<div class="bg-navy-surface rounded-[12px] p-5 flex flex-col gap-4 border border-navy-raised/50 shadow-lg">
+<div class="flex flex-col gap-2">
+<p class="text-cream font-medium text-xl leading-snug">Which city is the capital of Australia?</p>
+<span class="text-muted text-sm">Worth 2 points</span>
+</div>
+<div class="flex flex-col gap-2 mt-2">
+<textarea aria-label="Answer input" class="w-full bg-navy-ground text-cream border-2 border-navy-raised rounded-[12px] p-4 min-h-[88px] font-body text-lg focus:border-gold focus:ring-0 resize-none transition-colors" placeholder="Type your answer here...">Canberra</textarea>
+<div class="flex items-center gap-1.5 text-muted justify-end">
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">cloud_done</span>
+<span class="text-xs font-medium">Saved on this device</span>
+</div>
+</div>
+</div>
+<!-- Double Toggle Card -->
+<div class="bg-navy-surface rounded-[12px] p-4 flex items-center justify-between border-2 border-amber/30">
+<div class="flex flex-col gap-1 pr-4">
+<span class="text-amber font-bold text-base">Double this round</span>
+<span class="text-muted text-xs leading-relaxed">Twice the points. One round per game — you have not used yours yet.</span>
+</div>
+<!-- Custom Toggle -->
+<button aria-checked="false" aria-label="Toggle double points" class="relative inline-flex h-7 w-12 shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-navy-ground transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-amber focus:ring-offset-2 focus:ring-offset-navy-surface" role="switch" type="button">
+<span aria-hidden="true" class="pointer-events-none inline-block h-6 w-6 translate-x-0 rounded-full bg-muted shadow transform ring-0 transition duration-200 ease-in-out"></span>
+</button>
+</div>
+</main>
+<!-- Bottom Action Area -->
+<div class="fixed bottom-0 left-0 w-full bg-navy-ground pb-safe border-t border-navy-raised/50 px-4 pt-4 pb-6 z-40 shadow-[0_-8px_20px_rgba(14,26,47,0.8)] flex flex-col gap-3">
+<button class="w-full h-14 rounded-full bg-navy-surface text-muted font-headline font-bold text-lg flex items-center justify-center cursor-not-allowed border border-navy-raised" disabled="">
+            Submit answers
+        </button>
+<p class="text-center text-muted text-xs">Your host has released 3 of 5 questions.</p>
+</div>
+</body></html>

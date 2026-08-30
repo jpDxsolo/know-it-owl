@@ -155,6 +155,15 @@ describe("visibleRound release gating", () => {
     const round = { number: 2, category: "Music", status: "ACTIVE" as const, releasedCount: 1 };
     expect(visibleRound(round, questions, "GM")?.questions.map((q) => q.number)).toEqual([1, 2]);
   });
+
+  it("still tells a player how many questions the round holds", () => {
+    // The count is what unlocks a team's submit button; without it a player
+    // could not tell a half-released round from a finished one.
+    const round = { number: 2, category: "Music", status: "ACTIVE" as const, releasedCount: 1 };
+    const result = visibleRound(round, questions, "PLAYER");
+    expect(result?.questionCount).toBe(2);
+    expect(result?.questions).toHaveLength(1);
+  });
 });
 
 describe("withoutAnswerKeys", () => {

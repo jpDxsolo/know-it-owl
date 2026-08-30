@@ -27,6 +27,16 @@ export interface VisibleQuestion {
 }
 
 export interface VisibleRound extends Round {
+  /**
+   * How many questions the round was authored with, whether or not this viewer
+   * may see them yet.
+   *
+   * `questions` below is the released subset for a player, so its length says
+   * nothing about how much of the round is left. A team needs the total to know
+   * the host has finished releasing — it is the only thing that unlocks their
+   * submit button — and a bare count gives away no question and no answer.
+   */
+  questionCount: number;
   questions: VisibleQuestion[];
 }
 
@@ -93,9 +103,11 @@ export function visibleQuestion(
  * API carries a `correctAnswers` array.
  */
 export function withoutAnswerKeys(round: Round, questions: Question[]): VisibleRound {
+  const authored = questionsOf(round, questions);
   return {
     ...round,
-    questions: questionsOf(round, questions).map((question) => withKey(question, false)),
+    questionCount: authored.length,
+    questions: authored.map((question) => withKey(question, false)),
   };
 }
 
@@ -109,9 +121,11 @@ export function visibleRound(
   role: ViewerRole,
 ): VisibleRound | undefined {
   if (!isRoundVisible(round.status, role)) return undefined;
+  const authored = questionsOf(round, questions);
   return {
     ...round,
-    questions: questionsOf(round, questions)
+    questionCount: authored.length,
+    questions: authored
       .filter((question) => isQuestionReleased(round, question.number, role))
       .map((question) => visibleQuestion(question, round.status, role)),
   };

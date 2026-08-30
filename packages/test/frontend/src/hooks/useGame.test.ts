@@ -46,6 +46,7 @@ const PLAYER_ROUNDS: Game["rounds"] = [
     category: "Capitals",
     status: "ACTIVE",
     releasedCount: 1,
+    questionCount: 3,
     questions: [question(1)],
   },
 ];
@@ -57,6 +58,7 @@ const GM_ROUNDS: Game["rounds"] = [
     category: "Capitals",
     status: "ACTIVE",
     releasedCount: 1,
+    questionCount: 3,
     questions: [question(1), question(2), question(3)],
   },
   {
@@ -64,6 +66,7 @@ const GM_ROUNDS: Game["rounds"] = [
     category: "Secret Round",
     status: "DRAFT",
     releasedCount: 0,
+    questionCount: 1,
     questions: [question(1)],
   },
 ];

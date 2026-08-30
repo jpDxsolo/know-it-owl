@@ -47,6 +47,8 @@ type Team {
   name: String!
   score: Int!
   doubleUsedRound: Int
+  "Most recent round this team has handed in for; null until they submit one. Lets a teammate's device lock itself the moment anyone submits."
+  lastSubmittedRound: Int
   players: [Player!]!
 }
 
@@ -56,6 +58,8 @@ type Round {
   status: RoundStatus!
   "How many questions the GM has unveiled. Players never see beyond it."
   releasedCount: Int!
+  "How many questions the round holds in total. A count, never the content — it is what tells a team the host has finished releasing."
+  questionCount: Int!
   questions: [Question!]!
 }
 

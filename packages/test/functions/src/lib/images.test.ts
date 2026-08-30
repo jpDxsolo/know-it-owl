@@ -40,7 +40,14 @@ function question(number: number, imageKey?: string) {
 }
 
 function round(questions: ReturnType<typeof question>[]): VisibleRound {
-  return { number: 1, category: "Birds", status: "ACTIVE", releasedCount: 2, questions };
+  return {
+    number: 1,
+    category: "Birds",
+    status: "ACTIVE",
+    releasedCount: 2,
+    questionCount: questions.length,
+    questions,
+  };
 }
 
 beforeEach(() => {

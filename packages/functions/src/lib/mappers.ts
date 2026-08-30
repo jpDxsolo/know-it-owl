@@ -38,6 +38,7 @@ export interface TeamItem extends Item {
   name: string;
   score: number;
   doubleUsedRound: number | null;
+  lastSubmittedRound: number | null;
 }
 
 export interface RoundItem extends Item {
@@ -209,6 +210,7 @@ export function toTeam(item: Item): Team {
     name: str(item, "name"),
     score: num(item, "score"),
     doubleUsedRound: nullableNum(item, "doubleUsedRound"),
+    lastSubmittedRound: nullableNum(item, "lastSubmittedRound"),
   };
 }
 

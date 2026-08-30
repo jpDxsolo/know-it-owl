@@ -50,12 +50,14 @@ describe("mappers", () => {
       name: "Owls",
       score: 7,
       doubleUsedRound: 2,
+      lastSubmittedRound: 1,
     };
     expect(toTeam(teamItem)).toEqual({
       id: "t1",
       name: "Owls",
       score: 7,
       doubleUsedRound: 2,
+      lastSubmittedRound: 1,
     });
   });
 

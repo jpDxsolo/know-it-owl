@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Live Trivia Round - Know It Owl</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        navy: {
+                            ground: '#0E1A2F',
+                            surface: '#16294A',
+                            raised: '#1E3765'
+                        },
+                        brand: {
+                            gold: '#F5A81C',
+                            amber: '#F0821E',
+                            blue: '#2F7FE0',
+                            cream: '#F7EFE2',
+                            muted: '#9DB0CE',
+                            green: '#3FB27F',
+                            red: '#E5484D'
+                        }
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                    fontFamily: {
+                        "headline": ["Outfit", "sans-serif"],
+                        "display": ["Outfit", "sans-serif"],
+                        "body": ["Plus Jakarta Sans", "sans-serif"],
+                        "label": ["Plus Jakarta Sans", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: theme('colors.navy.ground');
+            color: theme('colors.brand.cream');
+            font-family: theme('fontFamily.body');
+        }
+        h1, h2, h3, h4, h5, h6 {
+            font-family: theme('fontFamily.headline');
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased">
+<!-- TopAppBar from JSON -->
+<header class="bg-[#0E1A2F] border-b border-[#1E3765] docked full-width top-0 flex justify-between items-center w-full px-6 py-4 z-50">
+<div class="flex items-center gap-3">
+<img alt="Know It Owl Logo" class="w-12 h-12 object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1VI0HLn7IsZPX6y8SuYNRpg0wPynlweBRxjITHx4C_FlqmIvHCc57Q_AC5ee6LOiqxmPxftM9BwvstuZsQitdWfH5xFh8BolVZ5WojL9iwFBTp9LQDPMoRR-aeiWkBtW3ad5njCBqloUyboHXos6_oIvi8SLgRjVHDmpz7Zp1zNlmPlAI_6wbTBBx1YixTaI7uXwzTxvVIA5GhEy0pxeL9hxJGNKSUhSXjAW3WIqZwyLRocr1J7o7H7MAI"/>
+<span class="text-2xl font-headline font-black uppercase tracking-tighter text-[#F5A81C]">Know It Owl</span>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2 bg-navy-surface px-4 py-2 rounded-full border border-navy-raised">
+<span class="w-2.5 h-2.5 rounded-full bg-brand-green animate-pulse"></span>
+<span class="text-sm font-bold text-brand-cream tracking-wide uppercase">Live</span>
+</div>
+</div>
+</header>
+<!-- Main Content Layout -->
+<main class="flex-grow w-full max-w-[1024px] mx-auto px-6 py-8 flex flex-col md:flex-row gap-8">
+<!-- Left Column: Team & Standings (~300px) -->
+<aside class="w-full md:w-[300px] flex-shrink-0 flex flex-col gap-6">
+<!-- Team Card -->
+<div class="bg-navy-surface rounded-xl p-6 border border-navy-raised shadow-lg">
+<h3 class="text-xs font-bold text-brand-muted tracking-wider uppercase mb-2">Your Team</h3>
+<h2 class="text-2xl font-headline font-black text-brand-gold tracking-tight mb-4">The Night Owls</h2>
+<div class="flex flex-wrap gap-2">
+<div class="flex items-center gap-2 bg-navy-raised rounded-full pl-1 pr-3 py-1">
+<div class="w-6 h-6 rounded-full bg-brand-blue flex items-center justify-center text-xs font-bold">A</div>
+<span class="text-sm font-medium text-brand-cream">Ada</span>
+</div>
+<div class="flex items-center gap-2 bg-navy-raised rounded-full pl-1 pr-3 py-1">
+<div class="w-6 h-6 rounded-full bg-brand-blue flex items-center justify-center text-xs font-bold">G</div>
+<span class="text-sm font-medium text-brand-cream">Grace</span>
+</div>
+<div class="flex items-center gap-2 bg-navy-raised rounded-full pl-1 pr-3 py-1">
+<div class="w-6 h-6 rounded-full bg-brand-blue flex items-center justify-center text-xs font-bold">A</div>
+<span class="text-sm font-medium text-brand-cream">Alan</span>
+</div>
+</div>
+</div>
+<!-- Standings -->
+<div class="bg-navy-surface rounded-xl p-6 border border-navy-raised shadow-lg">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-xs font-bold text-brand-muted tracking-wider uppercase">Standings</h3>
+<span class="material-symbols-outlined text-brand-muted text-sm">leaderboard</span>
+</div>
+<div class="flex flex-col gap-3">
+<!-- Row 1 -->
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<span class="text-brand-muted font-bold w-4 text-right">1</span>
+<span class="font-medium text-brand-cream">Quiz Khalifa</span>
+</div>
+<span class="text-sm font-bold text-brand-muted">31 pts</span>
+</div>
+<!-- Row 2 (Highlighted) -->
+<div class="flex items-center justify-between bg-navy-raised -mx-2 px-2 py-1.5 rounded-lg border border-brand-gold/30">
+<div class="flex items-center gap-3">
+<span class="text-brand-gold font-bold w-4 text-right">2</span>
+<span class="font-bold text-brand-gold">The Night Owls</span>
+</div>
+<span class="text-sm font-bold text-brand-gold">24 pts</span>
+</div>
+<!-- Row 3 -->
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<span class="text-brand-muted font-bold w-4 text-right">3</span>
+<span class="font-medium text-brand-cream">Bears</span>
+</div>
+<span class="text-sm font-bold text-brand-muted">19 pts</span>
+</div>
+<!-- Row 4 -->
+<div class="flex items-center justify-between opacity-70">
+<div class="flex items-center gap-3">
+<span class="text-brand-muted font-bold w-4 text-right">4</span>
+<span class="font-medium text-brand-cream truncate max-w-[120px]">Trivia Newton-John</span>
+</div>
+<span class="text-sm font-bold text-brand-muted">12 pts</span>
+</div>
+</div>
+</div>
+</aside>
+<!-- Right Column: Question Area -->
+<section class="flex-1 flex flex-col gap-6">
+<!-- Round Header -->
+<div class="flex items-baseline gap-4 mb-2">
+<h1 class="text-3xl font-headline font-black text-brand-cream tracking-tight">ROUND 2</h1>
+<span class="text-xl font-medium text-brand-muted">Capitals &amp; flags</span>
+</div>
+<!-- Pager Row -->
+<div class="flex items-center justify-between bg-navy-surface rounded-xl p-3 border border-navy-raised">
+<button class="p-2 text-brand-blue hover:bg-navy-raised rounded-full transition-colors">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<div class="flex flex-col items-center">
+<span class="text-sm font-bold text-brand-cream mb-2">Question 3 of 5</span>
+<div class="flex items-center gap-1.5">
+<!-- Q1 Ticked -->
+<div class="w-8 h-8 rounded-full bg-brand-green/20 border border-brand-green flex items-center justify-center">
+<span class="material-symbols-outlined text-brand-green text-sm" style="font-variation-settings: 'FILL' 1;">check</span>
+</div>
+<div class="w-4 h-0.5 bg-navy-raised"></div>
+<!-- Q2 Ticked -->
+<div class="w-8 h-8 rounded-full bg-brand-green/20 border border-brand-green flex items-center justify-center">
+<span class="material-symbols-outlined text-brand-green text-sm" style="font-variation-settings: 'FILL' 1;">check</span>
+</div>
+<div class="w-4 h-0.5 bg-brand-gold"></div>
+<!-- Q3 Current -->
+<div class="w-8 h-8 rounded-full bg-brand-gold flex items-center justify-center shadow-[0_0_12px_rgba(245,168,28,0.4)]">
+<span class="text-navy-ground font-bold text-sm">3</span>
+</div>
+<div class="w-4 h-0.5 bg-navy-raised"></div>
+<!-- Q4 Locked -->
+<div class="w-8 h-8 rounded-full bg-navy-ground border border-navy-raised flex items-center justify-center opacity-50">
+<span class="material-symbols-outlined text-brand-muted text-sm">lock</span>
+</div>
+<div class="w-4 h-0.5 bg-navy-raised"></div>
+<!-- Q5 Locked -->
+<div class="w-8 h-8 rounded-full bg-navy-ground border border-navy-raised flex items-center justify-center opacity-50">
+<span class="material-symbols-outlined text-brand-muted text-sm">lock</span>
+</div>
+</div>
+</div>
+<button class="p-2 text-brand-muted rounded-full cursor-not-allowed opacity-50">
+<span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+<!-- Main Question Area -->
+<div class="bg-navy-surface rounded-xl p-8 border border-navy-raised shadow-xl flex flex-col gap-8 relative overflow-hidden">
+<!-- Points Badge -->
+<div class="absolute top-4 right-4 bg-navy-ground border border-navy-raised px-3 py-1 rounded-full flex items-center gap-1">
+<span class="material-symbols-outlined text-brand-gold text-sm" style="font-variation-settings: 'FILL' 1;">stars</span>
+<span class="text-sm font-bold text-brand-gold">2 pts</span>
+</div>
+<h2 class="text-3xl md:text-4xl font-headline font-bold text-brand-cream leading-tight max-w-[90%] mt-4">
+                    Which city is the capital of Australia?
+                </h2>
+<div class="flex flex-col gap-2">
+<input class="w-full bg-navy-ground border-2 border-brand-green rounded-xl px-6 py-4 text-xl font-medium text-brand-cream focus:outline-none focus:border-brand-gold transition-colors" placeholder="Type your answer..." type="text" value="Canberra"/>
+<div class="flex items-center gap-2 pl-2">
+<span class="material-symbols-outlined text-brand-green text-sm">cloud_done</span>
+<span class="text-sm text-brand-muted">Saved on this device</span>
+</div>
+</div>
+</div>
+<!-- Double Card -->
+<div class="bg-navy-surface/50 rounded-xl p-5 border-2 border-brand-amber/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+<div class="flex items-start gap-4">
+<div class="w-10 h-10 rounded-full bg-brand-amber/20 flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-brand-amber" style="font-variation-settings: 'FILL' 1;">bolt</span>
+</div>
+<div>
+<h4 class="font-headline font-bold text-brand-amber text-lg">Double this round</h4>
+<p class="text-sm text-brand-muted">Twice the points. One round per game.</p>
+</div>
+</div>
+<!-- Toggle Switch -->
+<label class="relative inline-flex items-center cursor-pointer flex-shrink-0 sm:ml-auto">
+<input class="sr-only peer" type="checkbox" value=""/>
+<div class="w-14 h-8 bg-navy-ground border border-navy-raised peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-brand-muted after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-brand-amber peer-checked:border-brand-amber peer-checked:after:bg-navy-ground"></div>
+</label>
+</div>
+</section>
+</main>
+<!-- Footer Actions -->
+<footer class="w-full border-t border-navy-raised bg-navy-surface/80 backdrop-blur-md sticky bottom-0 z-40">
+<div class="max-w-[1024px] mx-auto px-6 py-4 flex flex-col sm:flex-row items-center justify-end gap-4">
+<p class="text-sm font-medium text-brand-muted text-center sm:text-right">
+                Your host has released 3 of 5 questions.
+            </p>
+<button class="bg-brand-gold/30 text-navy-surface font-bold text-lg px-8 py-3 rounded-full opacity-50 cursor-not-allowed border border-brand-gold/20 flex items-center gap-2 transition-all" disabled="">
+                Submit answers
+                <span class="material-symbols-outlined">send</span>
+</button>
+</div>
+</footer>
+</body></html>

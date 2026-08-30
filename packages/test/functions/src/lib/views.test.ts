@@ -12,8 +12,8 @@ const players: Player[] = [
 ];
 
 const teams: Team[] = [
-  { id: "t1", name: "Owls", score: 3, doubleUsedRound: null },
-  { id: "t2", name: "Hawks", score: 5, doubleUsedRound: 2 },
+  { id: "t1", name: "Owls", score: 3, doubleUsedRound: null, lastSubmittedRound: null },
+  { id: "t2", name: "Hawks", score: 5, doubleUsedRound: 2, lastSubmittedRound: 2 },
 ];
 
 describe("assembleGame", () => {

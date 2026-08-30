@@ -86,6 +86,7 @@ export async function randomizeTeams(args: Record<string, unknown>): Promise<Gam
       name: defaultTeamName(index),
       score: 0,
       doubleUsedRound: null,
+      lastSubmittedRound: null,
     };
     newTeams.push(team);
     const item: TeamItem = {
@@ -93,6 +94,7 @@ export async function randomizeTeams(args: Record<string, unknown>): Promise<Gam
       name: team.name,
       score: team.score,
       doubleUsedRound: team.doubleUsedRound,
+      lastSubmittedRound: team.lastSubmittedRound,
     };
     writes.push({ Put: { TableName: table, Item: item } });
     for (const playerId of playerIds) {

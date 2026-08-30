@@ -129,12 +129,13 @@ export const GameFields = graphql(`
     status
     currentRound
     players { id displayName teamId }
-    teams { id name score doubleUsedRound players { id displayName teamId } }
+    teams { id name score doubleUsedRound lastSubmittedRound players { id displayName teamId } }
     rounds {
       number
       category
       status
       releasedCount
+      questionCount
       questions { number type text imageUrl defaultPoints correctAnswers }
     }
   }
@@ -173,7 +174,7 @@ export const GameQuery = graphql(`
 export const MyTeamQuery = graphql(`
   query MyTeam($gameId: ID!, $playerId: ID!) {
     myTeam(gameId: $gameId, playerId: $playerId) {
-      id name score doubleUsedRound players { id displayName teamId }
+      id name score doubleUsedRound lastSubmittedRound players { id displayName teamId }
     }
   }
 `);
@@ -182,13 +183,13 @@ export const RoundResultsQuery = graphql(`
   query RoundResults($gameId: ID!, $roundNumber: Int!, $gmToken: String) {
     roundResults(gameId: $gameId, roundNumber: $roundNumber, gmToken: $gmToken) {
       round {
-        number category status releasedCount
+        number category status releasedCount questionCount
         questions { number type text imageUrl defaultPoints correctAnswers }
       }
       responses {
         roundNumber questionNumber teamId answers doubled graded gradedPoints
       }
-      standings { id name score doubleUsedRound players { id displayName teamId } }
+      standings { id name score doubleUsedRound lastSubmittedRound players { id displayName teamId } }
     }
   }
 `);
@@ -196,7 +197,7 @@ export const RoundResultsQuery = graphql(`
 export const StandingsQuery = graphql(`
   query Standings($gameId: ID!) {
     standings(gameId: $gameId) {
-      id name score doubleUsedRound players { id displayName teamId }
+      id name score doubleUsedRound lastSubmittedRound players { id displayName teamId }
     }
   }
 `);
@@ -212,7 +213,7 @@ export const CreateGameMutation = graphql(`
 export const CreateRoundMutation = graphql(`
   mutation CreateRound($gameId: ID!, $gmToken: String!, $category: String!, $questions: [QuestionInput!]!) {
     createRound(gameId: $gameId, gmToken: $gmToken, category: $category, questions: $questions) {
-      number category status releasedCount
+      number category status releasedCount questionCount
       questions { number type text imageUrl defaultPoints correctAnswers }
     }
   }

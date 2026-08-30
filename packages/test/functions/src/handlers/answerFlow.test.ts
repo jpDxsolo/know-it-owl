@@ -86,6 +86,13 @@ function writes(): Record<string, unknown>[] {
     []) as Record<string, unknown>[];
 }
 
+/** The items a transaction puts, in order, ignoring the updates alongside them. */
+function putItems(): Record<string, unknown>[] {
+  return writes()
+    .filter((item) => "Put" in item)
+    .map((item) => (item as { Put: { Item: Record<string, unknown> } }).Put.Item);
+}
+
 beforeEach(() => {
   ddbMock.reset();
   process.env.TABLE_NAME = "kio-table";
@@ -186,8 +193,9 @@ describe("submitAnswers", () => {
 
     expect(ddbMock.commandCalls(TransactWriteCommand)).toHaveLength(1);
     const items = writes();
-    expect(items).toHaveLength(3);
-    const puts = items.map((item) => (item as { Put: { Item: Record<string, unknown> } }).Put.Item);
+    // Two answers, the marker, and the team's own record of having handed in.
+    expect(items).toHaveLength(4);
+    const puts = putItems();
     expect(puts.map((item) => item.sk)).toEqual([
       "RESP#1#1#TEAM#t1",
       "RESP#1#2#TEAM#t1",
@@ -199,10 +207,22 @@ describe("submitAnswers", () => {
   it("guards the marker with attribute_not_exists and the answers without it", async () => {
     stubGame();
     await submitAnswers(submitArgs());
-    const conditions = writes().map(
-      (item) => (item as { Put: { ConditionExpression?: string } }).Put.ConditionExpression,
-    );
+    const conditions = writes()
+      .filter((item) => "Put" in item)
+      .map((item) => (item as { Put: { ConditionExpression?: string } }).Put.ConditionExpression);
     expect(conditions).toEqual([undefined, undefined, "attribute_not_exists(sk)"]);
+  });
+
+  it("stamps the round on the team, so a teammate's phone knows they are in", async () => {
+    // The other member never pressed submit and may not read the round's
+    // responses, so the lock has to arrive on the team item every snapshot
+    // already carries.
+    stubGame();
+    await submitAnswers(submitArgs());
+    const update = (writes()[3] as { Update: Record<string, unknown> }).Update;
+    expect(update.Key).toEqual(keys.team("g1", "t1"));
+    expect(update.UpdateExpression).toBe("SET lastSubmittedRound = :roundNumber");
+    expect(update.ExpressionAttributeValues).toEqual({ ":roundNumber": 1 });
   });
 
   it("records who submitted and when", async () => {
@@ -262,8 +282,12 @@ describe("submitAnswers with a double", () => {
 
     const items = writes();
     expect(items).toHaveLength(4);
+    // One update for the team, not two — a transaction may not touch an item twice.
     const update = (items[3] as { Update: Record<string, unknown> }).Update;
     expect(update.Key).toEqual(keys.team("g1", "t1"));
+    expect(update.UpdateExpression).toBe(
+      "SET lastSubmittedRound = :roundNumber, doubleUsedRound = :roundNumber",
+    );
     expect(update.ConditionExpression).toBe(
       "attribute_not_exists(doubleUsedRound) OR doubleUsedRound = :unused",
     );
@@ -272,10 +296,7 @@ describe("submitAnswers with a double", () => {
   it("marks every response and the marker as doubled", async () => {
     stubGame();
     await submitAnswers(submitArgs({ double: true }));
-    const puts = writes()
-      .filter((item) => "Put" in item)
-      .map((item) => (item as { Put: { Item: Record<string, unknown> } }).Put.Item);
-    expect(puts.every((item) => item.doubled === true)).toBe(true);
+    expect(putItems().every((item) => item.doubled === true)).toBe(true);
   });
 
   it("persists no answers when the double loses its race", async () => {
@@ -302,16 +323,15 @@ describe("submitAnswers with a double", () => {
     await submitAnswers(submitArgs({ double: true }));
 
     const items = writes();
-    expect(items).toHaveLength(3);
-    expect(items.every((item) => "Put" in item)).toBe(true);
+    expect(items).toHaveLength(4);
+    // Nothing to write for the double: only the hand-in is news.
+    const update = (items[3] as { Update: Record<string, unknown> }).Update;
+    expect(update.UpdateExpression).toBe("SET lastSubmittedRound = :roundNumber");
   });
 
   it("marks answers doubled when chooseDouble ran earlier, without asking again", async () => {
     stubGame({ doubleUsedRound: 1 });
     await submitAnswers(submitArgs());
-    const puts = writes().map(
-      (item) => (item as { Put: { Item: Record<string, unknown> } }).Put.Item,
-    );
-    expect(puts.every((item) => item.doubled === true)).toBe(true);
+    expect(putItems().every((item) => item.doubled === true)).toBe(true);
   });
 });

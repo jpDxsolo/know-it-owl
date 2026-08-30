@@ -225,6 +225,8 @@ export type QuestionType =
 export type Round = {
   category: Scalars['String']['output'];
   number: Scalars['Int']['output'];
+  /** How many questions the round holds in total. A count, never the content — it is what tells a team the host has finished releasing. */
+  questionCount: Scalars['Int']['output'];
   questions: Array<Question>;
   /** How many questions the GM has unveiled. Players never see beyond it. */
   releasedCount: Scalars['Int']['output'];
@@ -264,6 +266,8 @@ export type SubscriptionOnGameUpdatedArgs = {
 export type Team = {
   doubleUsedRound?: Maybe<Scalars['Int']['output']>;
   id: Scalars['ID']['output'];
+  /** Most recent round this team has handed in for; null until they submit one. Lets a teammate's device lock itself the moment anyone submits. */
+  lastSubmittedRound?: Maybe<Scalars['Int']['output']>;
   name: Scalars['String']['output'];
   players: Array<Player>;
   score: Scalars['Int']['output'];
@@ -284,9 +288,9 @@ export type UploadUrlPayload = {
   uploadUrl: Scalars['String']['output'];
 };
 
-export type GameFieldsFragment = { id: string, joinCode: string, status: GameStatus, currentRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }>, teams: Array<{ id: string, name: string, score: number, doubleUsedRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }> }>, rounds: Array<{ number: number, category: string, status: RoundStatus, releasedCount: number, questions: Array<{ number: number, type: QuestionType, text?: string | null, imageUrl?: string | null, defaultPoints: number, correctAnswers?: Array<string> | null }> }> };
+export type GameFieldsFragment = { id: string, joinCode: string, status: GameStatus, currentRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }>, teams: Array<{ id: string, name: string, score: number, doubleUsedRound?: number | null, lastSubmittedRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }> }>, rounds: Array<{ number: number, category: string, status: RoundStatus, releasedCount: number, questionCount: number, questions: Array<{ number: number, type: QuestionType, text?: string | null, imageUrl?: string | null, defaultPoints: number, correctAnswers?: Array<string> | null }> }> };
 
-export type GameUpdateFieldsFragment = { gameId: string, status: GameStatus, currentRound?: number | null, event: string, player?: { id: string, displayName: string, teamId?: string | null } | null, game: { id: string, joinCode: string, status: GameStatus, currentRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }>, teams: Array<{ id: string, name: string, score: number, doubleUsedRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }> }>, rounds: Array<{ number: number, category: string, status: RoundStatus, releasedCount: number, questions: Array<{ number: number, type: QuestionType, text?: string | null, imageUrl?: string | null, defaultPoints: number, correctAnswers?: Array<string> | null }> }> } };
+export type GameUpdateFieldsFragment = { gameId: string, status: GameStatus, currentRound?: number | null, event: string, player?: { id: string, displayName: string, teamId?: string | null } | null, game: { id: string, joinCode: string, status: GameStatus, currentRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }>, teams: Array<{ id: string, name: string, score: number, doubleUsedRound?: number | null, lastSubmittedRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }> }>, rounds: Array<{ number: number, category: string, status: RoundStatus, releasedCount: number, questionCount: number, questions: Array<{ number: number, type: QuestionType, text?: string | null, imageUrl?: string | null, defaultPoints: number, correctAnswers?: Array<string> | null }> }> } };
 
 export type GameQueryVariables = Exact<{
   gameId: Scalars['ID']['input'];
@@ -294,7 +298,7 @@ export type GameQueryVariables = Exact<{
 }>;
 
 
-export type GameQuery = { game?: { id: string, joinCode: string, status: GameStatus, currentRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }>, teams: Array<{ id: string, name: string, score: number, doubleUsedRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }> }>, rounds: Array<{ number: number, category: string, status: RoundStatus, releasedCount: number, questions: Array<{ number: number, type: QuestionType, text?: string | null, imageUrl?: string | null, defaultPoints: number, correctAnswers?: Array<string> | null }> }> } | null };
+export type GameQuery = { game?: { id: string, joinCode: string, status: GameStatus, currentRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }>, teams: Array<{ id: string, name: string, score: number, doubleUsedRound?: number | null, lastSubmittedRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }> }>, rounds: Array<{ number: number, category: string, status: RoundStatus, releasedCount: number, questionCount: number, questions: Array<{ number: number, type: QuestionType, text?: string | null, imageUrl?: string | null, defaultPoints: number, correctAnswers?: Array<string> | null }> }> } | null };
 
 export type MyTeamQueryVariables = Exact<{
   gameId: Scalars['ID']['input'];
@@ -302,7 +306,7 @@ export type MyTeamQueryVariables = Exact<{
 }>;
 
 
-export type MyTeamQuery = { myTeam?: { id: string, name: string, score: number, doubleUsedRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }> } | null };
+export type MyTeamQuery = { myTeam?: { id: string, name: string, score: number, doubleUsedRound?: number | null, lastSubmittedRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }> } | null };
 
 export type RoundResultsQueryVariables = Exact<{
   gameId: Scalars['ID']['input'];
@@ -311,19 +315,19 @@ export type RoundResultsQueryVariables = Exact<{
 }>;
 
 
-export type RoundResultsQuery = { roundResults?: { round: { number: number, category: string, status: RoundStatus, releasedCount: number, questions: Array<{ number: number, type: QuestionType, text?: string | null, imageUrl?: string | null, defaultPoints: number, correctAnswers?: Array<string> | null }> }, responses: Array<{ roundNumber: number, questionNumber: number, teamId: string, answers: Array<string>, doubled: boolean, graded: boolean, gradedPoints?: Array<number> | null }>, standings: Array<{ id: string, name: string, score: number, doubleUsedRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }> }> } | null };
+export type RoundResultsQuery = { roundResults?: { round: { number: number, category: string, status: RoundStatus, releasedCount: number, questionCount: number, questions: Array<{ number: number, type: QuestionType, text?: string | null, imageUrl?: string | null, defaultPoints: number, correctAnswers?: Array<string> | null }> }, responses: Array<{ roundNumber: number, questionNumber: number, teamId: string, answers: Array<string>, doubled: boolean, graded: boolean, gradedPoints?: Array<number> | null }>, standings: Array<{ id: string, name: string, score: number, doubleUsedRound?: number | null, lastSubmittedRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }> }> } | null };
 
 export type StandingsQueryVariables = Exact<{
   gameId: Scalars['ID']['input'];
 }>;
 
 
-export type StandingsQuery = { standings: Array<{ id: string, name: string, score: number, doubleUsedRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }> }> };
+export type StandingsQuery = { standings: Array<{ id: string, name: string, score: number, doubleUsedRound?: number | null, lastSubmittedRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }> }> };
 
 export type CreateGameMutationVariables = Exact<{ [key: string]: never; }>;
 
 
-export type CreateGameMutation = { createGame: { gmToken: string, game: { id: string, joinCode: string, status: GameStatus, currentRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }>, teams: Array<{ id: string, name: string, score: number, doubleUsedRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }> }>, rounds: Array<{ number: number, category: string, status: RoundStatus, releasedCount: number, questions: Array<{ number: number, type: QuestionType, text?: string | null, imageUrl?: string | null, defaultPoints: number, correctAnswers?: Array<string> | null }> }> } } };
+export type CreateGameMutation = { createGame: { gmToken: string, game: { id: string, joinCode: string, status: GameStatus, currentRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }>, teams: Array<{ id: string, name: string, score: number, doubleUsedRound?: number | null, lastSubmittedRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }> }>, rounds: Array<{ number: number, category: string, status: RoundStatus, releasedCount: number, questionCount: number, questions: Array<{ number: number, type: QuestionType, text?: string | null, imageUrl?: string | null, defaultPoints: number, correctAnswers?: Array<string> | null }> }> } } };
 
 export type CreateRoundMutationVariables = Exact<{
   gameId: Scalars['ID']['input'];
@@ -333,7 +337,7 @@ export type CreateRoundMutationVariables = Exact<{
 }>;
 
 
-export type CreateRoundMutation = { createRound: { number: number, category: string, status: RoundStatus, releasedCount: number, questions: Array<{ number: number, type: QuestionType, text?: string | null, imageUrl?: string | null, defaultPoints: number, correctAnswers?: Array<string> | null }> } };
+export type CreateRoundMutation = { createRound: { number: number, category: string, status: RoundStatus, releasedCount: number, questionCount: number, questions: Array<{ number: number, type: QuestionType, text?: string | null, imageUrl?: string | null, defaultPoints: number, correctAnswers?: Array<string> | null }> } };
 
 export type GradeResponseMutationVariables = Exact<{
   input: GradeResponseInput;
@@ -359,7 +363,7 @@ export type JoinGameMutationVariables = Exact<{
 }>;
 
 
-export type JoinGameMutation = { joinGame: { gameId: string, status: GameStatus, currentRound?: number | null, event: string, player?: { id: string, displayName: string, teamId?: string | null } | null, game: { id: string, joinCode: string, status: GameStatus, currentRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }>, teams: Array<{ id: string, name: string, score: number, doubleUsedRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }> }>, rounds: Array<{ number: number, category: string, status: RoundStatus, releasedCount: number, questions: Array<{ number: number, type: QuestionType, text?: string | null, imageUrl?: string | null, defaultPoints: number, correctAnswers?: Array<string> | null }> }> } } };
+export type JoinGameMutation = { joinGame: { gameId: string, status: GameStatus, currentRound?: number | null, event: string, player?: { id: string, displayName: string, teamId?: string | null } | null, game: { id: string, joinCode: string, status: GameStatus, currentRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }>, teams: Array<{ id: string, name: string, score: number, doubleUsedRound?: number | null, lastSubmittedRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }> }>, rounds: Array<{ number: number, category: string, status: RoundStatus, releasedCount: number, questionCount: number, questions: Array<{ number: number, type: QuestionType, text?: string | null, imageUrl?: string | null, defaultPoints: number, correctAnswers?: Array<string> | null }> }> } } };
 
 export type RandomizeTeamsMutationVariables = Exact<{
   gameId: Scalars['ID']['input'];
@@ -368,7 +372,7 @@ export type RandomizeTeamsMutationVariables = Exact<{
 }>;
 
 
-export type RandomizeTeamsMutation = { randomizeTeams: { gameId: string, status: GameStatus, currentRound?: number | null, event: string, player?: { id: string, displayName: string, teamId?: string | null } | null, game: { id: string, joinCode: string, status: GameStatus, currentRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }>, teams: Array<{ id: string, name: string, score: number, doubleUsedRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }> }>, rounds: Array<{ number: number, category: string, status: RoundStatus, releasedCount: number, questions: Array<{ number: number, type: QuestionType, text?: string | null, imageUrl?: string | null, defaultPoints: number, correctAnswers?: Array<string> | null }> }> } } };
+export type RandomizeTeamsMutation = { randomizeTeams: { gameId: string, status: GameStatus, currentRound?: number | null, event: string, player?: { id: string, displayName: string, teamId?: string | null } | null, game: { id: string, joinCode: string, status: GameStatus, currentRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }>, teams: Array<{ id: string, name: string, score: number, doubleUsedRound?: number | null, lastSubmittedRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }> }>, rounds: Array<{ number: number, category: string, status: RoundStatus, releasedCount: number, questionCount: number, questions: Array<{ number: number, type: QuestionType, text?: string | null, imageUrl?: string | null, defaultPoints: number, correctAnswers?: Array<string> | null }> }> } } };
 
 export type SetTeamNameMutationVariables = Exact<{
   gameId: Scalars['ID']['input'];
@@ -378,7 +382,7 @@ export type SetTeamNameMutationVariables = Exact<{
 }>;
 
 
-export type SetTeamNameMutation = { setTeamName: { gameId: string, status: GameStatus, currentRound?: number | null, event: string, player?: { id: string, displayName: string, teamId?: string | null } | null, game: { id: string, joinCode: string, status: GameStatus, currentRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }>, teams: Array<{ id: string, name: string, score: number, doubleUsedRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }> }>, rounds: Array<{ number: number, category: string, status: RoundStatus, releasedCount: number, questions: Array<{ number: number, type: QuestionType, text?: string | null, imageUrl?: string | null, defaultPoints: number, correctAnswers?: Array<string> | null }> }> } } };
+export type SetTeamNameMutation = { setTeamName: { gameId: string, status: GameStatus, currentRound?: number | null, event: string, player?: { id: string, displayName: string, teamId?: string | null } | null, game: { id: string, joinCode: string, status: GameStatus, currentRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }>, teams: Array<{ id: string, name: string, score: number, doubleUsedRound?: number | null, lastSubmittedRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }> }>, rounds: Array<{ number: number, category: string, status: RoundStatus, releasedCount: number, questionCount: number, questions: Array<{ number: number, type: QuestionType, text?: string | null, imageUrl?: string | null, defaultPoints: number, correctAnswers?: Array<string> | null }> }> } } };
 
 export type StartRoundMutationVariables = Exact<{
   gameId: Scalars['ID']['input'];
@@ -387,7 +391,7 @@ export type StartRoundMutationVariables = Exact<{
 }>;
 
 
-export type StartRoundMutation = { startRound: { gameId: string, status: GameStatus, currentRound?: number | null, event: string, player?: { id: string, displayName: string, teamId?: string | null } | null, game: { id: string, joinCode: string, status: GameStatus, currentRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }>, teams: Array<{ id: string, name: string, score: number, doubleUsedRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }> }>, rounds: Array<{ number: number, category: string, status: RoundStatus, releasedCount: number, questions: Array<{ number: number, type: QuestionType, text?: string | null, imageUrl?: string | null, defaultPoints: number, correctAnswers?: Array<string> | null }> }> } } };
+export type StartRoundMutation = { startRound: { gameId: string, status: GameStatus, currentRound?: number | null, event: string, player?: { id: string, displayName: string, teamId?: string | null } | null, game: { id: string, joinCode: string, status: GameStatus, currentRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }>, teams: Array<{ id: string, name: string, score: number, doubleUsedRound?: number | null, lastSubmittedRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }> }>, rounds: Array<{ number: number, category: string, status: RoundStatus, releasedCount: number, questionCount: number, questions: Array<{ number: number, type: QuestionType, text?: string | null, imageUrl?: string | null, defaultPoints: number, correctAnswers?: Array<string> | null }> }> } } };
 
 export type ReleaseQuestionMutationVariables = Exact<{
   gameId: Scalars['ID']['input'];
@@ -397,7 +401,7 @@ export type ReleaseQuestionMutationVariables = Exact<{
 }>;
 
 
-export type ReleaseQuestionMutation = { releaseQuestion: { gameId: string, status: GameStatus, currentRound?: number | null, event: string, player?: { id: string, displayName: string, teamId?: string | null } | null, game: { id: string, joinCode: string, status: GameStatus, currentRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }>, teams: Array<{ id: string, name: string, score: number, doubleUsedRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }> }>, rounds: Array<{ number: number, category: string, status: RoundStatus, releasedCount: number, questions: Array<{ number: number, type: QuestionType, text?: string | null, imageUrl?: string | null, defaultPoints: number, correctAnswers?: Array<string> | null }> }> } } };
+export type ReleaseQuestionMutation = { releaseQuestion: { gameId: string, status: GameStatus, currentRound?: number | null, event: string, player?: { id: string, displayName: string, teamId?: string | null } | null, game: { id: string, joinCode: string, status: GameStatus, currentRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }>, teams: Array<{ id: string, name: string, score: number, doubleUsedRound?: number | null, lastSubmittedRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }> }>, rounds: Array<{ number: number, category: string, status: RoundStatus, releasedCount: number, questionCount: number, questions: Array<{ number: number, type: QuestionType, text?: string | null, imageUrl?: string | null, defaultPoints: number, correctAnswers?: Array<string> | null }> }> } } };
 
 export type ChooseDoubleMutationVariables = Exact<{
   gameId: Scalars['ID']['input'];
@@ -406,14 +410,14 @@ export type ChooseDoubleMutationVariables = Exact<{
 }>;
 
 
-export type ChooseDoubleMutation = { chooseDouble: { gameId: string, status: GameStatus, currentRound?: number | null, event: string, player?: { id: string, displayName: string, teamId?: string | null } | null, game: { id: string, joinCode: string, status: GameStatus, currentRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }>, teams: Array<{ id: string, name: string, score: number, doubleUsedRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }> }>, rounds: Array<{ number: number, category: string, status: RoundStatus, releasedCount: number, questions: Array<{ number: number, type: QuestionType, text?: string | null, imageUrl?: string | null, defaultPoints: number, correctAnswers?: Array<string> | null }> }> } } };
+export type ChooseDoubleMutation = { chooseDouble: { gameId: string, status: GameStatus, currentRound?: number | null, event: string, player?: { id: string, displayName: string, teamId?: string | null } | null, game: { id: string, joinCode: string, status: GameStatus, currentRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }>, teams: Array<{ id: string, name: string, score: number, doubleUsedRound?: number | null, lastSubmittedRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }> }>, rounds: Array<{ number: number, category: string, status: RoundStatus, releasedCount: number, questionCount: number, questions: Array<{ number: number, type: QuestionType, text?: string | null, imageUrl?: string | null, defaultPoints: number, correctAnswers?: Array<string> | null }> }> } } };
 
 export type SubmitAnswersMutationVariables = Exact<{
   input: SubmitAnswersInput;
 }>;
 
 
-export type SubmitAnswersMutation = { submitAnswers: { gameId: string, status: GameStatus, currentRound?: number | null, event: string, player?: { id: string, displayName: string, teamId?: string | null } | null, game: { id: string, joinCode: string, status: GameStatus, currentRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }>, teams: Array<{ id: string, name: string, score: number, doubleUsedRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }> }>, rounds: Array<{ number: number, category: string, status: RoundStatus, releasedCount: number, questions: Array<{ number: number, type: QuestionType, text?: string | null, imageUrl?: string | null, defaultPoints: number, correctAnswers?: Array<string> | null }> }> } } };
+export type SubmitAnswersMutation = { submitAnswers: { gameId: string, status: GameStatus, currentRound?: number | null, event: string, player?: { id: string, displayName: string, teamId?: string | null } | null, game: { id: string, joinCode: string, status: GameStatus, currentRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }>, teams: Array<{ id: string, name: string, score: number, doubleUsedRound?: number | null, lastSubmittedRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }> }>, rounds: Array<{ number: number, category: string, status: RoundStatus, releasedCount: number, questionCount: number, questions: Array<{ number: number, type: QuestionType, text?: string | null, imageUrl?: string | null, defaultPoints: number, correctAnswers?: Array<string> | null }> }> } } };
 
 export type EndRoundMutationVariables = Exact<{
   gameId: Scalars['ID']['input'];
@@ -422,14 +426,14 @@ export type EndRoundMutationVariables = Exact<{
 }>;
 
 
-export type EndRoundMutation = { endRound: { gameId: string, status: GameStatus, currentRound?: number | null, event: string, player?: { id: string, displayName: string, teamId?: string | null } | null, game: { id: string, joinCode: string, status: GameStatus, currentRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }>, teams: Array<{ id: string, name: string, score: number, doubleUsedRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }> }>, rounds: Array<{ number: number, category: string, status: RoundStatus, releasedCount: number, questions: Array<{ number: number, type: QuestionType, text?: string | null, imageUrl?: string | null, defaultPoints: number, correctAnswers?: Array<string> | null }> }> } } };
+export type EndRoundMutation = { endRound: { gameId: string, status: GameStatus, currentRound?: number | null, event: string, player?: { id: string, displayName: string, teamId?: string | null } | null, game: { id: string, joinCode: string, status: GameStatus, currentRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }>, teams: Array<{ id: string, name: string, score: number, doubleUsedRound?: number | null, lastSubmittedRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }> }>, rounds: Array<{ number: number, category: string, status: RoundStatus, releasedCount: number, questionCount: number, questions: Array<{ number: number, type: QuestionType, text?: string | null, imageUrl?: string | null, defaultPoints: number, correctAnswers?: Array<string> | null }> }> } } };
 
 export type OnGameUpdatedSubscriptionVariables = Exact<{
   gameId: Scalars['ID']['input'];
 }>;
 
 
-export type OnGameUpdatedSubscription = { onGameUpdated?: { gameId: string, status: GameStatus, currentRound?: number | null, event: string, player?: { id: string, displayName: string, teamId?: string | null } | null, game: { id: string, joinCode: string, status: GameStatus, currentRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }>, teams: Array<{ id: string, name: string, score: number, doubleUsedRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }> }>, rounds: Array<{ number: number, category: string, status: RoundStatus, releasedCount: number, questions: Array<{ number: number, type: QuestionType, text?: string | null, imageUrl?: string | null, defaultPoints: number, correctAnswers?: Array<string> | null }> }> } } | null };
+export type OnGameUpdatedSubscription = { onGameUpdated?: { gameId: string, status: GameStatus, currentRound?: number | null, event: string, player?: { id: string, displayName: string, teamId?: string | null } | null, game: { id: string, joinCode: string, status: GameStatus, currentRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }>, teams: Array<{ id: string, name: string, score: number, doubleUsedRound?: number | null, lastSubmittedRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }> }>, rounds: Array<{ number: number, category: string, status: RoundStatus, releasedCount: number, questionCount: number, questions: Array<{ number: number, type: QuestionType, text?: string | null, imageUrl?: string | null, defaultPoints: number, correctAnswers?: Array<string> | null }> }> } } | null };
 
 export class TypedDocumentString<TResult, TVariables>
   extends String
@@ -465,6 +469,7 @@ export const GameFieldsFragmentDoc = new TypedDocumentString(`
     name
     score
     doubleUsedRound
+    lastSubmittedRound
     players {
       id
       displayName
@@ -476,6 +481,7 @@ export const GameFieldsFragmentDoc = new TypedDocumentString(`
     category
     status
     releasedCount
+    questionCount
     questions {
       number
       type
@@ -517,6 +523,7 @@ export const GameUpdateFieldsFragmentDoc = new TypedDocumentString(`
     name
     score
     doubleUsedRound
+    lastSubmittedRound
     players {
       id
       displayName
@@ -528,6 +535,7 @@ export const GameUpdateFieldsFragmentDoc = new TypedDocumentString(`
     category
     status
     releasedCount
+    questionCount
     questions {
       number
       type
@@ -559,6 +567,7 @@ export const GameDocument = new TypedDocumentString(`
     name
     score
     doubleUsedRound
+    lastSubmittedRound
     players {
       id
       displayName
@@ -570,6 +579,7 @@ export const GameDocument = new TypedDocumentString(`
     category
     status
     releasedCount
+    questionCount
     questions {
       number
       type
@@ -587,6 +597,7 @@ export const MyTeamDocument = new TypedDocumentString(`
     name
     score
     doubleUsedRound
+    lastSubmittedRound
     players {
       id
       displayName
@@ -603,6 +614,7 @@ export const RoundResultsDocument = new TypedDocumentString(`
       category
       status
       releasedCount
+      questionCount
       questions {
         number
         type
@@ -626,6 +638,7 @@ export const RoundResultsDocument = new TypedDocumentString(`
       name
       score
       doubleUsedRound
+      lastSubmittedRound
       players {
         id
         displayName
@@ -642,6 +655,7 @@ export const StandingsDocument = new TypedDocumentString(`
     name
     score
     doubleUsedRound
+    lastSubmittedRound
     players {
       id
       displayName
@@ -674,6 +688,7 @@ export const CreateGameDocument = new TypedDocumentString(`
     name
     score
     doubleUsedRound
+    lastSubmittedRound
     players {
       id
       displayName
@@ -685,6 +700,7 @@ export const CreateGameDocument = new TypedDocumentString(`
     category
     status
     releasedCount
+    questionCount
     questions {
       number
       type
@@ -707,6 +723,7 @@ export const CreateRoundDocument = new TypedDocumentString(`
     category
     status
     releasedCount
+    questionCount
     questions {
       number
       type
@@ -765,6 +782,7 @@ export const JoinGameDocument = new TypedDocumentString(`
     name
     score
     doubleUsedRound
+    lastSubmittedRound
     players {
       id
       displayName
@@ -776,6 +794,7 @@ export const JoinGameDocument = new TypedDocumentString(`
     category
     status
     releasedCount
+    questionCount
     questions {
       number
       type
@@ -821,6 +840,7 @@ export const RandomizeTeamsDocument = new TypedDocumentString(`
     name
     score
     doubleUsedRound
+    lastSubmittedRound
     players {
       id
       displayName
@@ -832,6 +852,7 @@ export const RandomizeTeamsDocument = new TypedDocumentString(`
     category
     status
     releasedCount
+    questionCount
     questions {
       number
       type
@@ -877,6 +898,7 @@ export const SetTeamNameDocument = new TypedDocumentString(`
     name
     score
     doubleUsedRound
+    lastSubmittedRound
     players {
       id
       displayName
@@ -888,6 +910,7 @@ export const SetTeamNameDocument = new TypedDocumentString(`
     category
     status
     releasedCount
+    questionCount
     questions {
       number
       type
@@ -933,6 +956,7 @@ export const StartRoundDocument = new TypedDocumentString(`
     name
     score
     doubleUsedRound
+    lastSubmittedRound
     players {
       id
       displayName
@@ -944,6 +968,7 @@ export const StartRoundDocument = new TypedDocumentString(`
     category
     status
     releasedCount
+    questionCount
     questions {
       number
       type
@@ -994,6 +1019,7 @@ export const ReleaseQuestionDocument = new TypedDocumentString(`
     name
     score
     doubleUsedRound
+    lastSubmittedRound
     players {
       id
       displayName
@@ -1005,6 +1031,7 @@ export const ReleaseQuestionDocument = new TypedDocumentString(`
     category
     status
     releasedCount
+    questionCount
     questions {
       number
       type
@@ -1050,6 +1077,7 @@ export const ChooseDoubleDocument = new TypedDocumentString(`
     name
     score
     doubleUsedRound
+    lastSubmittedRound
     players {
       id
       displayName
@@ -1061,6 +1089,7 @@ export const ChooseDoubleDocument = new TypedDocumentString(`
     category
     status
     releasedCount
+    questionCount
     questions {
       number
       type
@@ -1106,6 +1135,7 @@ export const SubmitAnswersDocument = new TypedDocumentString(`
     name
     score
     doubleUsedRound
+    lastSubmittedRound
     players {
       id
       displayName
@@ -1117,6 +1147,7 @@ export const SubmitAnswersDocument = new TypedDocumentString(`
     category
     status
     releasedCount
+    questionCount
     questions {
       number
       type
@@ -1162,6 +1193,7 @@ export const EndRoundDocument = new TypedDocumentString(`
     name
     score
     doubleUsedRound
+    lastSubmittedRound
     players {
       id
       displayName
@@ -1173,6 +1205,7 @@ export const EndRoundDocument = new TypedDocumentString(`
     category
     status
     releasedCount
+    questionCount
     questions {
       number
       type
@@ -1218,6 +1251,7 @@ export const OnGameUpdatedDocument = new TypedDocumentString(`
     name
     score
     doubleUsedRound
+    lastSubmittedRound
     players {
       id
       displayName
@@ -1229,6 +1263,7 @@ export const OnGameUpdatedDocument = new TypedDocumentString(`
     category
     status
     releasedCount
+    questionCount
     questions {
       number
       type
