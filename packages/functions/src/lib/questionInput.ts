@@ -10,6 +10,14 @@ import { ValidationError } from "./errors.js";
 /** A PICTURE_10 question is ten items on one image, so it needs exactly ten answers. */
 export const PICTURE_10_ANSWER_COUNT = 10;
 
+/**
+ * DynamoDB caps a transaction at 100 items, and the binding constraint is
+ * submission, not authoring: a team writes one response per question, plus its
+ * submission marker, plus the optional double flag. Authoring a round the teams
+ * could not then submit would be a trap, so the tighter limit governs both.
+ */
+export const MAX_QUESTIONS_PER_ROUND = 98;
+
 export type ParsedQuestion = Omit<Question, "roundNumber" | "number">;
 
 function fail(index: number, message: string): never {

@@ -1,8 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { ValidationError } from "@know-it-owl/functions/lib/errors";
-import { parseQuestionInputs } from "@know-it-owl/functions/lib/questionInput";
+import {
+  MAX_QUESTIONS_PER_ROUND,
+  parseQuestionInputs,
+} from "@know-it-owl/functions/lib/questionInput";
 
-const MAX = 99;
+const MAX = MAX_QUESTIONS_PER_ROUND;
 
 function text(overrides: Record<string, unknown> = {}): Record<string, unknown> {
   return { type: "TEXT", text: "Capital of France?", correctAnswers: ["Paris"], defaultPoints: 1, ...overrides };
@@ -103,9 +106,9 @@ describe("parseQuestionInputs", () => {
   it("rejects a non-array, an empty round and an over-long round", () => {
     expect(() => parseQuestionInputs("nope", MAX)).toThrow(/must be an array/);
     expect(() => parseQuestionInputs([], MAX)).toThrow(/at least one question/);
-    expect(() => parseQuestionInputs(Array.from({ length: 100 }, () => text()), MAX)).toThrow(
-      /at most 99 questions/,
-    );
+    expect(() =>
+      parseQuestionInputs(Array.from({ length: MAX + 1 }, () => text()), MAX),
+    ).toThrow(/at most 98 questions/);
   });
 
   it("rejects an entry that is not an object", () => {

@@ -46,6 +46,19 @@ export function response(
 }
 
 /**
+ * Marks that a team has submitted its answers for a round. Written in the same
+ * transaction as the answers under `attribute_not_exists`, so it is what makes
+ * "one submission per team per round" a storage guarantee rather than a check.
+ *
+ * It shares the `RESP#<round>#` prefix so one query returns a round's answers
+ * and the teams that have finished, but the `SUBMIT` segment sits where a
+ * question number sits in a response key — use `isSubmissionKey` before mapping.
+ */
+export function submission(gameId: string, roundNumber: number, teamId: string): TableKey {
+  return { pk: gamePk(gameId), sk: `RESP#${roundNumber}#SUBMIT#TEAM#${teamId}` };
+}
+
+/**
  * Secondary lookup item mapping a join code to a game id, so joinGame never
  * has to scan the table for a code.
  */
@@ -80,6 +93,10 @@ export const prefixes = {
   },
   questionResponses(roundNumber: number, questionNumber: number): string {
     return `RESP#${roundNumber}#${questionNumber}#TEAM#`;
+  },
+  /** The teams that have submitted for a round. */
+  submissions(roundNumber: number): string {
+    return `RESP#${roundNumber}#SUBMIT#TEAM#`;
   },
 } as const;
 

@@ -54,6 +54,12 @@ export interface QuestionItem extends Item {
   defaultPoints: number;
 }
 
+export interface SubmissionItem extends Item {
+  teamId: string;
+  submittedAt: string;
+  doubled: boolean;
+}
+
 export interface ResponseItem extends Item {
   answers: string[];
   doubled: boolean;
@@ -164,6 +170,15 @@ export function isQuestionKey(sk: string): boolean {
   return sk.includes("#Q#");
 }
 
+/**
+ * A `RESP#<round>#` query returns per-question answers and the round's
+ * submission markers together. The marker carries `SUBMIT` where a response
+ * carries a question number, so `toTeamResponse` would reject it — filter first.
+ */
+export function isSubmissionKey(sk: string): boolean {
+  return sk.includes("#SUBMIT#TEAM#");
+}
+
 /** `GAME#<id>` → `<id>`. */
 export function gameIdFromPk(pk: string): string {
   return suffixAfter(pk, "GAME#");
@@ -237,6 +252,26 @@ export function toTeamResponse(item: Item): TeamResponse {
     doubled: bool(item, "doubled"),
     graded: bool(item, "graded"),
     gradedPoints: nullableNumList(item, "gradedPoints"),
+  };
+}
+
+export interface Submission {
+  roundNumber: number;
+  teamId: string;
+  submittedAt: string;
+  doubled: boolean;
+}
+
+export function toSubmission(item: Item): Submission {
+  const [roundPart] = suffixAfter(item.sk, "RESP#").split("#");
+  if (roundPart === undefined || !isSubmissionKey(item.sk)) {
+    throw new ValidationError(`Unexpected submission sort key "${item.sk}"`);
+  }
+  return {
+    roundNumber: numberFrom(roundPart, item.sk),
+    teamId: suffixAfter(item.sk, `RESP#${roundPart}#SUBMIT#TEAM#`),
+    submittedAt: str(item, "submittedAt"),
+    doubled: bool(item, "doubled"),
   };
 }
 

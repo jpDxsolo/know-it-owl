@@ -5,17 +5,10 @@ import { ConflictError, NotFoundError } from "../lib/errors.js";
 import { assertGm } from "../lib/gmAuth.js";
 import * as keys from "../lib/keys.js";
 import { isQuestionKey, toRound, type QuestionItem, type RoundItem } from "../lib/mappers.js";
-import { parseQuestionInputs } from "../lib/questionInput.js";
+import { MAX_QUESTIONS_PER_ROUND, parseQuestionInputs } from "../lib/questionInput.js";
 import { withoutAnswerKeys, type VisibleRound } from "../lib/visibility.js";
 
 const MAX_CATEGORY_LENGTH = 60;
-
-/**
- * The round item and its questions are written in one transaction, and DynamoDB
- * caps that at 100 items — so a round holds at most 99 questions.
- */
-const MAX_TRANSACT_ITEMS = 100;
-const MAX_QUESTIONS_PER_ROUND = MAX_TRANSACT_ITEMS - 1;
 
 /** A round already in play; a second one would make "the current round" ambiguous. */
 const IN_PLAY = new Set(["ACTIVE", "GRADING"]);
