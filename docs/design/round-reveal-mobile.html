@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Round Reveal - Know It Owl</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=Public+Sans:wght@700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+            "navy-ground": "#0E1A2F",
+            "navy-surface": "#16294A",
+            "navy-raised": "#1E3765",
+            "gold": "#F5A81C",
+            "amber": "#F0821E",
+            "bright-blue": "#2F7FE0",
+            "cream": "#F7EFE2",
+            "muted": "#9DB0CE",
+            "green": "#3FB27F",
+            "red": "#E5484D"
+        },
+        "borderRadius": {
+                "DEFAULT": "0.5rem",
+                "lg": "1rem",
+                "xl": "1.5rem",
+                "full": "9999px"
+        },
+        "spacing": {
+            "safe": "env(safe-area-inset-bottom)"
+        },
+        "fontFamily": {
+                "headline": [
+                        "Public Sans", "sans-serif"
+                ],
+                "display": [
+                        "Public Sans", "sans-serif"
+                ],
+                "body": [
+                        "Plus Jakarta Sans", "sans-serif"
+                ],
+                "label": [
+                        "Plus Jakarta Sans", "sans-serif"
+                ]
+        },
+        "fontSize": {}
+    }
+    },
+  }
+</script>
+<style>
+    body {
+        background-color: #0E1A2F; /* navy-ground */
+        color: #F7EFE2; /* cream */
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        padding-bottom: 6rem; /* space for bottom nav */
+    }
+    h1, h2, h3, h4, h5, h6, .font-headline {
+        font-family: 'Public Sans', sans-serif;
+    }
+    
+    /* Ensure content is not hidden behind the fixed header */
+    main {
+        padding-top: 5rem;
+    }
+</style>
+</head>
+<body class="bg-navy-ground text-cream min-h-screen antialiased selection:bg-gold selection:text-navy-ground">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-[#0E1A2F] border-b border-[#1E3765] flex justify-between items-center px-4 h-16 shadow-none">
+<button class="text-[#F7EFE2] hover:bg-[#1E3765] transition-colors p-2 rounded-full active:scale-95 duration-100 flex items-center justify-center">
+<span aria-hidden="true" class="material-symbols-outlined" data-icon="sensors">sensors</span>
+</button>
+<div class="flex items-center gap-3">
+<img alt="Know It Owl Logo" class="h-8 w-auto object-contain rounded-full border border-navy-raised" src="https://lh3.googleusercontent.com/aida/AEtjO1VI0HLn7IsZPX6y8SuYNRpg0wPynlweBRxjITHx4C_FlqmIvHCc57Q_AC5ee6LOiqxmPxftM9BwvstuZsQitdWfH5xFh8BolVZ5WojL9iwFBTp9LQDPMoRR-aeiWkBtW3ad5njCBqloUyboHXos6_oIvi8SLgRjVHDmpz7Zp1zNlmPlAI_6wbTBBx1YixTaI7uXwzTxvVIA5GhEy0pxeL9hxJGNKSUhSXjAW3WIqZwyLRocr1J7o7H7MAI"/>
+<span class="text-xl font-headline font-black text-[#F5A81C] uppercase tracking-tight">Know It Owl</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="bg-green/20 text-green px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border border-green/30 flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-green animate-pulse"></span>
+                Live
+            </div>
+<button class="text-[#F7EFE2] hover:bg-[#1E3765] transition-colors p-2 rounded-full active:scale-95 duration-100 flex items-center justify-center">
+<span aria-hidden="true" class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+</div>
+</header>
+<main class="max-w-md mx-auto px-4 w-full">
+<!-- Header Section -->
+<section class="py-6 text-center">
+<p class="text-muted font-bold text-xs uppercase tracking-widest mb-1">Round 2 Revealed</p>
+<h1 class="font-headline font-black text-4xl text-cream tracking-tight leading-none mb-6">Capitals &amp; flags</h1>
+</section>
+<!-- Team Performance Card -->
+<section class="mb-8">
+<div class="bg-navy-surface rounded-xl p-5 shadow-lg border border-navy-raised relative overflow-hidden">
+<!-- Decorative background elements -->
+<div class="absolute -right-10 -top-10 w-32 h-32 bg-gold/5 rounded-full blur-2xl pointer-events-none"></div>
+<div class="absolute -left-10 -bottom-10 w-24 h-24 bg-amber/5 rounded-full blur-xl pointer-events-none"></div>
+<h2 class="text-muted text-sm font-semibold mb-1">How your team did</h2>
+<div class="flex justify-between items-start mb-4">
+<p class="text-gold font-headline font-bold text-xl">The Night Owls</p>
+<span class="bg-amber/20 text-amber px-2 py-1 rounded-md text-xs font-bold uppercase tracking-wide border border-amber/30">Doubled x2</span>
+</div>
+<div class="flex items-end gap-3 mt-2">
+<span class="font-headline font-black text-6xl text-gold leading-none">8</span>
+<span class="text-muted font-medium pb-1">points this round</span>
+</div>
+</div>
+</section>
+<!-- The Answers Section -->
+<section class="mb-8 space-y-6">
+<h3 class="font-headline font-extrabold text-2xl mb-4 border-b border-navy-raised pb-2">The answers</h3>
+<!-- Question 1 -->
+<div class="bg-navy-surface rounded-xl p-5 border border-navy-raised">
+<p class="text-muted text-[10px] font-bold uppercase tracking-wider mb-2">Question 1 · 2 Points</p>
+<p class="text-lg font-medium mb-4">Which city is the capital of Australia?</p>
+<div class="bg-green/10 border border-green/30 rounded-lg p-3 flex items-start gap-3 mb-5">
+<span class="material-symbols-outlined text-green mt-0.5" data-icon="check_circle" data-weight="fill" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<div>
+<p class="text-sm font-semibold text-green mb-0.5">Correct answer</p>
+<p class="font-bold text-cream">Canberra</p>
+</div>
+</div>
+<div class="space-y-3">
+<h4 class="text-xs font-bold text-muted uppercase tracking-wider mb-2">How teams answered</h4>
+<div class="flex justify-between items-center text-sm border-b border-navy-raised/50 pb-2">
+<div>
+<span class="font-bold text-cream block">The Quizzly Bears</span>
+<span class="text-muted">Canberra</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-green font-bold">+2</span>
+<span class="material-symbols-outlined text-green text-sm" data-icon="check" data-weight="fill" style="font-variation-settings: 'FILL' 1;">check</span>
+</div>
+</div>
+<div class="flex justify-between items-center text-sm border-b border-navy-raised/50 pb-2">
+<div>
+<span class="font-bold text-cream block">Smarty Pants</span>
+<span class="text-muted">Sydney</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-muted font-bold">0</span>
+<span class="material-symbols-outlined text-red text-sm" data-icon="close" data-weight="fill" style="font-variation-settings: 'FILL' 1;">close</span>
+</div>
+</div>
+<div class="flex justify-between items-center text-sm">
+<div>
+<span class="font-bold text-cream block">Trivia Newton-John</span>
+<span class="text-muted">Melbourne</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-muted font-bold">0</span>
+<span class="material-symbols-outlined text-red text-sm" data-icon="close" data-weight="fill" style="font-variation-settings: 'FILL' 1;">close</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Question 2 -->
+<div class="bg-navy-surface rounded-xl p-5 border border-navy-raised">
+<p class="text-muted text-[10px] font-bold uppercase tracking-wider mb-2">Question 2 · 1 Point</p>
+<p class="text-lg font-medium mb-4">What colors are on the flag of Ireland?</p>
+<div class="bg-green/10 border border-green/30 rounded-lg p-3 flex items-start gap-3 mb-5">
+<span class="material-symbols-outlined text-green mt-0.5" data-icon="check_circle" data-weight="fill" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<div>
+<p class="text-sm font-semibold text-green mb-0.5">Correct answer</p>
+<p class="font-bold text-cream">Green, White, Orange</p>
+</div>
+</div>
+<div class="space-y-3">
+<!-- Simplified rows for brevity in the design, implying more content -->
+<div class="flex justify-between items-center text-sm">
+<div>
+<span class="font-bold text-cream block">The Night Owls</span>
+<span class="text-muted">Green, White, Orange</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-green font-bold">+1</span>
+<span class="material-symbols-outlined text-green text-sm" data-icon="check" data-weight="fill" style="font-variation-settings: 'FILL' 1;">check</span>
+</div>
+</div>
+</div>
+</div>
+<button class="w-full py-3 bg-navy-surface border border-navy-raised rounded-xl text-bright-blue font-bold text-sm hover:bg-navy-raised/50 transition-colors flex items-center justify-center gap-2">
+                View all 10 questions
+                <span class="material-symbols-outlined text-[18px]" data-icon="expand_more">expand_more</span>
+</button>
+</section>
+<!-- Standings Section -->
+<section class="mb-10">
+<h3 class="font-headline font-extrabold text-2xl mb-4 border-b border-navy-raised pb-2 flex items-center gap-2">
+<span class="material-symbols-outlined text-gold" data-icon="trophy" data-weight="fill" style="font-variation-settings: 'FILL' 1;">trophy</span>
+                Standings after round 2
+            </h3>
+<div class="bg-navy-surface rounded-xl overflow-hidden border border-navy-raised">
+<div class="flex justify-between items-center p-4 border-b border-navy-raised/50">
+<div class="flex items-center gap-3">
+<span class="font-headline font-bold text-muted w-4">1</span>
+<span class="font-bold">Quiz Khalifa</span>
+</div>
+<span class="font-headline font-bold">31 pts</span>
+</div>
+<div class="flex justify-between items-center p-4 border-l-4 border-gold bg-navy-raised/30 relative">
+<div class="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-gold/10 to-transparent pointer-events-none"></div>
+<div class="flex items-center gap-3">
+<span class="font-headline font-bold text-gold w-4">2</span>
+<span class="font-bold text-gold">The Night Owls</span>
+<span class="bg-gold/20 text-gold text-[10px] px-1.5 py-0.5 rounded uppercase font-bold tracking-wider ml-1">You</span>
+</div>
+<span class="font-headline font-bold text-gold">24 pts</span>
+</div>
+<div class="flex justify-between items-center p-4 border-b border-navy-raised/50 border-t border-navy-raised/50">
+<div class="flex items-center gap-3">
+<span class="font-headline font-bold text-muted w-4">3</span>
+<span class="font-bold">Bears</span>
+</div>
+<span class="font-headline font-bold">19 pts</span>
+</div>
+<div class="flex justify-between items-center p-4">
+<div class="flex items-center gap-3">
+<span class="font-headline font-bold text-muted w-4">4</span>
+<span class="font-bold">Trivia Newton-John</span>
+</div>
+<span class="font-headline font-bold">12 pts</span>
+</div>
+</div>
+</section>
+<!-- Footer Notice -->
+<div class="text-center pb-8">
+<div class="inline-flex items-center justify-center gap-2 bg-navy-surface px-4 py-2 rounded-full border border-navy-raised">
+<span class="w-2 h-2 rounded-full bg-bright-blue animate-pulse"></span>
+<p class="text-muted text-sm font-medium">Your host will start the next round...</p>
+</div>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full h-20 flex justify-around items-center px-6 pb-safe bg-[#16294A] shadow-[0_-4px_10px_rgba(0,0,0,0.3)] z-50 rounded-t-xl md:hidden">
+<!-- Active Nav Item (Quiz) -->
+<a class="flex flex-col items-center justify-center text-[#F5A81C] bg-[#1E3765] rounded-full px-4 py-1 active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined text-[24px]" data-icon="quiz" data-weight="fill" style="font-variation-settings: 'FILL' 1;">quiz</span>
+<span class="font-label font-bold text-xs uppercase tracking-wider mt-1">Quiz</span>
+</a>
+<!-- Inactive Nav Item (Team) -->
+<a class="flex flex-col items-center justify-center text-[#9DB0CE] hover:text-[#F7EFE2] active:scale-90 transition-transform px-4 py-1" href="#">
+<span class="material-symbols-outlined text-[24px]" data-icon="groups">groups</span>
+<span class="font-label font-bold text-xs uppercase tracking-wider mt-1">Team</span>
+</a>
+<!-- Inactive Nav Item (Leaderboard) -->
+<a class="flex flex-col items-center justify-center text-[#9DB0CE] hover:text-[#F7EFE2] active:scale-90 transition-transform px-4 py-1" href="#">
+<span class="material-symbols-outlined text-[24px]" data-icon="leaderboard">leaderboard</span>
+<span class="font-label font-bold text-xs uppercase tracking-wider mt-1">Leaderboard</span>
+</a>
+</nav>
+<!-- For desktop, hide bottom nav and provide a placeholder shell structural element -->
+<div class="hidden md:block fixed left-0 top-16 bottom-0 w-64 border-r border-navy-raised bg-navy-surface p-4">
+<div class="text-muted text-sm text-center mt-10 p-4 border border-navy-raised border-dashed rounded-lg">
+            Desktop navigation would render here based on structural logic.
+        </div>
+</div>
+<div class="hidden md:block pl-64">
+<!-- Main content would shift here on desktop -->
+</div>
+</body></html>

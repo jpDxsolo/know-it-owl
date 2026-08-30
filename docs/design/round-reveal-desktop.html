@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Know It Owl - Round Reveal</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=Public+Sans:wght@400;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            navy: {
+                                ground: '#0E1A2F',
+                                surface: '#16294A',
+                                raised: '#1E3765'
+                            },
+                            gold: '#F5A81C',
+                            amber: '#F0821E',
+                            blue: '#2F7FE0',
+                            cream: '#F7EFE2',
+                            muted: '#9DB0CE',
+                            green: '#3FB27F',
+                            red: '#E5484D'
+                        }
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                    fontFamily: {
+                        headline: ["Outfit", "sans-serif"],
+                        display: ["Outfit", "sans-serif"],
+                        body: ["Plus Jakarta Sans", "sans-serif"],
+                        label: ["Plus Jakarta Sans", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: #0E1A2F;
+            color: #F7EFE2;
+        }
+    </style>
+</head>
+<body class="font-body min-h-screen flex flex-col bg-brand-navy-ground text-brand-cream">
+<!-- Top App Bar -->
+<header class="bg-[#0E1A2F] text-[#F5A81C] font-headline font-heavy tracking-tight docked full-width top-0 border-b border-[#1E3765] flat no shadows flex justify-between items-center w-full px-6 py-4 sticky z-40">
+<div class="flex items-center gap-3">
+<img class="w-10 h-10 object-contain rounded-full bg-brand-navy-surface p-1" data-alt="A small, stylized illustration of a cartoon owl wearing round glasses and a graduation cap, holding a book, acting as a logo mark, placed on a dark navy background." src="https://lh3.googleusercontent.com/aida/AEtjO1VI0HLn7IsZPX6y8SuYNRpg0wPynlweBRxjITHx4C_FlqmIvHCc57Q_AC5ee6LOiqxmPxftM9BwvstuZsQitdWfH5xFh8BolVZ5WojL9iwFBTp9LQDPMoRR-aeiWkBtW3ad5njCBqloUyboHXos6_oIvi8SLgRjVHDmpz7Zp1zNlmPlAI_6wbTBBx1YixTaI7uXwzTxvVIA5GhEy0pxeL9hxJGNKSUhSXjAW3WIqZwyLRocr1J7o7H7MAI"/>
+<span class="text-2xl font-headline font-black text-[#F5A81C] tracking-tight">Know It Owl</span>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2 bg-brand-navy-surface px-3 py-1.5 rounded-full border border-brand-green/30">
+<span class="relative flex h-3 w-3">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-green opacity-75"></span>
+<span class="relative inline-flex rounded-full h-3 w-3 bg-brand-green"></span>
+</span>
+<span class="font-label text-sm font-semibold text-brand-green tracking-wide uppercase">Live</span>
+</div>
+<div class="flex items-center gap-3 text-[#9DB0CE]">
+<button class="hover:bg-[#1E3765] transition-colors p-2 rounded-full flex items-center justify-center group active:scale-95 transition-transform">
+<span class="material-symbols-outlined group-hover:text-brand-cream transition-colors">sensors</span>
+</button>
+<button class="hover:bg-[#1E3765] transition-colors p-2 rounded-full flex items-center justify-center group active:scale-95 transition-transform">
+<span class="material-symbols-outlined group-hover:text-brand-cream transition-colors">settings</span>
+</button>
+</div>
+</div>
+</header>
+<!-- Main Layout -->
+<main class="flex-grow w-full max-w-[1024px] mx-auto px-6 py-10 flex flex-col md:flex-row gap-8 pb-32">
+<!-- Left Column: The Answers -->
+<div class="flex-1 flex flex-col gap-6">
+<header class="mb-4">
+<p class="font-label text-sm font-bold text-brand-muted tracking-widest uppercase mb-2">Round 2 Revealed</p>
+<h1 class="font-headline text-5xl font-black text-brand-cream tracking-tight">Capitals &amp; flags</h1>
+</header>
+<div class="flex flex-col gap-4">
+<h2 class="font-headline text-xl font-bold text-brand-cream mb-2">The answers</h2>
+<!-- Question 1 Card -->
+<article class="bg-brand-navy-surface rounded-xl p-6 border border-brand-navy-raised shadow-lg relative overflow-hidden">
+<div class="absolute top-0 left-0 w-1 h-full bg-brand-green"></div>
+<div class="flex flex-col gap-4">
+<div class="flex items-center justify-between">
+<span class="font-label text-xs font-bold text-brand-muted tracking-wider uppercase">Question 1 · 2 Points</span>
+</div>
+<h3 class="font-headline text-2xl font-bold leading-tight">Which city is the capital of Australia?</h3>
+<div class="bg-brand-green/10 border border-brand-green/20 rounded-lg p-4 flex items-start gap-3 mt-2">
+<span class="material-symbols-outlined text-brand-green mt-0.5" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<div>
+<p class="font-label text-sm font-medium text-brand-green opacity-90">Correct answer</p>
+<p class="font-headline text-xl font-bold text-brand-green">Canberra</p>
+</div>
+</div>
+<!-- Compact Table -->
+<div class="mt-4 border-t border-brand-navy-raised pt-4">
+<table class="w-full text-left border-collapse">
+<tbody>
+<tr class="border-b border-brand-navy-raised/50 last:border-0 hover:bg-brand-navy-raised/30 transition-colors">
+<td class="py-2.5 px-2 font-medium text-brand-cream">The Quizzly Bears</td>
+<td class="py-2.5 px-2 text-brand-muted">Canberra</td>
+<td class="py-2.5 px-2 text-right text-brand-green font-bold flex items-center justify-end gap-1"><span class="material-symbols-outlined text-sm">check</span> 2</td>
+</tr>
+<tr class="border-b border-brand-navy-raised/50 last:border-0 hover:bg-brand-navy-raised/30 transition-colors">
+<td class="py-2.5 px-2 font-medium text-brand-cream">Smarty Pants</td>
+<td class="py-2.5 px-2 text-brand-muted line-through opacity-70">Sydney</td>
+<td class="py-2.5 px-2 text-right text-brand-red font-bold flex items-center justify-end gap-1"><span class="material-symbols-outlined text-sm">close</span> 0</td>
+</tr>
+<tr class="border-b border-brand-navy-raised/50 last:border-0 hover:bg-brand-navy-raised/30 transition-colors">
+<td class="py-2.5 px-2 font-medium text-brand-cream">Trivia Newton-John</td>
+<td class="py-2.5 px-2 text-brand-muted line-through opacity-70">Melbourne</td>
+<td class="py-2.5 px-2 text-right text-brand-red font-bold flex items-center justify-end gap-1"><span class="material-symbols-outlined text-sm">close</span> 0</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</article>
+<!-- Question 2 Card -->
+<article class="bg-brand-navy-surface rounded-xl p-6 border border-brand-navy-raised shadow-lg relative overflow-hidden">
+<div class="absolute top-0 left-0 w-1 h-full bg-brand-green"></div>
+<div class="flex flex-col gap-4">
+<div class="flex items-center justify-between">
+<span class="font-label text-xs font-bold text-brand-muted tracking-wider uppercase">Question 2 · 1 Point</span>
+</div>
+<h3 class="font-headline text-2xl font-bold leading-tight">What colors are on the flag of Ireland?</h3>
+<div class="bg-brand-green/10 border border-brand-green/20 rounded-lg p-4 flex items-start gap-3 mt-2">
+<span class="material-symbols-outlined text-brand-green mt-0.5" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<div>
+<p class="font-label text-sm font-medium text-brand-green opacity-90">Correct answer</p>
+<p class="font-headline text-xl font-bold text-brand-green">Green, White, Orange</p>
+</div>
+</div>
+</div>
+</article>
+</div>
+</div>
+<!-- Right Sidebar -->
+<aside class="w-full md:w-[340px] flex flex-col gap-6 mt-10 md:mt-20">
+<!-- How your team did -->
+<section class="bg-brand-navy-surface rounded-2xl p-6 border-2 border-brand-gold shadow-2xl relative">
+<div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-brand-gold text-brand-navy-ground font-label font-bold text-xs uppercase tracking-wider px-3 py-1 rounded-full shadow-md">Your Team</div>
+<div class="text-center flex flex-col items-center gap-1 mt-3">
+<h3 class="font-headline text-xl font-bold text-brand-gold">The Night Owls</h3>
+<div class="flex items-baseline justify-center gap-2 my-2">
+<span class="font-headline text-7xl font-black text-brand-gold tracking-tighter">8</span>
+</div>
+<p class="font-label text-sm font-medium text-brand-muted uppercase tracking-widest mb-4">points this round</p>
+<span class="inline-flex items-center gap-1 bg-brand-amber text-brand-navy-ground font-bold text-xs px-3 py-1.5 rounded-full uppercase tracking-wider">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">bolt</span>
+                        Doubled ×2
+                    </span>
+</div>
+</section>
+<!-- Standings -->
+<section class="bg-brand-navy-surface rounded-xl p-5 border border-brand-navy-raised shadow-lg">
+<h3 class="font-headline text-lg font-bold text-brand-cream mb-4">Standings after round 2</h3>
+<ol class="flex flex-col gap-2">
+<li class="flex items-center justify-between p-3 rounded-lg bg-brand-navy-ground/50">
+<div class="flex items-center gap-3">
+<span class="font-headline font-black text-brand-muted w-5 text-right">1</span>
+<span class="font-medium text-brand-cream">Trivia Newton-John</span>
+</div>
+<span class="font-headline font-bold text-brand-cream">18</span>
+</li>
+<li class="flex items-center justify-between p-3 rounded-lg bg-brand-navy-ground border-2 border-brand-gold/50 shadow-inner">
+<div class="flex items-center gap-3">
+<span class="font-headline font-black text-brand-gold w-5 text-right">2</span>
+<span class="font-bold text-brand-gold">The Night Owls</span>
+</div>
+<span class="font-headline font-bold text-brand-gold">16</span>
+</li>
+<li class="flex items-center justify-between p-3 rounded-lg bg-brand-navy-ground/50">
+<div class="flex items-center gap-3">
+<span class="font-headline font-black text-brand-muted w-5 text-right">3</span>
+<span class="font-medium text-brand-cream">The Quizzly Bears</span>
+</div>
+<span class="font-headline font-bold text-brand-cream">14</span>
+</li>
+<li class="flex items-center justify-between p-3 rounded-lg bg-brand-navy-ground/50">
+<div class="flex items-center gap-3">
+<span class="font-headline font-black text-brand-muted w-5 text-right">4</span>
+<span class="font-medium text-brand-cream">Smarty Pants</span>
+</div>
+<span class="font-headline font-bold text-brand-cream">9</span>
+</li>
+</ol>
+</section>
+</aside>
+</main>
+<!-- Bottom Nav Bar (Status) -->
+<nav class="bg-[#16294A] font-body text-sm font-medium docked full-width bottom-0 rounded-t-xl bg-[#16294A] border-t border-[#1E3765] shadow-2xl fixed bottom-0 w-full z-50 flex justify-center items-center py-4 px-6 md:hidden">
+<div class="flex flex-col items-center justify-center gap-1">
+<span class="material-symbols-outlined text-[#F7EFE2] opacity-80 animate-pulse">poker_chip</span>
+<span class="text-[#F7EFE2] opacity-80 text-xs text-center">Your host will start the next round</span>
+</div>
+</nav>
+<!-- Desktop Footer Status -->
+<footer class="hidden md:flex fixed bottom-0 w-full py-4 px-6 bg-brand-navy-ground/90 backdrop-blur-sm border-t border-brand-navy-raised items-center justify-center z-40">
+<div class="flex items-center gap-2 text-brand-muted font-medium animate-pulse">
+<span class="material-symbols-outlined text-brand-muted">hourglass_top</span>
+            Your host will start the next round.
+        </div>
+</footer>
+</body></html>

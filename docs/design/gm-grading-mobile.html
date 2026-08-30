@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>GM Grading</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=Public+Sans:ital,wght@0,400;0,700;0,900;1,900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        navy: {
+                            ground: '#0E1A2F',
+                            surface: '#16294A',
+                            raised: '#1E3765'
+                        },
+                        brand: {
+                            gold: '#F5A81C',
+                            amber: '#F0821E',
+                            blue: '#2F7FE0',
+                            cream: '#F7EFE2',
+                            muted: '#9DB0CE',
+                            green: '#3FB27F',
+                            red: '#E5484D'
+                        }
+                    },
+                    borderRadius: {
+                        DEFAULT: "0.5rem",
+                        lg: "1rem",
+                        xl: "1.5rem",
+                        full: "9999px"
+                    },
+                    fontFamily: {
+                        headline: ["Public Sans", "sans-serif"],
+                        display: ["Public Sans", "sans-serif"],
+                        body: ["Plus Jakarta Sans", "sans-serif"],
+                        label: ["Plus Jakarta Sans", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: #0E1A2F;
+            color: #F7EFE2;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .pb-safe { padding-bottom: env(safe-area-inset-bottom, 24px); }
+        .pt-safe { padding-top: env(safe-area-inset-top, 0px); }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex flex-col pt-safe pb-24 relative overflow-x-hidden">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-[#0E1A2F] border-b border-[#1E3765] flex justify-between items-center px-4 h-16 pt-safe">
+<div class="flex items-center gap-3">
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-navy-surface transition-colors active:scale-95 text-[#F5A81C]">
+<span class="material-symbols-outlined" data-weight="fill" style="font-variation-settings: 'FILL' 1;">sensors</span>
+</button>
+<div class="flex items-center gap-2">
+<img alt="Know It Owl Logo" class="w-8 h-8 rounded-full bg-navy-surface object-cover" src="https://lh3.googleusercontent.com/aida/AEtjO1VI0HLn7IsZPX6y8SuYNRpg0wPynlweBRxjITHx4C_FlqmIvHCc57Q_AC5ee6LOiqxmPxftM9BwvstuZsQitdWfH5xFh8BolVZ5WojL9iwFBTp9LQDPMoRR-aeiWkBtW3ad5njCBqloUyboHXos6_oIvi8SLgRjVHDmpz7Zp1zNlmPlAI_6wbTBBx1YixTaI7uXwzTxvVIA5GhEy0pxeL9hxJGNKSUhSXjAW3WIqZwyLRocr1J7o7H7MAI"/>
+<span class="text-[#F5A81C] font-headline text-xl font-black italic uppercase tracking-tighter">Know It Owl</span>
+</div>
+</div>
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-navy-surface transition-colors active:scale-95 text-[#9DB0CE]">
+<span class="material-symbols-outlined" data-weight="fill" style="font-variation-settings: 'FILL' 1;">settings</span>
+</button>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 w-full max-w-md mx-auto px-4 mt-20 pb-safe pb-28">
+<!-- Header Section -->
+<section class="mb-6">
+<div class="flex justify-between items-start mb-2">
+<h1 class="font-headline text-3xl font-black tracking-tight leading-none">Marking round 2</h1>
+<div class="bg-brand-green/20 text-brand-green border border-brand-green/30 px-2 py-1 rounded-full flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide">
+<div class="w-1.5 h-1.5 rounded-full bg-brand-green animate-pulse"></div>
+                    Live
+                </div>
+</div>
+<p class="text-brand-muted text-sm font-medium mb-4">Capitals &amp; flags · 12 of 15 marked</p>
+<!-- Progress Bar -->
+<div class="w-full bg-navy-surface rounded-full h-1.5 overflow-hidden">
+<div class="bg-brand-gold h-full rounded-full transition-all duration-500" style="width: 80%"></div>
+</div>
+</section>
+<!-- Question Card -->
+<section class="bg-navy-surface rounded-xl p-5 mb-6 border border-navy-raised shadow-lg relative overflow-hidden">
+<div class="absolute top-0 right-0 w-24 h-24 bg-brand-gold/5 rounded-bl-full -mr-4 -mt-4"></div>
+<div class="flex justify-between items-center mb-3">
+<span class="text-brand-muted text-xs font-bold tracking-wider uppercase">QUESTION 3 · 2 POINTS</span>
+</div>
+<h2 class="text-xl font-bold mb-4 leading-tight">Which city is the capital of Australia?</h2>
+<div class="bg-navy-ground rounded-lg p-3 border border-brand-green/30 flex items-start gap-3">
+<span class="material-symbols-outlined text-brand-green mt-0.5" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<div>
+<span class="text-brand-muted text-xs font-bold uppercase tracking-wider block mb-0.5">Answer</span>
+<span class="font-semibold text-brand-green">Canberra</span>
+</div>
+</div>
+</section>
+<!-- Team Answers List -->
+<section class="space-y-3">
+<!-- Team 1 (Special State: Doubled) -->
+<div class="bg-navy-surface rounded-lg p-4 border border-brand-amber/30 relative overflow-hidden shadow-md">
+<!-- Decorative pulse for doubled state -->
+<div class="absolute -left-1 top-1/2 -translate-y-1/2 w-2 h-12 bg-brand-amber rounded-r-full opacity-50"></div>
+<div class="pl-3">
+<div class="flex justify-between items-start mb-2">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="text-brand-muted text-xs font-medium">The Quizzly Bears</span>
+<span class="bg-brand-amber text-navy-ground text-[10px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded-sm">DOUBLED ×2</span>
+</div>
+<div class="text-lg font-semibold text-brand-cream">Canberra</div>
+</div>
+<!-- Scoring Controls -->
+<div class="flex flex-col items-end gap-2">
+<input class="w-16 h-10 bg-navy-ground border border-brand-amber text-brand-amber font-bold text-center rounded-lg focus:ring-2 focus:ring-brand-amber focus:border-transparent outline-none" max="4" min="0" type="number" value="4"/>
+<div class="flex gap-1">
+<button class="w-8 h-8 rounded bg-navy-raised text-brand-muted text-xs font-bold hover:bg-navy-surface transition-colors active:scale-95 flex items-center justify-center border border-transparent">0</button>
+</div>
+</div>
+</div>
+<p class="text-brand-amber/80 text-xs mt-2 italic flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">info</span>
+                        Type the doubled value yourself.
+                    </p>
+</div>
+</div>
+<!-- Team 2 -->
+<div class="bg-navy-surface rounded-lg p-4 border border-navy-raised shadow-md">
+<div class="flex justify-between items-start">
+<div>
+<div class="text-brand-muted text-xs font-medium mb-1">Smarty Pants</div>
+<div class="text-lg font-semibold text-brand-cream">Sydney</div>
+</div>
+<!-- Scoring Controls -->
+<div class="flex flex-col items-end gap-2">
+<input class="w-16 h-10 bg-navy-ground border border-navy-raised text-brand-cream font-bold text-center rounded-lg focus:ring-2 focus:ring-brand-blue focus:border-transparent outline-none" max="2" min="0" type="number" value="0"/>
+<div class="flex gap-1">
+<button class="w-8 h-8 rounded bg-navy-raised text-brand-cream text-xs font-bold hover:bg-navy-surface transition-colors active:scale-95 flex items-center justify-center">0</button>
+<button class="h-8 px-2 rounded bg-brand-green/20 text-brand-green border border-brand-green/30 text-xs font-bold hover:bg-brand-green/30 transition-colors active:scale-95 flex items-center justify-center whitespace-nowrap">+ full</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Team 3 -->
+<div class="bg-navy-surface rounded-lg p-4 border border-navy-raised shadow-md">
+<div class="flex justify-between items-start">
+<div>
+<div class="text-brand-muted text-xs font-medium mb-1">Trivia Newton-John</div>
+<div class="text-lg font-semibold text-brand-cream">Melbourne</div>
+</div>
+<!-- Scoring Controls -->
+<div class="flex flex-col items-end gap-2">
+<input class="w-16 h-10 bg-navy-ground border border-navy-raised text-brand-cream font-bold text-center rounded-lg focus:ring-2 focus:ring-brand-blue focus:border-transparent outline-none" max="2" min="0" type="number" value="0"/>
+<div class="flex gap-1">
+<button class="w-8 h-8 rounded bg-navy-raised text-brand-cream text-xs font-bold hover:bg-navy-surface transition-colors active:scale-95 flex items-center justify-center">0</button>
+<button class="h-8 px-2 rounded bg-brand-green/20 text-brand-green border border-brand-green/30 text-xs font-bold hover:bg-brand-green/30 transition-colors active:scale-95 flex items-center justify-center whitespace-nowrap">+ full</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Bottom Action Bar (Transactional / Linear flow footer, not a global nav) -->
+<div class="fixed bottom-0 w-full bg-[#16294A] border-t border-navy-raised px-4 py-4 pb-safe shadow-[0_-10px_30px_rgba(0,0,0,0.5)] z-40">
+<div class="max-w-md mx-auto flex flex-col items-center gap-2">
+<span class="text-brand-muted text-xs font-medium">3 answers still unmarked</span>
+<button class="w-full h-14 bg-brand-gold hover:bg-brand-gold/90 text-navy-ground font-headline font-black text-lg rounded-full transition-transform active:scale-[0.98] flex items-center justify-center shadow-lg">
+                End round and reveal
+            </button>
+</div>
+</div>
+<!-- BottomNavBar (Semantic Shell - Rendered for context, but hidden on this specific transactional screen per rules) -->
+<!-- Note: Following the rule "Automatic Suppression: You MUST exclude the navigation shell if the page intent is: Linear/Transactional... Task-Focused". 
+         Grading is a focused task with a primary action ("End round") docked at the bottom. 
+         Therefore, the BottomNavBar is intentionally omitted in favor of the transactional footer above. -->
+</body></html>
