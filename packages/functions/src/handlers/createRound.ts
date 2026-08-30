@@ -1,10 +1,11 @@
 import type { Question, Round } from "@know-it-owl/core";
 import { requiredString } from "../lib/args.js";
-import { getItem, queryPrefix, tableName, transactWrite } from "../lib/db.js";
+import { tableName, transactWrite } from "../lib/db.js";
 import { ConflictError, NotFoundError } from "../lib/errors.js";
 import { assertGm } from "../lib/gmAuth.js";
 import * as keys from "../lib/keys.js";
-import { isQuestionKey, toRound, type QuestionItem, type RoundItem } from "../lib/mappers.js";
+import { loadGameState } from "../lib/gameState.js";
+import type { QuestionItem, RoundItem } from "../lib/mappers.js";
 import { MAX_QUESTIONS_PER_ROUND, parseQuestionInputs } from "../lib/questionInput.js";
 import { signRounds, type SignedRound } from "../lib/images.js";
 import { withoutAnswerKeys } from "../lib/visibility.js";
@@ -26,13 +27,11 @@ export async function createRound(args: Record<string, unknown>): Promise<Signed
   const category = requiredString(args, "category", { maxLength: MAX_CATEGORY_LENGTH });
   const parsed = parseQuestionInputs(args.questions, MAX_QUESTIONS_PER_ROUND);
 
-  const meta = await getItem(keys.gameMeta(gameId));
-  if (!meta) throw new NotFoundError("No such game");
-  assertGm(gmToken, typeof meta.gmTokenHash === "string" ? meta.gmTokenHash : undefined);
+  const state = await loadGameState(gameId);
+  if (!state) throw new NotFoundError("No such game");
+  assertGm(gmToken, state.gmTokenHash);
 
-  const roundItems = await queryPrefix(keys.gamePk(gameId), keys.prefixes.rounds());
-  const existing = roundItems.filter((item) => !isQuestionKey(item.sk)).map(toRound);
-
+  const existing = state.rounds;
   if (existing.some((round) => IN_PLAY.has(round.status))) {
     throw new ConflictError("Finish the round in play before authoring another");
   }
