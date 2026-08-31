@@ -48,7 +48,15 @@ function toPoints(values: readonly string[], expected: number): number[] {
 export function GmGrading() {
   const { gameId } = useParams<{ gameId: string }>();
   const { game, realtime, loading, error, viewer, gmToken, isHost, lastEvent } = useGmGame(gameId);
-  useStatusRedirect(gameId, game?.status, viewer, "gm/grading");
+  /*
+   * A host reaches this screen while the round is still ROUND_ACTIVE — every
+   * team has handed in, but nothing has been marked yet, and marking is what
+   * moves the game into GRADING. Passing the status through unchanged would
+   * send them straight back to the dashboard, which is the only route here.
+   * `undefined` is the hook's own "stay put".
+   */
+  const settled = game?.status === "ROUND_ACTIVE" ? undefined : game?.status;
+  useStatusRedirect(gameId, settled, viewer, "gm/grading");
 
   const roundNumber = game?.currentRound ?? null;
   const { results, loading: reading, refresh } = useRoundResults(gameId, roundNumber, gmToken);

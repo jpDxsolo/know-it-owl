@@ -1,6 +1,6 @@
 import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { MemoryRouter, Route, Routes } from "react-router-dom";
+import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { Game } from "@know-it-owl/frontend/hooks/useGame";
 import { GmDashboard } from "@know-it-owl/frontend/screens/GmDashboard";
@@ -92,11 +92,18 @@ function serve(snapshot: Game, submittedTeamIds: string[] = []): void {
   );
 }
 
+/** Reports wherever the router currently is, so a navigation can be asserted. */
+function Location() {
+  return <span data-testid="location">{useLocation().pathname}</span>;
+}
+
 function renderDashboard(state?: { justCreated: boolean }) {
   return render(
     <MemoryRouter initialEntries={[{ pathname: "/game/g1/gm", state }]}>
+      <Location />
       <Routes>
         <Route path="/game/:gameId/gm" element={<GmDashboard />} />
+        <Route path="/game/:gameId/gm/grading" element={<p>marking sheet</p>} />
       </Routes>
     </MemoryRouter>,
   );
@@ -359,32 +366,44 @@ describe("running a round", () => {
     expect(screen.getByText("Still writing")).toBeInTheDocument();
   });
 
-  it("will not end the round while a team is still writing", async () => {
-    // endRound refuses outright in this case, so offering it would only fail.
+  it("will not offer marking while a team is still writing", async () => {
     setGmToken("g1", "token");
     serve(live(3), ["t1"]);
     renderDashboard();
 
     await waitFor(() => expect(screen.getByText(/1 of 2 teams in/i)).toBeInTheDocument());
-    expect(screen.getByRole("button", { name: /end round and reveal/i })).toBeDisabled();
+    expect(screen.getByRole("button", { name: /mark the answers/i })).toBeDisabled();
     expect(screen.getByText(/every team has to hand in/i)).toBeInTheDocument();
   });
 
-  it("ends the round once everyone is in", async () => {
+  it("goes to the marking sheet once everyone is in", async () => {
+    // The only route there: the game does not reach GRADING until an answer is
+    // marked, so a host with no way through from here could never mark at all.
     setGmToken("g1", "token");
     serve(live(3), ["t1", "t2"]);
     renderDashboard();
 
     await waitFor(() =>
-      expect(screen.getByRole("button", { name: /end round and reveal/i })).toBeEnabled(),
+      expect(screen.getByRole("button", { name: /mark the answers/i })).toBeEnabled(),
     );
-    await userEvent.click(screen.getByRole("button", { name: /end round and reveal/i }));
-    await waitFor(() => expect(calls.some((call) => call.query.includes("EndRound"))).toBe(true));
-    expect(calls.find((call) => call.query.includes("EndRound"))?.variables).toEqual({
-      gameId: "g1",
-      gmToken: "token",
-      roundNumber: 1,
-    });
+    await userEvent.click(screen.getByRole("button", { name: /mark the answers/i }));
+    await waitFor(() => expect(screen.getByTestId("location")).toHaveTextContent(
+      "/game/g1/gm/grading",
+    ));
+  });
+
+  it("never reveals a round straight from the dashboard, unmarked", async () => {
+    // Revealing without marking scores every team nothing, and a revealed round
+    // cannot be graded afterwards — so the reveal belongs on the marking sheet.
+    setGmToken("g1", "token");
+    serve(live(3), ["t1", "t2"]);
+    renderDashboard();
+
+    await waitFor(() =>
+      expect(screen.getByRole("button", { name: /mark the answers/i })).toBeEnabled(),
+    );
+    expect(screen.queryByRole("button", { name: /reveal/i })).not.toBeInTheDocument();
+    expect(calls.some((call) => call.query.includes("EndRound"))).toBe(false);
   });
 
   it("labels a picture question rather than showing empty text", async () => {
