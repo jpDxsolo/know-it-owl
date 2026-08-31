@@ -123,11 +123,19 @@ export function RoundReveal() {
                 </p>
                 {question.type === "PICTURE_10" ? (
                   question.imageUrl ? (
-                    <img
-                      className="kio-revealq__image"
-                      src={question.imageUrl}
-                      alt={`Picture round, question ${question.number}`}
-                    />
+                    <a
+                      className="kio-picture-link"
+                      href={question.imageUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <img
+                        className="kio-revealq__image"
+                        src={question.imageUrl}
+                        alt={`Picture round, question ${question.number}`}
+                      />
+                      <span className="kio-picture-link__hint">Open full size ↗</span>
+                    </a>
                   ) : (
                     <p className="kio-muted">Picture round</p>
                   )
