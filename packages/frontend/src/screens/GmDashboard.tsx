@@ -6,14 +6,13 @@
  * between states is which panel leads, not where things live.
  */
 import { useState } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { AppHeader } from "../components/AppHeader";
 import { RoundBuilder } from "../components/RoundBuilder";
 import { useGmGame } from "../hooks/useGmGame";
 import type { Game } from "../hooks/useGame";
 import {
   ApiError,
-  EndRoundMutation,
   execute,
   RandomizeTeamsMutation,
   ReleaseQuestionMutation,
@@ -42,9 +41,11 @@ function nextDraft(game: Game): Round | undefined {
 export function GmDashboard() {
   const { gameId } = useParams<{ gameId: string }>();
   const location = useLocation();
+  const navigate = useNavigate();
   const justCreated = (location.state as { justCreated?: boolean } | null)?.justCreated === true;
 
-  const { game, realtime, loading, error, gmToken, isHost, submittedTeamIds } = useGmGame(gameId);
+  const { game, realtime, loading, error, gmToken, isHost, submittedTeamIds, refresh } =
+    useGmGame(gameId);
 
   const [teamCount, setTeamCount] = useState(MIN_TEAMS);
   const [busy, setBusy] = useState(false);
@@ -134,11 +135,6 @@ export function GmDashboard() {
       await execute(ReleaseQuestionMutation, { gameId, gmToken, roundNumber, questionNumber });
     });
 
-  const endRound = (roundNumber: number) =>
-    run(async () => {
-      await execute(EndRoundMutation, { gameId, gmToken, roundNumber });
-    });
-
   if (building) {
     return (
       <main className="kio-page kio-page--wide">
@@ -147,7 +143,16 @@ export function GmDashboard() {
           gameId={gameId}
           gmToken={gmToken}
           roundNumber={game.rounds.length + 1}
-          onSaved={() => setBuilding(false)}
+          onSaved={() => {
+            setBuilding(false);
+            // `createRound` is the one mutation the host makes that fans out to
+            // nobody — it returns a Round rather than a GameUpdate, by design,
+            // since a DRAFT round is not news to the players. So nothing tells
+            // this screen its own round list just grew, and without this the
+            // round the host has just written is missing from the list and
+            // cannot be started until something else forces a re-read.
+            refresh();
+          }}
           onCancel={() => setBuilding(false)}
         />
       </main>
@@ -182,7 +187,7 @@ export function GmDashboard() {
           submittedTeamIds={submittedTeamIds}
           busy={busy}
           onRelease={releaseNext}
-          onEnd={endRound}
+          onMark={() => navigate(`/game/${gameId}/gm/grading`)}
         />
       ) : (
         <>
@@ -335,14 +340,14 @@ interface LiveRoundProps {
   submittedTeamIds: ReadonlySet<string>;
   busy: boolean;
   onRelease: (roundNumber: number, questionNumber: number) => void;
-  onEnd: (roundNumber: number) => void;
+  onMark: () => void;
 }
 
 /**
  * The round in play: unveil the questions one at a time, and watch the teams
  * hand in. Release is strictly sequential, so there is only ever one next.
  */
-function LiveRound({ game, round, submittedTeamIds, busy, onRelease, onEnd }: LiveRoundProps) {
+function LiveRound({ game, round, submittedTeamIds, busy, onRelease, onMark }: LiveRoundProps) {
   const total = round.questions.length;
   const released = round.releasedCount;
   const nextNumber = released + 1;
@@ -422,16 +427,24 @@ function LiveRound({ game, round, submittedTeamIds, busy, onRelease, onEnd }: Li
         </section>
       </div>
 
+      {/*
+        * Marking comes between the last hand-in and the reveal, and this is the
+        * only way into it: the game does not reach GRADING until a first answer
+        * is marked, so a host sent straight to the reveal from here could never
+        * get to the marking sheet at all — and would reveal a round in which
+        * every team scored nothing. The reveal lives on that sheet, behind
+        * having actually marked the answers.
+        */}
       <div className="kio-gm__foot">
         <button
           className="kio-button kio-button--primary"
           type="button"
-          onClick={() => onEnd(round.number)}
+          onClick={onMark}
           disabled={busy || !everyoneIn}
         >
-          End round and reveal
+          Mark the answers
         </button>
-        {!everyoneIn && <p className="kio-muted">Every team has to hand in before the reveal.</p>}
+        {!everyoneIn && <p className="kio-muted">Every team has to hand in before you can mark.</p>}
       </div>
     </>
   );

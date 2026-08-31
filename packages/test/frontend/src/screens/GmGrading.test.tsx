@@ -1,6 +1,6 @@
 import { cleanup, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { MemoryRouter, Route, Routes } from "react-router-dom";
+import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { Game } from "@know-it-owl/frontend/hooks/useGame";
 import { GmGrading } from "@know-it-owl/frontend/screens/GmGrading";
@@ -127,11 +127,19 @@ function serve(payload: ReturnType<typeof results>): void {
   );
 }
 
+/** Reports wherever the router currently is, so a redirect can be asserted. */
+function Location() {
+  return <span data-testid="location">{useLocation().pathname}</span>;
+}
+
 function renderGrading() {
   return render(
     <MemoryRouter initialEntries={["/game/g1/gm/grading"]}>
+      <Location />
       <Routes>
         <Route path="/game/:gameId/gm/grading" element={<GmGrading />} />
+        <Route path="/game/:gameId/gm" element={<p>dashboard</p>} />
+        <Route path="/game/:gameId/reveal" element={<p>reveal</p>} />
       </Routes>
     </MemoryRouter>,
   );
@@ -156,6 +164,59 @@ afterEach(() => {
   vi.restoreAllMocks();
   setApiConfig(undefined);
   localStorage.clear();
+});
+
+describe("getting here at all", () => {
+  it("stays put while the round is still active", async () => {
+    // Nothing is marked yet, so the game is still ROUND_ACTIVE — and marking is
+    // what moves it to GRADING. Redirecting on that status would bounce the host
+    // back to the dashboard, which is the only route here: a deadlock in which
+    // the round can only ever be revealed unmarked.
+    setGmToken("g1", "token");
+    const active: Game = { ...game, status: "ROUND_ACTIVE" };
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (_url: string, init: RequestInit) => {
+        const body = JSON.parse(String(init.body)) as { query: string };
+        if (body.query.includes("query RoundResults")) {
+          return {
+            ok: true,
+            status: 200,
+            json: async () => ({ data: { roundResults: oneTextQuestion() } }),
+          };
+        }
+        return { ok: true, status: 200, json: async () => ({ data: { game: active } }) };
+      }),
+    );
+    renderGrading();
+
+    await waitFor(() => expect(screen.getByText("Owls")).toBeInTheDocument());
+    expect(screen.getByTestId("location")).toHaveTextContent("/game/g1/gm/grading");
+  });
+
+  it("leaves once the round has been revealed", async () => {
+    setGmToken("g1", "token");
+    const revealed: Game = { ...game, status: "REVEAL" };
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (_url: string, init: RequestInit) => {
+        const body = JSON.parse(String(init.body)) as { query: string };
+        if (body.query.includes("query RoundResults")) {
+          return {
+            ok: true,
+            status: 200,
+            json: async () => ({ data: { roundResults: oneTextQuestion() } }),
+          };
+        }
+        return { ok: true, status: 200, json: async () => ({ data: { game: revealed } }) };
+      }),
+    );
+    renderGrading();
+
+    await waitFor(() =>
+      expect(screen.getByTestId("location")).toHaveTextContent("/game/g1/reveal"),
+    );
+  });
 });
 
 describe("who is allowed in", () => {
