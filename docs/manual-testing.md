@@ -1,6 +1,6 @@
 # Poking at the dev API by hand
 
-Everything here runs against the deployed `dev` stage. If you want the whole
+Everything here runs against the deployed stage. If you want the whole
 game driven automatically instead, that is `scripts/dev-smoke-test.mjs` — see
 [dev-smoke-test.md](./dev-smoke-test.md). This document is for exploring by
 hand, and for the failure cases worth trying deliberately.
@@ -9,18 +9,22 @@ hand, and for the failure cases worth trying deliberately.
 
 | | |
 | --- | --- |
-| **GraphQL endpoint** | `https://rmoxds4lyrdjhdfr36dhqzn3uu.appsync-api.us-east-1.amazonaws.com/graphql` |
-| **Realtime endpoint** | `wss://rmoxds4lyrdjhdfr36dhqzn3uu.appsync-realtime-api.us-east-1.amazonaws.com/graphql` |
-| **Auth** | header `x-api-key: da2-hyghrmj5yjg33pl2av5dtilvzi` |
-| **Deployed site** | https://dp7loru8glau0.cloudfront.net |
-| **AppSync console** | https://us-east-1.console.aws.amazon.com/appsync/home?region=us-east-1#/s7ul5ccv4ndsne2wycorhkh7ey/v1/queries |
+| **GraphQL endpoint** | `https://bjj72gtrtzbvxb2toxtgml2fny.appsync-api.us-east-1.amazonaws.com/graphql` |
+| **Realtime endpoint** | `wss://bjj72gtrtzbvxb2toxtgml2fny.appsync-realtime-api.us-east-1.amazonaws.com/graphql` |
+| **Auth** | header `x-api-key: da2-qjmlvuo2bvd4ppz7gil5u2krsq` |
+| **Deployed site** | https://drj82qe36oane.cloudfront.net |
+| **AppSync console** | https://us-east-1.console.aws.amazon.com/appsync/home?region=us-east-1#/f2wryv3mynhfjfvzjuhv5lvj64/v1/queries |
 
 The API key is not a secret — the static site is built with it baked in, so it
 reaches every browser that loads the app. The thing that actually authorises
 anything is the **GM token**, returned once by `createGame` and never again.
 Losing it means losing control of that game.
 
-`npx sst deploy --stage dev` reprints all of these.
+`npx sst deploy` reprints all of these, and is the authority when they
+disagree: the table above is a convenience, and a redeploy to a *different*
+stage mints a whole new set. These values are the stage `.sst/stage` names —
+one stage, deliberately, after a second one got stood up by accident and was
+removed.
 
 ---
 
@@ -81,7 +85,7 @@ each event land in the player tab.
 Postman handles these fine.
 
 1. **POST** to the GraphQL endpoint.
-2. Headers: `x-api-key: da2-hyghrmj5yjg33pl2av5dtilvzi`.
+2. Headers: `x-api-key: da2-qjmlvuo2bvd4ppz7gil5u2krsq`.
 3. Body → **GraphQL**. Paste the query in the top pane and variables in the
    bottom one.
 
@@ -118,14 +122,14 @@ send the frames yourself.
 Connect to, all on one line:
 
 ```
-wss://rmoxds4lyrdjhdfr36dhqzn3uu.appsync-realtime-api.us-east-1.amazonaws.com/graphql?header=eyJob3N0Ijoicm1veGRzNGx5cmRqaGRmcjM2ZGhxem4zdXUuYXBwc3luYy1hcGkudXMtZWFzdC0xLmFtYXpvbmF3cy5jb20iLCJ4LWFwaS1rZXkiOiJkYTItaHlnaHJtajV5amczM3BsMmF2NWR0aWx2emkifQ==&payload=e30=
+wss://bjj72gtrtzbvxb2toxtgml2fny.appsync-realtime-api.us-east-1.amazonaws.com/graphql?header=eyJob3N0IjoiYmpqNzJndHJ0emJ2eGIydG94dGdtbDJmbnkuYXBwc3luYy1hcGkudXMtZWFzdC0xLmFtYXpvbmF3cy5jb20iLCJ4LWFwaS1rZXkiOiJkYTItcWptbHZ1bzJidmQ0cHB6N2dpbDV1Mmtyc3EifQ==&payload=e30=
 ```
 
 with subprotocol `graphql-ws`. That `header` value is just base64 of:
 
 ```json
-{ "host": "rmoxds4lyrdjhdfr36dhqzn3uu.appsync-api.us-east-1.amazonaws.com",
-  "x-api-key": "da2-hyghrmj5yjg33pl2av5dtilvzi" }
+{ "host": "bjj72gtrtzbvxb2toxtgml2fny.appsync-api.us-east-1.amazonaws.com",
+  "x-api-key": "da2-qjmlvuo2bvd4ppz7gil5u2krsq" }
 ```
 
 Note the **host is the `appsync-api` host, not the realtime one** — signing it
@@ -143,8 +147,8 @@ wait for `connection_ack`, then (with your own `gameId`):
 {"id":"1","type":"start","payload":{
   "data":"{\"query\":\"subscription($gameId: ID!) { onGameUpdated(gameId: $gameId) { gameId event status player { displayName } game { players { displayName teamId } } } }\",\"variables\":{\"gameId\":\"PUT-GAME-ID-HERE\"}}",
   "extensions":{"authorization":{
-    "host":"rmoxds4lyrdjhdfr36dhqzn3uu.appsync-api.us-east-1.amazonaws.com",
-    "x-api-key":"da2-hyghrmj5yjg33pl2av5dtilvzi"}}}}
+    "host":"bjj72gtrtzbvxb2toxtgml2fny.appsync-api.us-east-1.amazonaws.com",
+    "x-api-key":"da2-qjmlvuo2bvd4ppz7gil5u2krsq"}}}}
 ```
 
 The `data` field is a **JSON-encoded string**, not an object — that is the part
@@ -159,8 +163,8 @@ work. Reach for this when you need Postman's scripting around it.
 ## Option C — curl
 
 ```sh
-export API=https://rmoxds4lyrdjhdfr36dhqzn3uu.appsync-api.us-east-1.amazonaws.com/graphql
-export KEY=da2-hyghrmj5yjg33pl2av5dtilvzi
+export API=https://bjj72gtrtzbvxb2toxtgml2fny.appsync-api.us-east-1.amazonaws.com/graphql
+export KEY=da2-qjmlvuo2bvd4ppz7gil5u2krsq
 
 gql() { curl -s -X POST "$API" -H "x-api-key: $KEY" -H 'Content-Type: application/json' \
           --data-binary "$(jq -nc --arg q "$1" '{query:$q}')" | jq; }
@@ -259,7 +263,7 @@ subscribed mutations to it.
 - **HTTP 403 on upload.** `Content-Length` and `Content-Type` are both signed
   into the URL and must match exactly.
 - **`UnauthorizedException` everywhere, suddenly.** The API key expires; it is
-  renewed on redeploy. `aws appsync list-api-keys --api-id s7ul5ccv4ndsne2wycorhkh7ey --region us-east-1`
+  renewed on redeploy. `aws appsync list-api-keys --api-id f2wryv3mynhfjfvzjuhv5lvj64 --region us-east-1`
   shows the expiry.
 - **Lambda errors.** There is no `sst logs` command; tail CloudWatch directly.
   Every handler error is logged with its `errorType` and message:

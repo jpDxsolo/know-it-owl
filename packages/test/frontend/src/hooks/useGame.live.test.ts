@@ -6,7 +6,7 @@
  *
  *   API_URL=... API_KEY=... npx vitest run frontend/src/hooks/useGame.live
  *
- * Both values are printed by `npx sst deploy --stage dev`; see
+ * Both values are printed by `npx sst deploy`; see
  * docs/dev-smoke-test.md.
  */
 import { renderHook, waitFor } from "@testing-library/react";
