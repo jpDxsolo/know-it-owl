@@ -14,6 +14,13 @@
  * draft live between devices is a different feature with a server behind it.
  */
 
+/**
+ * `kio.` like every other key this app writes, rather than the bare `draft:`
+ * the ticket spelled out. localStorage is per-origin and shared with anything
+ * else served from it, so an unnamespaced key is a collision waiting to happen
+ * — and one key in five not matching its siblings is worse than the mismatch
+ * with the ticket. Agreed in review on KIO-13.
+ */
 const DRAFT_PREFIX = "kio.draft.";
 
 /** Answers for one round, keyed by question number. */
