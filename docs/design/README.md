@@ -14,6 +14,9 @@ artefact — open them in a browser; the `.png` thumbnails are small.
 | Round builder | [`round-builder-mobile`](round-builder-mobile.png) | [`round-builder-desktop`](round-builder-desktop.png) |
 | Team round, text question | [`team-round-text-mobile`](team-round-text-mobile.png) | [`team-round-text-desktop`](team-round-text-desktop.png) |
 | Team round, picture question | [`team-round-picture-mobile`](team-round-picture-mobile.png) | — see note below |
+| GM grading | [`gm-grading-mobile`](gm-grading-mobile.png) | [`gm-grading-desktop`](gm-grading-desktop.png) |
+| Round reveal | [`round-reveal-mobile`](round-reveal-mobile.png) | [`round-reveal-desktop`](round-reveal-desktop.png) |
+| Standings | [`standings-mobile`](standings-mobile.png) | [`standings-desktop`](standings-desktop.png) |
 
 The desktop picture round has no mockup of its own: Stitch timed out on it
 repeatedly, and it is the one screen whose shape was already settled — it is the

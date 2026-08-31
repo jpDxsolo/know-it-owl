@@ -1,0 +1,246 @@
+/*
+ * The reveal.
+ *
+ * On a phone it reads top to bottom: your score, then the answers, then the
+ * table. In a browser the score and the table become a sidebar, because the
+ * question-by-question detail is what people scroll and the standings are what
+ * they keep glancing back at.
+ */
+
+.kio-reveal__head {
+  text-align: center;
+}
+
+.kio-reveal__title {
+  font-size: 1.75rem;
+}
+
+.kio-reveal__layout {
+  display: flex;
+  flex-direction: column;
+  gap: var(--kio-space-5);
+}
+
+.kio-reveal__sectionTitle {
+  font-size: 1.125rem;
+  margin-bottom: var(--kio-space-3);
+}
+
+.kio-reveal__side {
+  display: flex;
+  flex-direction: column;
+  gap: var(--kio-space-4);
+}
+
+/* --- Your team's round --- */
+
+.kio-reveal__mine {
+  text-align: center;
+}
+
+.kio-reveal__mineName {
+  margin: 0;
+  color: var(--kio-gold);
+  font-family: var(--kio-font-headline);
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.kio-reveal__mineScore {
+  margin: 0;
+  color: var(--kio-gold);
+  font-family: var(--kio-font-headline);
+  font-size: 4rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.kio-reveal__doubled {
+  display: inline-block;
+  margin: var(--kio-space-3) 0 0;
+  padding: var(--kio-space-1) var(--kio-space-3);
+  background-color: var(--kio-amber);
+  border-radius: var(--kio-radius-pill);
+  color: var(--kio-gold-ink);
+  font-family: var(--kio-font-headline);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+/* --- Question by question --- */
+
+.kio-reveal__questions,
+.kio-revealq__teams,
+.kio-reveal__standings {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.kio-reveal__questions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--kio-space-4);
+}
+
+.kio-revealq {
+  display: flex;
+  flex-direction: column;
+  gap: var(--kio-space-3);
+}
+
+.kio-revealq__prompt {
+  margin: 0;
+  font-size: 1.125rem;
+  line-height: 1.4;
+}
+
+.kio-revealq__image {
+  width: 100%;
+  height: auto;
+  border-radius: var(--kio-radius);
+}
+
+.kio-revealq__key {
+  display: flex;
+  align-items: baseline;
+  gap: var(--kio-space-2);
+  margin: 0;
+  color: var(--kio-green);
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.kio-revealq__key .kio-label {
+  margin: 0;
+}
+
+.kio-revealq__teams {
+  display: flex;
+  flex-direction: column;
+  gap: var(--kio-space-2);
+}
+
+.kio-revealq__team {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 2.5rem;
+  align-items: baseline;
+  gap: var(--kio-space-1) var(--kio-space-3);
+  padding: var(--kio-space-2) var(--kio-space-3);
+  background-color: var(--kio-navy-ground);
+  border: 1px solid transparent;
+  border-radius: var(--kio-radius);
+}
+
+.kio-revealq__team--mine {
+  border-color: var(--kio-gold);
+}
+
+.kio-revealq__teamName {
+  color: var(--kio-muted);
+  font-size: 0.8125rem;
+  grid-column: 1;
+}
+
+.kio-revealq__said {
+  grid-column: 1;
+  overflow-wrap: anywhere;
+}
+
+.kio-revealq__points {
+  grid-row: 1 / span 2;
+  grid-column: 2;
+  align-self: center;
+  color: var(--kio-muted);
+  font-family: var(--kio-font-headline);
+  font-size: 1.25rem;
+  font-weight: 700;
+  text-align: right;
+}
+
+/* Something scored, which is the only number worth colouring. */
+.kio-revealq__points--scored {
+  color: var(--kio-green);
+}
+
+/* --- Standings --- */
+
+.kio-reveal__standings {
+  display: flex;
+  flex-direction: column;
+  gap: var(--kio-space-2);
+}
+
+.kio-reveal__standing {
+  display: grid;
+  grid-template-columns: 1.5rem 1fr auto;
+  align-items: center;
+  gap: var(--kio-space-3);
+  padding: var(--kio-space-2) var(--kio-space-3);
+  background-color: var(--kio-navy-ground);
+  border: 1px solid transparent;
+  border-radius: var(--kio-radius);
+}
+
+.kio-reveal__standing--mine {
+  border-color: var(--kio-gold);
+}
+
+.kio-reveal__place {
+  color: var(--kio-muted);
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.kio-reveal__standingName {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.kio-reveal__score {
+  font-family: var(--kio-font-headline);
+  font-weight: 700;
+}
+
+.kio-reveal__next {
+  text-align: center;
+}
+
+@media (min-width: 40rem) {
+  .kio-reveal__head {
+    text-align: left;
+  }
+
+  .kio-reveal__title {
+    font-size: 2.25rem;
+  }
+
+  .kio-reveal__layout {
+    display: grid;
+    grid-template-columns: 1fr 20rem;
+    align-items: start;
+    gap: var(--kio-space-6);
+  }
+
+  /* The three columns a reveal is actually read in. */
+  .kio-revealq__team {
+    grid-template-columns: 12rem minmax(0, 1fr) 3rem;
+    align-items: center;
+  }
+
+  .kio-revealq__teamName {
+    grid-column: 1;
+    font-size: 0.9375rem;
+  }
+
+  .kio-revealq__said {
+    grid-column: 2;
+  }
+
+  .kio-revealq__points {
+    grid-row: auto;
+    grid-column: 3;
+  }
+}

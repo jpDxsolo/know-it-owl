@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Know It Owl - Standings</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=Public+Sans:wght@700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        navy: {
+                            ground: '#0E1A2F',
+                            surface: '#16294A',
+                            raised: '#1E3765'
+                        },
+                        brand: {
+                            gold: '#F5A81C',
+                            amber: '#F0821E',
+                            blue: '#2F7FE0',
+                            cream: '#F7EFE2',
+                            muted: '#9DB0CE',
+                            green: '#3FB27F',
+                            red: '#E5484D'
+                        }
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                    fontFamily: {
+                        "headline": ["Public Sans", "sans-serif"],
+                        "display": ["Public Sans", "sans-serif"],
+                        "body": ["Plus Jakarta Sans", "sans-serif"],
+                        "label": ["Plus Jakarta Sans", "sans-serif"]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-navy-ground text-brand-cream font-body min-h-screen flex flex-col">
+<!-- TopAppBar -->
+<header class="bg-[#0E1A2F] border-b border-[#1E3765] docked full-width top-0 z-50">
+<div class="flex justify-between items-center px-6 py-4 max-w-[800px] mx-auto w-full">
+<div class="flex items-center gap-3">
+<img alt="Know It Owl Logo" class="w-10 h-10 rounded-full" src="https://lh3.googleusercontent.com/aida/AEtjO1VI0HLn7IsZPX6y8SuYNRpg0wPynlweBRxjITHx4C_FlqmIvHCc57Q_AC5ee6LOiqxmPxftM9BwvstuZsQitdWfH5xFh8BolVZ5WojL9iwFBTp9LQDPMoRR-aeiWkBtW3ad5njCBqloUyboHXos6_oIvi8SLgRjVHDmpz7Zp1zNlmPlAI_6wbTBBx1YixTaI7uXwzTxvVIA5GhEy0pxeL9hxJGNKSUhSXjAW3WIqZwyLRocr1J7o7H7MAI"/>
+<span class="text-[#F5A81C] font-headline font-black text-2xl uppercase tracking-wider">Know It Owl</span>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2 bg-navy-surface px-3 py-1.5 rounded-full border border-navy-raised">
+<div class="w-2 h-2 rounded-full bg-brand-green animate-pulse"></div>
+<span class="text-brand-green text-sm font-bold uppercase tracking-wide">Live</span>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-grow flex flex-col items-center px-4 py-8 max-w-[800px] mx-auto w-full">
+<!-- Header Info -->
+<div class="w-full text-center mb-10">
+<p class="text-brand-muted font-bold text-sm tracking-widest uppercase mb-2">After 4 Rounds</p>
+<h1 class="font-headline font-black text-4xl md:text-5xl tracking-tight">Final standings</h1>
+</div>
+<!-- Standings List -->
+<div class="w-full flex flex-col gap-4">
+<!-- First Place Card -->
+<div class="bg-navy-surface border-2 border-brand-gold rounded-xl p-6 flex items-center justify-between shadow-[0_0_20px_rgba(245,168,28,0.15)] relative overflow-hidden">
+<div class="absolute -right-10 -top-10 text-brand-gold opacity-10">
+<span class="material-symbols-outlined text-[150px]" style="font-variation-settings: 'FILL' 1;">emoji_events</span>
+</div>
+<div class="flex items-center gap-6 z-10">
+<div class="w-14 h-14 bg-brand-gold text-navy-ground rounded-full flex items-center justify-center font-headline font-black text-3xl shadow-lg">
+                        1
+                    </div>
+<div>
+<h2 class="font-headline font-extrabold text-2xl text-brand-gold">Quiz Khalifa</h2>
+<p class="text-brand-muted text-sm mt-1 flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">bolt</span>
+                            Doubled round 3
+                        </p>
+</div>
+</div>
+<div class="z-10 font-headline font-black text-6xl tracking-tighter text-brand-gold">
+                    42
+                </div>
+</div>
+<!-- Second Place Row (Your Team) -->
+<div class="bg-navy-surface border-2 border-brand-gold/50 rounded-xl p-5 flex items-center justify-between relative overflow-hidden group hover:border-brand-gold transition-colors duration-300">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-brand-gold"></div>
+<div class="flex items-center gap-5">
+<div class="w-10 h-10 rounded-full bg-navy-raised flex items-center justify-center font-headline font-bold text-xl text-brand-cream group-hover:bg-brand-gold group-hover:text-navy-ground transition-colors">
+                        2
+                    </div>
+<div>
+<div class="flex items-center gap-3">
+<h3 class="font-headline font-bold text-xl">The Night Owls</h3>
+<span class="bg-brand-gold/20 text-brand-gold text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider border border-brand-gold/30">Your Team</span>
+</div>
+<p class="text-brand-muted text-sm mt-0.5 flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">bolt</span>
+                            Doubled round 4
+                        </p>
+</div>
+</div>
+<div class="font-headline font-black text-4xl tracking-tight">
+                    38
+                </div>
+</div>
+<!-- Third Place Row -->
+<div class="bg-navy-surface border border-navy-raised rounded-xl p-5 flex items-center justify-between hover:bg-navy-raised/50 transition-colors duration-300">
+<div class="flex items-center gap-5">
+<div class="w-10 h-10 rounded-full bg-navy-raised flex items-center justify-center font-headline font-bold text-xl text-brand-muted">
+                        3
+                    </div>
+<div>
+<h3 class="font-headline font-bold text-xl">Trivia Newton John</h3>
+<p class="text-brand-muted text-sm mt-0.5 flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">bolt</span>
+                            Doubled round 2
+                        </p>
+</div>
+</div>
+<div class="font-headline font-bold text-3xl tracking-tight text-brand-muted">
+                    34
+                </div>
+</div>
+<!-- Fourth Place Row -->
+<div class="bg-navy-surface border border-navy-raised rounded-xl p-5 flex items-center justify-between opacity-80 hover:opacity-100 hover:bg-navy-raised/50 transition-all duration-300">
+<div class="flex items-center gap-5">
+<div class="w-10 h-10 rounded-full bg-navy-raised flex items-center justify-center font-headline font-bold text-xl text-brand-muted">
+                        4
+                    </div>
+<div>
+<h3 class="font-headline font-bold text-xl text-brand-muted">Les Quizerables</h3>
+<p class="text-brand-muted/70 text-sm mt-0.5">
+                            Double unused
+                        </p>
+</div>
+</div>
+<div class="font-headline font-bold text-3xl tracking-tight text-brand-muted/70">
+                    29
+                </div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-[#0E1A2F] border-t border-[#1E3765] shadow-2xl relative z-40 mt-auto">
+<div class="flex justify-between items-center p-8 max-w-[800px] mx-auto w-full">
+<span class="text-[#9DB0CE] font-body text-sm font-medium">Thanks for playing</span>
+<button class="bg-transparent border-2 border-[#F5A81C] text-[#F5A81C] hover:bg-[#F5A81C] hover:text-[#0E1A2F] rounded-full px-6 py-2.5 font-bold uppercase tracking-widest text-sm transition-all duration-300 active:scale-[0.98]">
+                Start a new game
+            </button>
+</div>
+</footer>
+</body></html>

@@ -1,0 +1,142 @@
+/*
+ * The scoreboard.
+ *
+ * The one screen that stays a single column at every size: a ranking read down
+ * the page is the whole point, and putting it in two columns would ask people
+ * to compare across a gutter. Desktop grows the type instead — this is the
+ * screen most likely to be held up for a table to read.
+ */
+
+.kio-standings__head {
+  text-align: center;
+}
+
+.kio-standings__title {
+  font-size: 1.75rem;
+}
+
+/* --- First place, which is a different thing from second --- */
+
+.kio-leader {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: var(--kio-space-4);
+  border-color: var(--kio-gold);
+}
+
+.kio-leader__place {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  background-color: var(--kio-gold);
+  border-radius: var(--kio-radius-pill);
+  color: var(--kio-gold-ink);
+  font-family: var(--kio-font-headline);
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.kio-leader__name {
+  color: var(--kio-gold);
+  font-size: 1.375rem;
+}
+
+.kio-leader__score {
+  margin: 0;
+  font-family: var(--kio-font-headline);
+  font-size: 2.75rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.kio-leader--mine {
+  border-width: 2px;
+}
+
+/* --- Everyone else --- */
+
+.kio-standings__rest {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--kio-space-3);
+  margin: 0;
+  padding: 0;
+}
+
+.kio-standings__row {
+  display: grid;
+  grid-template-columns: 1.5rem 1fr auto;
+  align-items: center;
+  gap: var(--kio-space-4);
+}
+
+.kio-standings__row--mine {
+  border-color: var(--kio-gold);
+}
+
+.kio-standings__place {
+  color: var(--kio-muted);
+  font-family: var(--kio-font-headline);
+  font-size: 1.125rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.kio-standings__name {
+  margin: 0;
+  font-family: var(--kio-font-headline);
+  font-size: 1.125rem;
+  font-weight: 700;
+}
+
+.kio-standings__score {
+  margin: 0;
+  font-family: var(--kio-font-headline);
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* Your own row, so a team finds itself without reading every name. */
+.kio-standings__yours {
+  margin: var(--kio-space-1) 0 0;
+  color: var(--kio-gold);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.kio-standings__foot {
+  text-align: center;
+}
+
+@media (min-width: 40rem) {
+  .kio-standings {
+    max-width: 44rem;
+  }
+
+  .kio-standings__head {
+    text-align: left;
+  }
+
+  .kio-standings__title {
+    font-size: 2.5rem;
+  }
+
+  .kio-leader__name {
+    font-size: 1.75rem;
+  }
+
+  .kio-leader__score {
+    font-size: 4rem;
+  }
+
+  .kio-standings__score {
+    font-size: 2.25rem;
+  }
+}
