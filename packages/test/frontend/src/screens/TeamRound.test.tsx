@@ -349,6 +349,14 @@ describe("answers and the draft", () => {
 
     await waitFor(() => expect(screen.getByAltText(/picture round/i)).toBeInTheDocument());
     expect(screen.getAllByRole("textbox")).toHaveLength(10);
+
+    // The picture opens in a tab of its own, where the browser gives full size,
+    // pinch-zoom and save for free.
+    const link = screen.getByAltText(/picture round/i).closest("a");
+    expect(link).toHaveAttribute("href", "https://images.test/one.jpg");
+    expect(link).toHaveAttribute("target", "_blank");
+    // Without noopener the opened tab can reach back through window.opener.
+    expect(link?.getAttribute("rel")).toContain("noopener");
     await userEvent.type(screen.getByLabelText("Answer 7"), "Colosseum");
     await waitFor(() =>
       expect(roundDraft("g1", 1)?.answers[1]).toEqual(["", "", "", "", "", "", "Colosseum"]),

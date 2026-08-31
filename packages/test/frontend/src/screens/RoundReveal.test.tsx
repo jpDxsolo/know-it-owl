@@ -39,9 +39,19 @@ const game: Game = {
   rounds: [],
 };
 
-const question = {
+/** Widened deliberately: these fixtures carry both question formats. */
+interface RevealQuestion {
+  number: number;
+  type: "TEXT" | "PICTURE_10";
+  text: string | null;
+  imageUrl: string | null;
+  defaultPoints: number;
+  correctAnswers: string[] | null;
+}
+
+const question: RevealQuestion = {
   number: 1,
-  type: "TEXT" as const,
+  type: "TEXT",
   text: "Which city is the capital of Australia?",
   imageUrl: null,
   defaultPoints: 2,
@@ -150,7 +160,7 @@ describe("the reveal", () => {
 
     await waitFor(() => expect(screen.getByText("Capitals")).toBeInTheDocument());
     expect(screen.getByText("Round 1 revealed")).toBeInTheDocument();
-    expect(screen.getByText(question.text)).toBeInTheDocument();
+    expect(screen.getByText(question.text ?? "")).toBeInTheDocument();
     // Once as the key, once as the Owls' answer.
     expect(screen.getAllByText("Canberra")).toHaveLength(2);
     expect(screen.getByText("Sydney")).toBeInTheDocument();
@@ -182,6 +192,32 @@ describe("the reveal", () => {
     expect(rows[0]).toHaveTextContent("31");
     expect(rows[1]).toHaveTextContent("Owls");
     expect(rows[1].className).toContain("kio-reveal__standing--mine");
+  });
+
+  it("lets a picture round be opened at full size", async () => {
+    serve({
+      ...revealed,
+      round: {
+        ...revealed.round,
+        questions: [
+          {
+            number: 1,
+            type: "PICTURE_10",
+            text: null,
+            imageUrl: "https://images.test/one.jpg",
+            defaultPoints: 1,
+            correctAnswers: ["a"],
+          } satisfies RevealQuestion,
+        ],
+      },
+    });
+    renderReveal();
+
+    await waitFor(() => expect(screen.getByAltText(/picture round/i)).toBeInTheDocument());
+    const link = screen.getByAltText(/picture round/i).closest("a");
+    expect(link).toHaveAttribute("href", "https://images.test/one.jpg");
+    expect(link).toHaveAttribute("target", "_blank");
+    expect(link?.getAttribute("rel")).toContain("noopener");
   });
 
   it("shows no double badge for a team that did not double", async () => {

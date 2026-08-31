@@ -381,11 +381,27 @@ export function TeamRound() {
                   {question.type === "PICTURE_10" ? (
                     <>
                       {question.imageUrl ? (
-                        <img
-                          className="kio-question__image"
-                          src={question.imageUrl}
-                          alt={`Picture round, question ${question.number}`}
-                        />
+                        /*
+                         * A plain link to the image, so the browser's own viewer
+                         * does the work: full size, pinch-zoom on a phone, and
+                         * save by long-press or right-click. Anything built in
+                         * here would be a worse version of all three.
+                         */
+                        <a
+                          className="kio-picture-link"
+                          href={question.imageUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <img
+                            className="kio-question__image"
+                            src={question.imageUrl}
+                            alt={`Picture round, question ${question.number}`}
+                          />
+                          <span className="kio-picture-link__hint">
+                            Open full size ↗
+                          </span>
+                        </a>
                       ) : (
                         <p className="kio-muted">The picture is on its way…</p>
                       )}

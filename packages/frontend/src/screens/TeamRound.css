@@ -383,6 +383,39 @@
 
 /* --- Desktop: the context becomes a sidebar, the action stops being a slab --- */
 
+/*
+ * A picture round's image, as a link to itself.
+ *
+ * The browser already has a good image viewer — full size, pinch-zoom on a
+ * phone, long-press or right-click to save — so opening the file in a tab beats
+ * anything this app would build. The hint exists because a bare image does not
+ * look tappable.
+ */
+.kio-picture-link {
+  position: relative;
+  display: block;
+  border-radius: var(--kio-radius);
+  overflow: hidden;
+}
+
+.kio-picture-link:focus-visible {
+  outline: 2px solid var(--kio-gold);
+  outline-offset: 2px;
+}
+
+.kio-picture-link__hint {
+  position: absolute;
+  right: var(--kio-space-2);
+  bottom: var(--kio-space-2);
+  padding: var(--kio-space-1) var(--kio-space-3);
+  /* Over an unknown photograph, so it carries its own contrast. */
+  background-color: rgb(14 26 47 / 0.85);
+  border-radius: var(--kio-radius-pill);
+  color: var(--kio-cream);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
 @media (min-width: 40rem) {
   .kio-round__layout {
     display: grid;
