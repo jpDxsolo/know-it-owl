@@ -233,6 +233,31 @@ describe("with teams but no rounds", () => {
     expect(screen.getByText(/write a round first/i)).toBeInTheDocument();
   });
 
+  it("re-reads the game after a round is saved, so it can be started", async () => {
+    // createRound fans out to nobody — it returns a Round, not a GameUpdate —
+    // so without an explicit re-read the host's own new round is missing from
+    // the list and the start button stays dead until a page reload.
+    setGmToken("g1", "token");
+    serve(seated());
+    renderDashboard();
+    await waitFor(() => expect(screen.getByText("Owls")).toBeInTheDocument());
+
+    await userEvent.click(screen.getByRole("button", { name: /new round/i }));
+    await userEvent.type(screen.getByLabelText(/category/i), "Capitals");
+    await userEvent.type(screen.getByLabelText(/^question$/i), "Capital of Australia?");
+    await userEvent.type(screen.getByLabelText(/^answer$/i), "Canberra");
+
+    const readsBefore = calls.filter((call) => call.query.includes("query Game")).length;
+    await userEvent.click(screen.getByRole("button", { name: /save round/i }));
+
+    await waitFor(() => expect(calls.some((call) => call.query.includes("CreateRound"))).toBe(true));
+    await waitFor(() =>
+      expect(calls.filter((call) => call.query.includes("query Game")).length).toBeGreaterThan(
+        readsBefore,
+      ),
+    );
+  });
+
   it("opens the round builder", async () => {
     setGmToken("g1", "token");
     serve(seated());

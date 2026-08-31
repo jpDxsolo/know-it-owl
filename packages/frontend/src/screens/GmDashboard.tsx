@@ -44,7 +44,8 @@ export function GmDashboard() {
   const location = useLocation();
   const justCreated = (location.state as { justCreated?: boolean } | null)?.justCreated === true;
 
-  const { game, realtime, loading, error, gmToken, isHost, submittedTeamIds } = useGmGame(gameId);
+  const { game, realtime, loading, error, gmToken, isHost, submittedTeamIds, refresh } =
+    useGmGame(gameId);
 
   const [teamCount, setTeamCount] = useState(MIN_TEAMS);
   const [busy, setBusy] = useState(false);
@@ -147,7 +148,16 @@ export function GmDashboard() {
           gameId={gameId}
           gmToken={gmToken}
           roundNumber={game.rounds.length + 1}
-          onSaved={() => setBuilding(false)}
+          onSaved={() => {
+            setBuilding(false);
+            // `createRound` is the one mutation the host makes that fans out to
+            // nobody — it returns a Round rather than a GameUpdate, by design,
+            // since a DRAFT round is not news to the players. So nothing tells
+            // this screen its own round list just grew, and without this the
+            // round the host has just written is missing from the list and
+            // cannot be started until something else forces a re-read.
+            refresh();
+          }}
           onCancel={() => setBuilding(false)}
         />
       </main>
