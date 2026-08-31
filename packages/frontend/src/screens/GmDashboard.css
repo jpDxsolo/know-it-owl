@@ -162,8 +162,15 @@
   opacity: 0.55;
 }
 
-.kio-liveq__release {
+/*
+ * Sized to its label, not to the page-action minimum: it shares a row with the
+ * question it releases, and at 14rem it overlapped the text instead.
+ * Two classes deep so it beats the themed `.kio-button` whatever order the
+ * bundled stylesheets end up in.
+ */
+.kio-liveq .kio-liveq__release {
   width: auto;
+  min-width: 0;
   flex: none;
 }
 

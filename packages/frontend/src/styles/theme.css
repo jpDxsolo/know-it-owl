@@ -119,8 +119,16 @@ h3 {
     gap: var(--kio-space-6);
   }
 
-  /* A full-width button is right under a thumb and absurd on a laptop. */
-  .kio-button {
+  /*
+   * A full-width button is right under a thumb and absurd on a laptop.
+   *
+   * Ghost buttons are excluded: this is a rule about the one big action a
+   * screen is asking for, and a ghost is the opposite of that — "Copy",
+   * "Full", "Nought", "Remove". Left in, a 14rem minimum turns every one of
+   * them into a slab that shoulders its neighbours out of the row, which is
+   * exactly what it did to the marking sheet and the release button.
+   */
+  .kio-button:not(.kio-button--ghost) {
     width: auto;
     min-width: 14rem;
     align-self: center;
