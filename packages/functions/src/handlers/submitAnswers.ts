@@ -87,18 +87,34 @@ export async function submitAnswers(args: Record<string, unknown>): Promise<Game
     },
   });
 
-  const doubleIndex = writes.length;
-  if (writesDouble) {
-    writes.push({
-      Update: {
-        TableName: table,
-        Key: keys.team(gameId, team.id),
-        UpdateExpression: "SET doubleUsedRound = :roundNumber",
-        ConditionExpression: "attribute_not_exists(doubleUsedRound) OR doubleUsedRound = :unused",
-        ExpressionAttributeValues: { ":roundNumber": roundNumber, ":unused": null },
-      },
-    });
-  }
+  /*
+   * One write for the team item, carrying up to two things.
+   *
+   * `lastSubmittedRound` is how a teammate's phone learns their team is in:
+   * they did not press submit, and players may not read the round's responses,
+   * so the lock has to arrive on something every snapshot already carries.
+   *
+   * The double rides along in the *same* update rather than one of its own,
+   * because a transaction may not touch one item twice — two updates on this
+   * team would be rejected outright, and only when a team doubled on the way in.
+   */
+  const teamIndex = writes.length;
+  writes.push({
+    Update: {
+      TableName: table,
+      Key: keys.team(gameId, team.id),
+      UpdateExpression: writesDouble
+        ? "SET lastSubmittedRound = :roundNumber, doubleUsedRound = :roundNumber"
+        : "SET lastSubmittedRound = :roundNumber",
+      ...(writesDouble
+        ? {
+            ConditionExpression:
+              "attribute_not_exists(doubleUsedRound) OR doubleUsedRound = :unused",
+            ExpressionAttributeValues: { ":roundNumber": roundNumber, ":unused": null },
+          }
+        : { ExpressionAttributeValues: { ":roundNumber": roundNumber } }),
+    },
+  });
 
   try {
     await transactWrite(writes);
@@ -107,7 +123,7 @@ export async function submitAnswers(args: Record<string, unknown>): Promise<Game
     if (codes[markerIndex] === CONDITION_FAILED) {
       throw new ConflictError("Your team has already submitted this round");
     }
-    if (writesDouble && codes[doubleIndex] === CONDITION_FAILED) {
+    if (writesDouble && codes[teamIndex] === CONDITION_FAILED) {
       // Nothing persisted: the answers were in the same transaction.
       throw new ConflictError("Your team already used its double on another round");
     }
@@ -118,8 +134,12 @@ export async function submitAnswers(args: Record<string, unknown>): Promise<Game
     {
       ...state,
       teams: state.teams.map((candidate) =>
-        candidate.id === team.id && doubled
-          ? { ...candidate, doubleUsedRound: roundNumber }
+        candidate.id === team.id
+          ? {
+              ...candidate,
+              lastSubmittedRound: roundNumber,
+              ...(doubled ? { doubleUsedRound: roundNumber } : {}),
+            }
           : candidate,
       ),
     },

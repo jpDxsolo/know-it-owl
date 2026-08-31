@@ -12,6 +12,13 @@ artefact — open them in a browser; the `.png` thumbnails are small.
 | GM dashboard, before the quiz | [`gm-dashboard-mobile`](gm-dashboard-mobile.png) | [`gm-dashboard-desktop`](gm-dashboard-desktop.png) |
 | GM running a round | [`gm-round-active-mobile`](gm-round-active-mobile.png) | [`gm-round-active-desktop`](gm-round-active-desktop.png) |
 | Round builder | [`round-builder-mobile`](round-builder-mobile.png) | [`round-builder-desktop`](round-builder-desktop.png) |
+| Team round, text question | [`team-round-text-mobile`](team-round-text-mobile.png) | [`team-round-text-desktop`](team-round-text-desktop.png) |
+| Team round, picture question | [`team-round-picture-mobile`](team-round-picture-mobile.png) | — see note below |
+
+The desktop picture round has no mockup of its own: Stitch timed out on it
+repeatedly, and it is the one screen whose shape was already settled — it is the
+round builder's picture layout with the answer key in two columns instead of the
+host's. The implementation follows `round-builder-desktop`.
 
 The GM screens carry two extras the generated mocks invented and we do not have:
 a left-hand app nav (Games / Library / Results) and a "Game Master" account
