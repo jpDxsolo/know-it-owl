@@ -379,13 +379,36 @@ describe("the doubled badge", () => {
 });
 
 describe("finishing the round", () => {
-  it("reveals the round", async () => {
+  it("will not reveal while an answer is unmarked", async () => {
+    // An unmarked answer silently scores nothing, and a reveal is the moment
+    // the scores become the standings — so the host has to say what every
+    // answer was worth first, even when the answer is worth nought.
     setGmToken("g1", "token");
     serve(oneTextQuestion());
+    renderGrading();
+
+    await waitFor(() =>
+      expect(screen.getByRole("button", { name: /end round and reveal/i })).toBeDisabled(),
+    );
+    expect(screen.getByText(/2 answers are still unmarked/i)).toBeInTheDocument();
+  });
+
+  it("reveals the round once everything is marked", async () => {
+    setGmToken("g1", "token");
+    serve(
+      results(
+        [textQuestion(1)],
+        [
+          response(1, "t1", ["Canberra"], { gradedPoints: [2] }),
+          response(1, "t2", ["Sydney"], { gradedPoints: [0] }),
+        ],
+      ),
+    );
     renderGrading();
     await waitFor(() =>
       expect(screen.getByRole("button", { name: /end round and reveal/i })).toBeEnabled(),
     );
+    expect(screen.getByText(/everything is marked/i)).toBeInTheDocument();
 
     await userEvent.click(screen.getByRole("button", { name: /end round and reveal/i }));
     await waitFor(() => expect(calls.some((c) => c.query.includes("EndRound"))).toBe(true));
@@ -395,14 +418,84 @@ describe("finishing the round", () => {
       roundNumber: 1,
     });
   });
+});
 
-  it("warns that unmarked answers will score nothing", async () => {
+describe("marking a whole question", () => {
+  it("noughts only the answers still unmarked, leaving entered scores alone", async () => {
+    setGmToken("g1", "token");
+    serve(
+      results(
+        [textQuestion(1)],
+        [
+          response(1, "t1", ["Canberra"], { gradedPoints: [2] }),
+          response(1, "t2", ["Sydney"]),
+        ],
+      ),
+    );
+    renderGrading();
+    await waitFor(() => expect(screen.getByText("Sydney")).toBeInTheDocument());
+
+    await userEvent.click(screen.getByRole("button", { name: /nought the rest/i }));
+
+    await waitFor(() => expect(calls.some((c) => c.query.includes("GradeResponse"))).toBe(true));
+    const graded = calls.filter((c) => c.query.includes("GradeResponse"));
+    // The Owls' 2 was already in; only the Bears are touched.
+    expect(graded).toHaveLength(1);
+    expect(graded[0].variables.input).toMatchObject({ teamId: "t2", points: [0] });
+  });
+
+  it("gives every team the marks in one go", async () => {
     setGmToken("g1", "token");
     serve(oneTextQuestion());
     renderGrading();
+    await waitFor(() => expect(screen.getByText("Sydney")).toBeInTheDocument());
+
+    await userEvent.click(screen.getByRole("button", { name: /everyone right/i }));
 
     await waitFor(() =>
-      expect(screen.getByText(/2 answers are still unmarked/i)).toBeInTheDocument(),
+      expect(calls.filter((c) => c.query.includes("GradeResponse"))).toHaveLength(2),
     );
+    const graded = calls.filter((c) => c.query.includes("GradeResponse"));
+    expect(graded.map((c) => (c.variables.input as { teamId: string }).teamId)).toEqual([
+      "t1",
+      "t2",
+    ]);
+    expect(graded.every((c) => (c.variables.input as { points: number[] }).points[0] === 2)).toBe(
+      true,
+    );
+  });
+});
+
+describe("marking at speed", () => {
+  it("moves Enter down the column of points boxes", async () => {
+    // A host reads across a row, types a number, and wants the next box.
+    setGmToken("g1", "token");
+    serve(oneTextQuestion());
+    renderGrading();
+    await waitFor(() => expect(screen.getByLabelText("Points for Owls")).toBeInTheDocument());
+
+    const first = screen.getByLabelText("Points for Owls");
+    first.focus();
+    await userEvent.keyboard("2{Enter}");
+
+    expect(screen.getByLabelText("Points for Bears")).toHaveFocus();
+    // Leaving the box is what saves it, so moving on has banked the 2.
+    await waitFor(() => expect(calls.some((c) => c.query.includes("GradeResponse"))).toBe(true));
+    expect(calls.find((c) => c.query.includes("GradeResponse"))?.variables.input).toMatchObject({
+      teamId: "t1",
+      points: [2],
+    });
+  });
+
+  it("keeps the quick marks out of the tab path between boxes", async () => {
+    setGmToken("g1", "token");
+    serve(oneTextQuestion());
+    renderGrading();
+    await waitFor(() => expect(screen.getByLabelText("Points for Owls")).toBeInTheDocument());
+
+    screen.getByLabelText("Points for Owls").focus();
+    await userEvent.tab();
+
+    expect(screen.getByLabelText("Points for Bears")).toHaveFocus();
   });
 });

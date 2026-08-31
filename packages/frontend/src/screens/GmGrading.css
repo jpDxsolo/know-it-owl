@@ -159,6 +159,11 @@
   gap: var(--kio-space-2);
 }
 
+/* The question-level pair sits under the answer key, clear of the team rows. */
+.kio-marking__head .kio-marking__quick {
+  margin-top: var(--kio-space-2);
+}
+
 .kio-marking__points {
   width: 5rem;
   flex: none;

@@ -15,7 +15,7 @@
  * It is a grid of every team's answers, which is a shape that needs width, so
  * this is designed at desktop and folded into one column on a phone.
  */
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState, type KeyboardEvent } from "react";
 import { useParams } from "react-router-dom";
 import { AppHeader } from "../components/AppHeader";
 import { useGmGame } from "../hooks/useGmGame";
@@ -61,6 +61,8 @@ export function GmGrading() {
   const [edits, setEdits] = useState<Record<string, string[]>>({});
   const [busy, setBusy] = useState(false);
   const [problem, setProblem] = useState<string>();
+  /** The marking sheet, so Enter can find the next points box in it. */
+  const sheet = useRef<HTMLOListElement>(null);
 
   // A team handing in late is a new column of answers to mark.
   useEffect(() => {
@@ -121,20 +123,43 @@ export function GmGrading() {
     });
   };
 
-  async function send(question: Question, response: TeamResponse, values: string[]): Promise<void> {
+  /** One grade, with no re-read of its own: callers decide when to refresh. */
+  async function gradeOne(
+    question: Question,
+    response: TeamResponse,
+    values: string[],
+  ): Promise<void> {
     if (!gameId || !gmToken) return;
+    await execute(GradeResponseMutation, {
+      input: {
+        gameId,
+        gmToken,
+        roundNumber: response.roundNumber,
+        questionNumber: question.number,
+        teamId: response.teamId,
+        points: toPoints(values, expectedPoints(question)),
+      },
+    });
+  }
+
+  interface Entry {
+    response: TeamResponse;
+    values: string[];
+  }
+
+  /**
+   * Save one grade or a whole question's worth, then re-read once.
+   *
+   * Sequential rather than parallel: `gradeResponse` also walks the round and
+   * the game into GRADING, so a burst of them is a burst of conditional writes
+   * to the same two items — and the loser of that race comes back as a conflict
+   * the host did nothing to deserve.
+   */
+  async function send(question: Question, entries: Entry[]): Promise<void> {
+    if (entries.length === 0) return;
     setProblem(undefined);
     try {
-      await execute(GradeResponseMutation, {
-        input: {
-          gameId,
-          gmToken,
-          roundNumber: response.roundNumber,
-          questionNumber: question.number,
-          teamId: response.teamId,
-          points: toPoints(values, expectedPoints(question)),
-        },
-      });
+      for (const entry of entries) await gradeOne(question, entry.response, entry.values);
       refresh();
     } catch (cause) {
       setProblem(cause instanceof ApiError ? cause.message : String(cause));
@@ -149,12 +174,54 @@ export function GmGrading() {
       return { ...previous, [key]: next };
     });
 
-  /** A quick mark: set every box for this response and save it immediately. */
+  const filled = (question: Question, points: number): string[] =>
+    Array.from({ length: expectedPoints(question) }, () => String(points));
+
+  /** A quick mark: fill every box for this response and save it immediately. */
   const markAll = (question: Question, response: TeamResponse, points: number): void => {
-    const key = slot(question.number, response.teamId);
-    const values = Array.from({ length: expectedPoints(question) }, () => String(points));
-    setEdits((previous) => ({ ...previous, [key]: values }));
-    void send(question, response, values);
+    const values = filled(question, points);
+    setEdits((previous) => ({ ...previous, [slot(question.number, response.teamId)]: values }));
+    void send(question, [{ response, values }]);
+  };
+
+  /**
+   * Mark a whole question in one go.
+   *
+   * `onlyUnmarked` is the one a host actually reaches for: having gone down the
+   * column giving marks to the teams that earned them, the rest are noughts, and
+   * with the reveal gated on everything being marked those noughts have to be
+   * entered rather than left blank.
+   */
+  const markQuestion = (question: Question, points: number, onlyUnmarked: boolean): void => {
+    const entries = results.responses
+      .filter((response) => response.questionNumber === question.number)
+      .filter((response) => !onlyUnmarked || !response.graded)
+      .map((response) => ({ response, values: filled(question, points) }));
+    setEdits((previous) => {
+      const next = { ...previous };
+      for (const entry of entries) next[slot(question.number, entry.response.teamId)] = entry.values;
+      return next;
+    });
+    void send(question, entries);
+  };
+
+  /**
+   * Enter moves down the column of points boxes.
+   *
+   * A host marks by reading across a row and typing a number, over and over, so
+   * the fastest path is one key between entries. Moving focus fires the blur
+   * that saves, so this is only navigation. DOM order is the visual order, which
+   * is why the boxes are found by query rather than tracked in state.
+   */
+  const onPointsKeyDown = (event: KeyboardEvent<HTMLInputElement>): void => {
+    if (event.key !== "Enter") return;
+    event.preventDefault();
+    const boxes = Array.from(
+      sheet.current?.querySelectorAll<HTMLInputElement>("input.kio-marking__points") ?? [],
+    );
+    const next = boxes[boxes.indexOf(event.currentTarget) + 1];
+    if (next) next.focus();
+    else event.currentTarget.blur();
   };
 
   const endRound = async (): Promise<void> => {
@@ -190,7 +257,7 @@ export function GmGrading() {
         />
       </header>
 
-      <ol className="kio-grading__questions">
+      <ol className="kio-grading__questions" ref={sheet}>
         {round.questions.map((question) => (
           <li key={question.number} className="kio-card kio-marking">
             <div className="kio-marking__head">
@@ -205,6 +272,28 @@ export function GmGrading() {
                 <span className="kio-label">Correct</span>
                 {(question.correctAnswers ?? []).join(" · ") || "No answer key"}
               </p>
+              {/* Out of the tab order on purpose, here and on every row below.
+                  A host tabbing down the column wants the next points box, not
+                  two buttons on the way to it — and nothing is lost, because
+                  each of these only types a number the box accepts anyway. */}
+              <div className="kio-marking__quick">
+                <button
+                  className="kio-button kio-button--ghost"
+                  type="button"
+                  tabIndex={-1}
+                  onClick={() => markQuestion(question, question.defaultPoints, false)}
+                >
+                  Everyone right
+                </button>
+                <button
+                  className="kio-button kio-button--ghost"
+                  type="button"
+                  tabIndex={-1}
+                  onClick={() => markQuestion(question, 0, true)}
+                >
+                  Nought the rest
+                </button>
+              </div>
             </div>
 
             <ul className="kio-marking__teams">
@@ -246,8 +335,11 @@ export function GmGrading() {
                                   type(question, response, index, event.target.value)
                                 }
                                 onBlur={() =>
-                                  void send(question, response, valuesFor(question, response))
+                                  void send(question, [
+                                    { response, values: valuesFor(question, response) },
+                                  ])
                                 }
+                                onKeyDown={onPointsKeyDown}
                                 aria-label={`Points for ${team.name}, item ${index + 1}`}
                               />
                             </li>
@@ -257,6 +349,7 @@ export function GmGrading() {
                           <button
                             className="kio-button kio-button--ghost"
                             type="button"
+                            tabIndex={-1}
                             onClick={() => markAll(question, response, question.defaultPoints)}
                           >
                             All right
@@ -264,6 +357,7 @@ export function GmGrading() {
                           <button
                             className="kio-button kio-button--ghost"
                             type="button"
+                            tabIndex={-1}
                             onClick={() => markAll(question, response, 0)}
                           >
                             All wrong
@@ -277,6 +371,7 @@ export function GmGrading() {
                           <button
                             className="kio-button kio-button--ghost"
                             type="button"
+                            tabIndex={-1}
                             onClick={() => markAll(question, response, question.defaultPoints)}
                           >
                             Full
@@ -284,6 +379,7 @@ export function GmGrading() {
                           <button
                             className="kio-button kio-button--ghost"
                             type="button"
+                            tabIndex={-1}
                             onClick={() => markAll(question, response, 0)}
                           >
                             Nought
@@ -296,8 +392,11 @@ export function GmGrading() {
                             value={values[0] ?? ""}
                             onChange={(event) => type(question, response, 0, event.target.value)}
                             onBlur={() =>
-                              void send(question, response, valuesFor(question, response))
+                              void send(question, [
+                                { response, values: valuesFor(question, response) },
+                              ])
                             }
+                            onKeyDown={onPointsKeyDown}
                             aria-label={`Points for ${team.name}`}
                           />
                         </div>
@@ -325,13 +424,17 @@ export function GmGrading() {
           className="kio-button kio-button--primary"
           type="button"
           onClick={() => void endRound()}
-          disabled={busy}
+          disabled={busy || outstanding > 0}
         >
           End round and reveal
         </button>
+        {/* A reveal is the moment the scores become the standings, and an
+            unmarked answer silently scores nothing — so the round cannot be
+            revealed until the host has said what every answer was worth, even
+            if what it was worth is nought. */}
         <p className="kio-muted">
           {outstanding > 0
-            ? `${outstanding} ${outstanding === 1 ? "answer is" : "answers are"} still unmarked — they will score nothing.`
+            ? `${outstanding} ${outstanding === 1 ? "answer is" : "answers are"} still unmarked. Mark them — "Nought the rest" does a question at a time.`
             : "Everything is marked."}
         </p>
       </div>
