@@ -17,8 +17,22 @@
   height: auto;
 }
 
+/*
+ * The header mark. Sized here rather than left to the width attribute, so it
+ * can grow on a laptop — the artwork carries the wordmark inside it, and at
+ * 40px on a large display the lettering is unreadable. The attribute stays as
+ * the intrinsic hint that reserves the space before the image arrives.
+ */
+.kio-logo--mark {
+  width: 2.5rem;
+}
+
 @media (min-width: 40rem) {
   .kio-logo--hero {
     width: 20rem;
+  }
+
+  .kio-logo--mark {
+    width: 3.75rem;
   }
 }
