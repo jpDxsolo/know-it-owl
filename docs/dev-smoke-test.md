@@ -11,17 +11,17 @@ a list of things worth trying — see [manual-testing.md](./manual-testing.md).
 ```sh
 export AWS_PROFILE=league-szn      # us-east-1, account 435238036810
 npx sst install                    # once, to fetch the pulumi providers
-npx sst deploy --stage dev
+npx sst deploy
 ```
 
 The run ends by printing the stack outputs:
 
 | Output        | Value (stage `dev`)                                                                   |
 | ------------- | ------------------------------------------------------------------------------------- |
-| `api`         | `https://rmoxds4lyrdjhdfr36dhqzn3uu.appsync-api.us-east-1.amazonaws.com/graphql`       |
-| `apiRealtime` | `wss://rmoxds4lyrdjhdfr36dhqzn3uu.appsync-realtime-api.us-east-1.amazonaws.com/graphql` |
-| `apiKey`      | `da2-hyghrmj5yjg33pl2av5dtilvzi`                                                       |
-| `site`        | `https://dp7loru8glau0.cloudfront.net`                                                 |
+| `api`         | `https://bjj72gtrtzbvxb2toxtgml2fny.appsync-api.us-east-1.amazonaws.com/graphql`       |
+| `apiRealtime` | `wss://bjj72gtrtzbvxb2toxtgml2fny.appsync-realtime-api.us-east-1.amazonaws.com/graphql` |
+| `apiKey`      | `da2-qjmlvuo2bvd4ppz7gil5u2krsq`                                                       |
+| `site`        | `https://drj82qe36oane.cloudfront.net`                                                 |
 
 The API authenticates with `API_KEY`, sent as an `x-api-key` header (and in the
 `header` parameter of the realtime handshake). The key is not a secret: the
@@ -32,7 +32,7 @@ every browser that loads the app. It is the *GM token* — returned once by
 To re-read the outputs later without deploying, or after rotating the key:
 
 ```sh
-npx sst deploy --stage dev          # prints them again; no-ops if nothing changed
+npx sst deploy          # prints them again; no-ops if nothing changed
 aws appsync list-api-keys --api-id <id> --region us-east-1
 ```
 
@@ -129,5 +129,5 @@ null everywhere else.
 ## Tearing down
 
 ```sh
-npx sst remove --stage dev
+npx sst remove
 ```
