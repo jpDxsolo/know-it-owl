@@ -67,6 +67,7 @@ export default $config({
       "submitAnswers",
       "gradeResponse",
       "endRound",
+      "finishGame",
       "getImageUploadUrl",
     ];
     const queries = ["game", "myTeam", "roundResults", "standings"];
