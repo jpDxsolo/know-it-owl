@@ -11,6 +11,7 @@ import { chooseDouble } from "@know-it-owl/functions/handlers/chooseDouble";
 import { createGame } from "@know-it-owl/functions/handlers/createGame";
 import { createRound } from "@know-it-owl/functions/handlers/createRound";
 import { endRound } from "@know-it-owl/functions/handlers/endRound";
+import { finishGame } from "@know-it-owl/functions/handlers/finishGame";
 import { getGame } from "@know-it-owl/functions/handlers/getGame";
 import { gradeResponse } from "@know-it-owl/functions/handlers/gradeResponse";
 import { joinGame } from "@know-it-owl/functions/handlers/joinGame";
@@ -474,6 +475,10 @@ describe("walkthrough: every broadcast is a player view", () => {
     const reveal = await endRound({ gameId, gmToken, roundNumber: 1 });
     broadcasts.push(reveal);
 
+    // Ending the quiz fans out like everything else, and leaks no more than the
+    // rest: a status change carrying the same player-shaped snapshot.
+    broadcasts.push(await finishGame({ gameId, gmToken }));
+
     // The reveal is where the keys become public; the token never does.
     expect(JSON.stringify(broadcasts)).not.toContain(gmToken);
     expect(JSON.stringify(broadcasts)).not.toContain("gmTokenHash");
@@ -497,6 +502,7 @@ describe("walkthrough: every broadcast is a player view", () => {
       "chooseDouble",
       "submitAnswers",
       "endRound",
+      "finishGame",
     ]);
   });
 });

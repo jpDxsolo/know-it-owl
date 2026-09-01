@@ -101,6 +101,26 @@
   line-height: 1;
 }
 
+/* Said once, in gold, and only when the game is actually over. */
+.kio-standings__crown {
+  margin: var(--kio-space-1) 0 0;
+  color: var(--kio-gold);
+  font-family: var(--kio-font-headline);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.kio-standings__tie {
+  margin: 0;
+  padding: var(--kio-space-3) var(--kio-space-4);
+  background-color: var(--kio-navy-surface);
+  border-left: 3px solid var(--kio-gold);
+  border-radius: var(--kio-radius);
+  font-size: 0.9375rem;
+}
+
 /* Your own row, so a team finds itself without reading every name. */
 .kio-standings__yours {
   margin: var(--kio-space-1) 0 0;

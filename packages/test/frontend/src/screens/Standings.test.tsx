@@ -188,6 +188,34 @@ describe("the scoreboard", () => {
     });
   });
 
+  it("names the winner once the game is finished", async () => {
+    serve(standing([24, 31, 12]));
+    renderStandings();
+
+    await waitFor(() => expect(screen.getByText("Winner")).toBeInTheDocument());
+    // The crown belongs to the team on top, not to whoever sorted first.
+    expect(screen.getByText("Winner").closest("section")).toHaveTextContent("Bears");
+  });
+
+  it("crowns nobody while the game is still going", async () => {
+    serve(standing([24, 31, 12], "TEAMS_SET"));
+    renderStandings();
+
+    await waitFor(() => expect(screen.getByText("Standings")).toBeInTheDocument());
+    expect(screen.queryByText("Winner")).not.toBeInTheDocument();
+  });
+
+  it("calls a tie a tie rather than inventing a winner", async () => {
+    // Sort order would happily crown one of them, and a pub would notice.
+    serve(standing([31, 31, 12]));
+    renderStandings();
+
+    await waitFor(() => expect(screen.getByText(/a tie at the top/i)).toBeInTheDocument());
+    expect(screen.getByText(/finish level on 31/i)).toBeInTheDocument();
+    expect(screen.queryByText("Winner")).not.toBeInTheDocument();
+    expect(screen.getAllByText("Joint winner")).toHaveLength(2);
+  });
+
   it("says there is nothing to show before the teams are drawn", async () => {
     const empty = standing([0, 0, 0]);
     empty.teams = [];

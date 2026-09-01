@@ -58,7 +58,8 @@ export type GameEvent =
   | "QUESTION_RELEASED"
   | "DOUBLE_CHOSEN"
   | "ANSWERS_SUBMITTED"
-  | "ROUND_REVEALED";
+  | "ROUND_REVEALED"
+  | "GAME_FINISHED";
 
 export interface GameUpdate {
   gameId: string;

@@ -201,6 +201,69 @@ describe("the host's way onward", () => {
     );
   });
 
+  it("finishes the game, once confirmed", async () => {
+    setGmToken("g1", "token");
+    const { calls } = serveAs(game);
+    renderReveal();
+    await waitFor(() =>
+      expect(screen.getByRole("button", { name: /finish the game/i })).toBeEnabled(),
+    );
+
+    await userEvent.click(screen.getByRole("button", { name: /finish the game/i }));
+    const dialog = screen.getByRole("dialog");
+    expect(within(dialog).getByText(/cannot be restarted/i)).toBeInTheDocument();
+
+    await userEvent.click(within(dialog).getByRole("button", { name: /finish the game/i }));
+    await waitFor(() => expect(calls.some((query) => query.includes("FinishGame"))).toBe(true));
+  });
+
+  it("backs out of finishing without sending anything", async () => {
+    setGmToken("g1", "token");
+    const { calls } = serveAs(game);
+    renderReveal();
+    await waitFor(() =>
+      expect(screen.getByRole("button", { name: /finish the game/i })).toBeEnabled(),
+    );
+
+    await userEvent.click(screen.getByRole("button", { name: /finish the game/i }));
+    await userEvent.click(screen.getByRole("button", { name: /keep playing/i }));
+
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(calls.some((query) => query.includes("FinishGame"))).toBe(false);
+  });
+
+  it("offers a tie-breaker when the top of the table is level", async () => {
+    // Both on 31, so there is no winner to declare — the host gets the thing
+    // they actually want, not a warning buried in the finish dialog.
+    setGmToken("g1", "token");
+    const level = {
+      ...revealed,
+      standings: [
+        { ...teams[0], score: 31 },
+        { ...teams[1], score: 31 },
+      ],
+    };
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (_url: string, init: RequestInit) => {
+        const body = JSON.parse(String(init.body)) as { query: string };
+        if (body.query.includes("query RoundResults")) {
+          return { ok: true, status: 200, json: async () => ({ data: { roundResults: level } }) };
+        }
+        return { ok: true, status: 200, json: async () => ({ data: { game } }) };
+      }),
+    );
+    renderReveal();
+
+    await waitFor(() =>
+      expect(screen.getByRole("button", { name: /write a tie-breaker/i })).toBeInTheDocument(),
+    );
+    expect(screen.getByText(/owls and bears are level on 31/i)).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /write the next round/i }),
+    ).not.toBeInTheDocument();
+  });
+
   it("shows a player none of it", async () => {
     serveAs(withDraft);
     renderReveal();

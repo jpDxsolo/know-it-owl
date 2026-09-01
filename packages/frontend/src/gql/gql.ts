@@ -32,6 +32,7 @@ type Documents = {
     "\n  mutation ReleaseQuestion($gameId: ID!, $gmToken: String!, $roundNumber: Int!, $questionNumber: Int!) {\n    releaseQuestion(gameId: $gameId, gmToken: $gmToken, roundNumber: $roundNumber, questionNumber: $questionNumber) { ...GameUpdateFields }\n  }\n": typeof types.ReleaseQuestionDocument,
     "\n  mutation ChooseDouble($gameId: ID!, $playerId: ID!, $roundNumber: Int!) {\n    chooseDouble(gameId: $gameId, playerId: $playerId, roundNumber: $roundNumber) { ...GameUpdateFields }\n  }\n": typeof types.ChooseDoubleDocument,
     "\n  mutation SubmitAnswers($input: SubmitAnswersInput!) {\n    submitAnswers(input: $input) { ...GameUpdateFields }\n  }\n": typeof types.SubmitAnswersDocument,
+    "\n  mutation FinishGame($gameId: ID!, $gmToken: String!) {\n    finishGame(gameId: $gameId, gmToken: $gmToken) { ...GameUpdateFields }\n  }\n": typeof types.FinishGameDocument,
     "\n  mutation EndRound($gameId: ID!, $gmToken: String!, $roundNumber: Int!) {\n    endRound(gameId: $gameId, gmToken: $gmToken, roundNumber: $roundNumber) { ...GameUpdateFields }\n  }\n": typeof types.EndRoundDocument,
     "\n  subscription OnGameUpdated($gameId: ID!) {\n    onGameUpdated(gameId: $gameId) { ...GameUpdateFields }\n  }\n": typeof types.OnGameUpdatedDocument,
 };
@@ -53,6 +54,7 @@ const documents: Documents = {
     "\n  mutation ReleaseQuestion($gameId: ID!, $gmToken: String!, $roundNumber: Int!, $questionNumber: Int!) {\n    releaseQuestion(gameId: $gameId, gmToken: $gmToken, roundNumber: $roundNumber, questionNumber: $questionNumber) { ...GameUpdateFields }\n  }\n": types.ReleaseQuestionDocument,
     "\n  mutation ChooseDouble($gameId: ID!, $playerId: ID!, $roundNumber: Int!) {\n    chooseDouble(gameId: $gameId, playerId: $playerId, roundNumber: $roundNumber) { ...GameUpdateFields }\n  }\n": types.ChooseDoubleDocument,
     "\n  mutation SubmitAnswers($input: SubmitAnswersInput!) {\n    submitAnswers(input: $input) { ...GameUpdateFields }\n  }\n": types.SubmitAnswersDocument,
+    "\n  mutation FinishGame($gameId: ID!, $gmToken: String!) {\n    finishGame(gameId: $gameId, gmToken: $gmToken) { ...GameUpdateFields }\n  }\n": types.FinishGameDocument,
     "\n  mutation EndRound($gameId: ID!, $gmToken: String!, $roundNumber: Int!) {\n    endRound(gameId: $gameId, gmToken: $gmToken, roundNumber: $roundNumber) { ...GameUpdateFields }\n  }\n": types.EndRoundDocument,
     "\n  subscription OnGameUpdated($gameId: ID!) {\n    onGameUpdated(gameId: $gameId) { ...GameUpdateFields }\n  }\n": types.OnGameUpdatedDocument,
 };
@@ -125,6 +127,10 @@ export function graphql(source: "\n  mutation ChooseDouble($gameId: ID!, $player
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  mutation SubmitAnswers($input: SubmitAnswersInput!) {\n    submitAnswers(input: $input) { ...GameUpdateFields }\n  }\n"): typeof import('./graphql').SubmitAnswersDocument;
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation FinishGame($gameId: ID!, $gmToken: String!) {\n    finishGame(gameId: $gameId, gmToken: $gmToken) { ...GameUpdateFields }\n  }\n"): typeof import('./graphql').FinishGameDocument;
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

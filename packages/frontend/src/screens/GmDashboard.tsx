@@ -55,7 +55,10 @@ export function GmDashboard() {
   const { gameId } = useParams<{ gameId: string }>();
   const location = useLocation();
   const navigate = useNavigate();
-  const justCreated = (location.state as { justCreated?: boolean } | null)?.justCreated === true;
+  const routed = location.state as { justCreated?: boolean; tieBreaker?: boolean } | null;
+  const justCreated = routed?.justCreated === true;
+  /* Sent here from the reveal screen when the top of the table is level. */
+  const tieBreaker = routed?.tieBreaker === true;
 
   const { game, realtime, loading, error, gmToken, isHost, submittedTeamIds, refresh } =
     useGmGame(gameId);
@@ -64,7 +67,7 @@ export function GmDashboard() {
   const [busy, setBusy] = useState(false);
   const [problem, setProblem] = useState<string>();
   const [copied, setCopied] = useState(false);
-  const [building, setBuilding] = useState(false);
+  const [building, setBuilding] = useState(tieBreaker);
   const [noticeSeen, setNoticeSeen] = useState(false);
 
   async function run(what: () => Promise<void>): Promise<void> {
@@ -156,6 +159,8 @@ export function GmDashboard() {
           gameId={gameId}
           gmToken={gmToken}
           roundNumber={game.rounds.length + 1}
+          initialCategory={tieBreaker ? "Tie-breaker" : ""}
+          singleQuestion={tieBreaker}
           onSaved={() => {
             setBuilding(false);
             // `createRound` is the one mutation the host makes that fans out to

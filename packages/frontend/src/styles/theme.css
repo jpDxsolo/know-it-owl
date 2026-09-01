@@ -244,6 +244,60 @@ h3 {
   font-size: 0.875rem;
 }
 
+/*
+ * A decision that cannot be taken back — spending a double, ending a quiz.
+ *
+ * Lives here rather than on a screen because two of them use it now, and it
+ * only worked before by accident: one stylesheet is emitted for the whole app,
+ * so a class defined in TeamRound.css was reachable from the reveal screen
+ * whether or not that screen had any business relying on it.
+ */
+.kio-confirm {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--kio-space-4);
+  background-color: rgb(14 26 47 / 0.8);
+}
+
+.kio-confirm__box {
+  display: flex;
+  flex-direction: column;
+  gap: var(--kio-space-3);
+  width: 100%;
+  max-width: 24rem;
+}
+
+.kio-confirm__title {
+  font-size: 1.25rem;
+}
+
+.kio-confirm__actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--kio-space-2);
+}
+
+/*
+ * The dialog is 24rem wide and holds two page-actions, which at the themed
+ * 14rem minimum came to 28rem and hung over both edges of the card. In here
+ * they share the row instead.
+ */
+.kio-confirm__actions .kio-button {
+  min-width: 0;
+  flex: 1;
+}
+
+@media (min-width: 40rem) {
+  .kio-confirm__actions {
+    flex-direction: row-reverse;
+    justify-content: flex-start;
+  }
+}
+
 /* Visible to screen readers only. */
 .kio-sr-only {
   position: absolute;

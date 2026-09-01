@@ -67,6 +67,8 @@ export type Mutation = {
   createGame: CreateGamePayload;
   createRound: Round;
   endRound: GameUpdate;
+  /** Declare the quiz over. Only from REVEAL — a game ends between rounds, never mid-round. */
+  finishGame: GameUpdate;
   /** contentLength is signed into the URL, so the upload must be exactly that many bytes. */
   getImageUploadUrl: UploadUrlPayload;
   gradeResponse: TeamResponse;
@@ -99,6 +101,12 @@ export type MutationEndRoundArgs = {
   gameId: Scalars['ID']['input'];
   gmToken: Scalars['String']['input'];
   roundNumber: Scalars['Int']['input'];
+};
+
+
+export type MutationFinishGameArgs = {
+  gameId: Scalars['ID']['input'];
+  gmToken: Scalars['String']['input'];
 };
 
 
@@ -418,6 +426,14 @@ export type SubmitAnswersMutationVariables = Exact<{
 
 
 export type SubmitAnswersMutation = { submitAnswers: { gameId: string, status: GameStatus, currentRound?: number | null, event: string, player?: { id: string, displayName: string, teamId?: string | null } | null, game: { id: string, joinCode: string, status: GameStatus, currentRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }>, teams: Array<{ id: string, name: string, score: number, doubleUsedRound?: number | null, lastSubmittedRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }> }>, rounds: Array<{ number: number, category: string, status: RoundStatus, releasedCount: number, questionCount: number, questions: Array<{ number: number, type: QuestionType, text?: string | null, imageUrl?: string | null, defaultPoints: number, correctAnswers?: Array<string> | null }> }> } } };
+
+export type FinishGameMutationVariables = Exact<{
+  gameId: Scalars['ID']['input'];
+  gmToken: Scalars['String']['input'];
+}>;
+
+
+export type FinishGameMutation = { finishGame: { gameId: string, status: GameStatus, currentRound?: number | null, event: string, player?: { id: string, displayName: string, teamId?: string | null } | null, game: { id: string, joinCode: string, status: GameStatus, currentRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }>, teams: Array<{ id: string, name: string, score: number, doubleUsedRound?: number | null, lastSubmittedRound?: number | null, players: Array<{ id: string, displayName: string, teamId?: string | null }> }>, rounds: Array<{ number: number, category: string, status: RoundStatus, releasedCount: number, questionCount: number, questions: Array<{ number: number, type: QuestionType, text?: string | null, imageUrl?: string | null, defaultPoints: number, correctAnswers?: Array<string> | null }> }> } } };
 
 export type EndRoundMutationVariables = Exact<{
   gameId: Scalars['ID']['input'];
@@ -1172,6 +1188,64 @@ fragment GameUpdateFields on GameUpdate {
     ...GameFields
   }
 }`) as unknown as TypedDocumentString<SubmitAnswersMutation, SubmitAnswersMutationVariables>;
+export const FinishGameDocument = new TypedDocumentString(`
+    mutation FinishGame($gameId: ID!, $gmToken: String!) {
+  finishGame(gameId: $gameId, gmToken: $gmToken) {
+    ...GameUpdateFields
+  }
+}
+    fragment GameFields on Game {
+  id
+  joinCode
+  status
+  currentRound
+  players {
+    id
+    displayName
+    teamId
+  }
+  teams {
+    id
+    name
+    score
+    doubleUsedRound
+    lastSubmittedRound
+    players {
+      id
+      displayName
+      teamId
+    }
+  }
+  rounds {
+    number
+    category
+    status
+    releasedCount
+    questionCount
+    questions {
+      number
+      type
+      text
+      imageUrl
+      defaultPoints
+      correctAnswers
+    }
+  }
+}
+fragment GameUpdateFields on GameUpdate {
+  gameId
+  status
+  currentRound
+  event
+  player {
+    id
+    displayName
+    teamId
+  }
+  game {
+    ...GameFields
+  }
+}`) as unknown as TypedDocumentString<FinishGameMutation, FinishGameMutationVariables>;
 export const EndRoundDocument = new TypedDocumentString(`
     mutation EndRound($gameId: ID!, $gmToken: String!, $roundNumber: Int!) {
   endRound(gameId: $gameId, gmToken: $gmToken, roundNumber: $roundNumber) {

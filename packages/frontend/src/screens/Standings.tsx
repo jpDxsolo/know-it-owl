@@ -53,6 +53,15 @@ export function Standings() {
   const ranked = byScore(game.teams);
   const [leader, ...rest] = ranked;
   const finished = game.status === "FINISHED";
+
+  /*
+   * Everyone level with the top score, which is usually one team and sometimes
+   * is not. Crowning whoever the sort happened to put first would invent a
+   * winner out of tie-break order, and a pub would notice immediately.
+   */
+  const winners = leader ? ranked.filter((team) => team.score === leader.score) : [];
+  const tied = winners.length > 1;
+  const won = (team: Team): boolean => finished && winners.some((w) => w.id === team.id);
   const roundsPlayed = game.rounds.filter((round) => round.status === "REVEALED").length;
   const mine = game.teams.find((team) => team.players.some((player) => player.id === me));
 
@@ -82,12 +91,22 @@ export function Standings() {
         <h1 className="kio-standings__title">{finished ? "Final standings" : "Standings"}</h1>
       </header>
 
+      {finished && tied && (
+        <p className="kio-standings__tie" role="status">
+          A tie at the top — {winners.map((team) => team.name).join(" and ")} finish level on{" "}
+          {leader.score}.
+        </p>
+      )}
+
       <section className={`kio-card kio-leader${leader.id === mine?.id ? " kio-leader--mine" : ""}`}>
         <span className="kio-leader__place" aria-hidden="true">
           1
         </span>
         <div className="kio-leader__who">
           <h2 className="kio-leader__name">{leader.name}</h2>
+          {won(leader) && (
+            <p className="kio-standings__crown">{tied ? "Joint winner" : "Winner"}</p>
+          )}
           <p className="kio-muted">{doubleNote(leader)}</p>
           {leader.id === mine?.id && <p className="kio-standings__yours">Your team</p>}
         </div>
@@ -108,6 +127,7 @@ export function Standings() {
             <span className="kio-standings__place">{index + 2}</span>
             <div className="kio-standings__who">
               <p className="kio-standings__name">{team.name}</p>
+              {won(team) && <p className="kio-standings__crown">Joint winner</p>}
               <p className="kio-muted">{doubleNote(team)}</p>
               {team.id === mine?.id && <p className="kio-standings__yours">Your team</p>}
             </div>
