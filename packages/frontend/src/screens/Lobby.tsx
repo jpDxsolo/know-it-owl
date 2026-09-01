@@ -15,7 +15,17 @@ import { ApiError, execute, RandomizeTeamsMutation, StartRoundMutation } from ".
 import { gmToken, playerId } from "../services/identity";
 import "./Lobby.css";
 
-const MIN_TEAMS = 2;
+/*
+ * One team is allowed.
+ *
+ * A single team playing alone is how the game gets tested end to end, and the
+ * server has always permitted it — `randomizeTeams` takes a count with a
+ * minimum of one and only refuses more teams than there are players. This was
+ * a frontend rule with nothing behind it.
+ */
+const MIN_TEAMS = 1;
+/** What a quiz night usually wants, and what the stepper starts on. */
+const DEFAULT_TEAMS = 2;
 
 type Team = Game["teams"][number];
 
@@ -34,12 +44,19 @@ export function Lobby() {
   useStatusRedirect(gameId, game?.status, viewer, "lobby");
 
   const me = playerId();
-  const [teamCount, setTeamCount] = useState(MIN_TEAMS);
+  const [teamCount, setTeamCount] = useState(DEFAULT_TEAMS);
   const [busy, setBusy] = useState(false);
   const [problem, setProblem] = useState<string>();
   const [copied, setCopied] = useState(false);
 
   const teamsDrawn = (game?.teams.length ?? 0) > 0;
+  /*
+   * Two is the right default for a quiz night, but there may not be two people
+   * in the room — and asking the server for more teams than players is a
+   * rejection. So the stepper's number is a wish, and this is what is sent.
+   */
+  const present = game?.players.length ?? 0;
+  const teams = Math.min(teamCount, Math.max(present, MIN_TEAMS));
   const mine = useMemo(() => (game ? myTeam(game, me) : undefined), [game, me]);
   // The host cannot start a round nobody has written yet, so the button has to
   // know whether one exists rather than promising something that will fail.
@@ -61,7 +78,7 @@ export function Lobby() {
     run(async () => {
       const token = gameId ? gmToken(gameId) : null;
       if (!gameId || !token) throw new Error("You are not the host of this game");
-      await execute(RandomizeTeamsMutation, { gameId, gmToken: token, teamCount });
+      await execute(RandomizeTeamsMutation, { gameId, gmToken: token, teamCount: teams });
     });
 
   const startRound = () =>
@@ -193,7 +210,7 @@ export function Lobby() {
                   −
                 </button>
                 <output className="kio-stepper__value" htmlFor="teamCount">
-                  {teamCount}
+                  {teams}
                 </output>
                 <button
                   className="kio-stepper__button"
@@ -223,13 +240,13 @@ export function Lobby() {
             className="kio-button kio-button--primary"
             type="button"
             onClick={teamsDrawn ? startRound : drawTeams}
-            disabled={busy || (!teamsDrawn && players.length < MIN_TEAMS) || (teamsDrawn && !firstRound)}
+            disabled={busy || (!teamsDrawn && players.length === 0) || (teamsDrawn && !firstRound)}
           >
             {teamsDrawn ? "Start round 1" : "Draw the teams"}
           </button>
 
-          {!teamsDrawn && players.length < MIN_TEAMS && (
-            <p className="kio-muted">Waiting for at least {MIN_TEAMS} players.</p>
+          {!teamsDrawn && players.length === 0 && (
+            <p className="kio-muted">Waiting for someone to join.</p>
           )}
           {teamsDrawn && !firstRound && (
             <p className="kio-muted">Write round 1 before you can start it.</p>

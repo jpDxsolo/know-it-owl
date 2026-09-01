@@ -186,15 +186,35 @@ describe("before the teams are drawn", () => {
     expect(screen.getByText("2 players")).toBeInTheDocument();
   });
 
-  it("cannot draw teams with fewer than two players", async () => {
+  it("draws a single team for a single player", async () => {
     setGmToken("g1", "token");
     serve(game({ players: [player("p1", "Ada")] }));
     renderDashboard();
 
     await waitFor(() =>
+      expect(screen.getByRole("button", { name: /draw the teams/i })).toBeEnabled(),
+    );
+    await userEvent.click(screen.getByRole("button", { name: /draw the teams/i }));
+
+    await waitFor(() =>
+      expect(calls.some((call) => call.query.includes("RandomizeTeams"))).toBe(true),
+    );
+    expect(calls.find((call) => call.query.includes("RandomizeTeams"))?.variables).toEqual({
+      gameId: "g1",
+      gmToken: "token",
+      teamCount: 1,
+    });
+  });
+
+  it("waits until somebody has actually joined", async () => {
+    setGmToken("g1", "token");
+    serve(game({ players: [] }));
+    renderDashboard();
+
+    await waitFor(() =>
       expect(screen.getByRole("button", { name: /draw the teams/i })).toBeDisabled(),
     );
-    expect(screen.getByText(/waiting for at least 2 players/i)).toBeInTheDocument();
+    expect(screen.getByText(/waiting for someone to join/i)).toBeInTheDocument();
   });
 
   it("draws the teams with the chosen count", async () => {

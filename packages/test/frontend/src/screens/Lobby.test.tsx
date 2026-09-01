@@ -36,13 +36,17 @@ function game(overrides: Partial<Game> = {}): Game {
   };
 }
 
+/** Every operation the screen sent, so a mutation's variables can be checked. */
+let calls: { query: string; variables: Record<string, unknown> }[] = [];
+
 function serve(snapshot: Game): void {
   vi.stubGlobal(
     "fetch",
-    vi.fn().mockResolvedValue({
-      ok: true,
-      status: 200,
-      json: async () => ({ data: { game: snapshot } }),
+    vi.fn(async (_url: string, init: RequestInit) => {
+      calls.push(
+        JSON.parse(String(init.body)) as { query: string; variables: Record<string, unknown> },
+      );
+      return { ok: true, status: 200, json: async () => ({ data: { game: snapshot } }) };
     }),
   );
 }
@@ -61,6 +65,7 @@ function renderLobby() {
 }
 
 beforeEach(() => {
+  calls = [];
   localStorage.clear();
   setApiConfig({ url: "https://api.test/graphql", realtimeUrl: "wss://rt.test", apiKey: "da2-x" });
   vi.stubGlobal("WebSocket", InertSocket);
@@ -125,15 +130,40 @@ describe("what the host can do", () => {
     expect(screen.queryByText(/waiting for your host/i)).not.toBeInTheDocument();
   });
 
-  it("cannot draw teams with only one player, and says why", async () => {
+  it("draws a single team for a single player", async () => {
+    // One team alone is how the whole game gets tested end to end, and the
+    // server has always allowed it — the two-team floor was a frontend rule
+    // with nothing behind it.
     setGmToken("game-1", "token");
     serve(game({ players: [player("p1", "Ada")] }));
     renderLobby();
 
     await waitFor(() =>
+      expect(screen.getByRole("button", { name: /draw the teams/i })).toBeEnabled(),
+    );
+    await userEvent.click(screen.getByRole("button", { name: /draw the teams/i }));
+
+    await waitFor(() =>
+      expect(calls.some((call) => call.query.includes("RandomizeTeams"))).toBe(true),
+    );
+    // The stepper still says two — asking for more teams than players is a
+    // rejection, so what is sent is clamped to the people actually here.
+    expect(calls.find((call) => call.query.includes("RandomizeTeams"))?.variables).toEqual({
+      gameId: "game-1",
+      gmToken: "token",
+      teamCount: 1,
+    });
+  });
+
+  it("waits until somebody has actually joined", async () => {
+    setGmToken("game-1", "token");
+    serve(game({ players: [] }));
+    renderLobby();
+
+    await waitFor(() =>
       expect(screen.getByRole("button", { name: /draw the teams/i })).toBeDisabled(),
     );
-    expect(screen.getByText(/waiting for at least 2 players/i)).toBeInTheDocument();
+    expect(screen.getByText(/waiting for someone to join/i)).toBeInTheDocument();
   });
 
   it("will not let the stepper ask for more teams than there are players", async () => {
@@ -142,9 +172,9 @@ describe("what the host can do", () => {
     renderLobby();
 
     await waitFor(() => expect(screen.getByText("Grace")).toBeInTheDocument());
-    // Two players, two teams: already at the ceiling.
+    // Two players, two teams: at the ceiling, but free to come down to one.
     expect(screen.getByRole("button", { name: /one more team/i })).toBeDisabled();
-    expect(screen.getByRole("button", { name: /one fewer team/i })).toBeDisabled();
+    expect(screen.getByRole("button", { name: /one fewer team/i })).toBeEnabled();
   });
 });
 
