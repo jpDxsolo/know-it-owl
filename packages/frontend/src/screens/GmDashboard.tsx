@@ -20,7 +20,17 @@ import {
 } from "../services/api";
 import "./GmDashboard.css";
 
-const MIN_TEAMS = 2;
+/*
+ * One team is allowed.
+ *
+ * A single team playing alone is how the game gets tested end to end, and the
+ * server has always permitted it — `randomizeTeams` takes a count with a
+ * minimum of one and only refuses more teams than there are players. This was
+ * a frontend rule with nothing behind it.
+ */
+const MIN_TEAMS = 1;
+/** What a quiz night usually wants, and what the stepper starts on. */
+const DEFAULT_TEAMS = 2;
 
 type Round = Game["rounds"][number];
 
@@ -63,7 +73,7 @@ export function GmDashboard() {
   const { game, realtime, loading, error, gmToken, isHost, submittedTeamIds, refresh } =
     useGmGame(gameId);
 
-  const [teamCount, setTeamCount] = useState(MIN_TEAMS);
+  const [teamCount, setTeamCount] = useState(DEFAULT_TEAMS);
   const [busy, setBusy] = useState(false);
   const [problem, setProblem] = useState<string>();
   const [copied, setCopied] = useState(false);
@@ -123,6 +133,8 @@ export function GmDashboard() {
   }
 
   const teamsDrawn = game.teams.length > 0;
+  // A wish, clamped to the people actually here — see the stepper in Lobby.
+  const teams = Math.min(teamCount, Math.max(game.players.length, MIN_TEAMS));
   const running = activeRound(game);
   const draft = nextDraft(game);
 
@@ -138,7 +150,7 @@ export function GmDashboard() {
 
   const drawTeams = () =>
     run(async () => {
-      await execute(RandomizeTeamsMutation, { gameId, gmToken, teamCount });
+      await execute(RandomizeTeamsMutation, { gameId, gmToken, teamCount: teams });
     });
 
   const startRound = (roundNumber: number) =>
@@ -273,7 +285,7 @@ export function GmDashboard() {
                     type="number"
                     min={MIN_TEAMS}
                     max={Math.max(MIN_TEAMS, game.players.length)}
-                    value={teamCount}
+                    value={teams}
                     onChange={(event) =>
                       setTeamCount(Math.max(MIN_TEAMS, Number(event.target.value) || MIN_TEAMS))
                     }
@@ -285,12 +297,12 @@ export function GmDashboard() {
                 className={`kio-button ${teamsDrawn ? "kio-button--secondary" : "kio-button--primary"}`}
                 type="button"
                 onClick={drawTeams}
-                disabled={busy || game.players.length < MIN_TEAMS}
+                disabled={busy || game.players.length === 0}
               >
                 {teamsDrawn ? "Re-draw teams" : "Draw the teams"}
               </button>
-              {game.players.length < MIN_TEAMS && (
-                <p className="kio-muted">Waiting for at least {MIN_TEAMS} players.</p>
+              {game.players.length === 0 && (
+                <p className="kio-muted">Waiting for someone to join.</p>
               )}
             </section>
 
