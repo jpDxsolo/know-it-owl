@@ -165,8 +165,9 @@
 /*
  * Sized to its label, not to the page-action minimum: it shares a row with the
  * question it releases, and at 14rem it overlapped the text instead.
- * Two classes deep so it beats the themed `.kio-button` whatever order the
- * bundled stylesheets end up in.
+ * This beats the themed `.kio-button` because screen stylesheets are emitted
+ * after theme.css — see the import order in main.tsx, which is what makes any
+ * of these overrides work at all.
  */
 .kio-liveq .kio-liveq__release {
   width: auto;
