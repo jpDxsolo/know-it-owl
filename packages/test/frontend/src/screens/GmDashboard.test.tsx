@@ -424,6 +424,78 @@ describe("running a round", () => {
   });
 });
 
+describe("between rounds", () => {
+  const revealed = () =>
+    game({
+      status: "REVEAL",
+      currentRound: 1,
+      players: [player("p1", "Ada", "t1"), player("p2", "Grace", "t2")],
+      teams: [
+        team("t1", "Owls", [player("p1", "Ada", "t1")]),
+        team("t2", "Bears", [player("p2", "Grace", "t2")]),
+      ],
+      rounds: [
+        {
+          number: 1,
+          category: "Capitals",
+          status: "REVEALED",
+          releasedCount: 3,
+          questionCount: 3,
+          questions: [question(1), question(2), question(3)],
+        },
+        {
+          number: 2,
+          category: "Music",
+          status: "DRAFT",
+          releasedCount: 0,
+          questionCount: 1,
+          questions: [question(1)],
+        },
+      ],
+    });
+
+  it("does not treat the round it just revealed as still in play", async () => {
+    // currentRound still points at it, so matching on the number alone showed
+    // the live panel for a finished round — and hid every control for getting
+    // to the next one. The quiz looked over after one round.
+    setGmToken("g1", "token");
+    serve(revealed());
+    renderDashboard();
+
+    await waitFor(() => expect(screen.getByText(/round 1 · capitals/i)).toBeInTheDocument());
+    expect(screen.queryByRole("button", { name: /release next/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /mark the answers/i })).not.toBeInTheDocument();
+  });
+
+  it("offers the next written round, and a way to write another", async () => {
+    setGmToken("g1", "token");
+    serve(revealed());
+    renderDashboard();
+
+    await waitFor(() =>
+      expect(screen.getByRole("button", { name: /start round 2/i })).toBeEnabled(),
+    );
+    expect(screen.getByRole("button", { name: /new round/i })).toBeInTheDocument();
+  });
+
+  it("starts the next round from a reveal", async () => {
+    setGmToken("g1", "token");
+    serve(revealed());
+    renderDashboard();
+    await waitFor(() =>
+      expect(screen.getByRole("button", { name: /start round 2/i })).toBeEnabled(),
+    );
+
+    await userEvent.click(screen.getByRole("button", { name: /start round 2/i }));
+    await waitFor(() => expect(calls.some((call) => call.query.includes("StartRound"))).toBe(true));
+    expect(calls.find((call) => call.query.includes("StartRound"))?.variables).toEqual({
+      gameId: "g1",
+      gmToken: "token",
+      roundNumber: 2,
+    });
+  });
+});
+
 describe("submission tracking", () => {
   it("ignores a slow read for a round that is no longer in play", async () => {
     // The answer is stale by the time it lands, not merely late: showing round

@@ -241,7 +241,26 @@
   font-weight: 600;
 }
 
+/* The host's controls: a pause between rounds, not the end of the quiz. */
+.kio-reveal__host {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--kio-space-2);
+  text-align: center;
+}
+
 @media (min-width: 40rem) {
+  .kio-reveal__host {
+    flex-direction: row-reverse;
+    justify-content: flex-start;
+    gap: var(--kio-space-4);
+  }
+
+  .kio-reveal__host .kio-button {
+    align-self: auto;
+  }
+
   .kio-reveal__head {
     text-align: left;
   }

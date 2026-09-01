@@ -28,9 +28,22 @@ function initial(name: string): string {
   return name.trim().charAt(0).toUpperCase() || "?";
 }
 
-/** The round the host is running, if any. */
+/** Rounds that are still being played or marked, as opposed to finished. */
+const IN_PLAY = new Set(["ACTIVE", "GRADING"]);
+
+/**
+ * The round the host is running, if any.
+ *
+ * Matching on the number alone was not enough: `currentRound` still points at
+ * the round that was just revealed, so the host was shown the live panel for a
+ * finished round — release controls for questions already out, and no sign of
+ * the "New round" and "Start round" controls that live in the other view. The
+ * quiz appeared to end after one round.
+ */
 function activeRound(game: Game): Round | undefined {
-  return game.rounds.find((round) => round.number === game.currentRound);
+  return game.rounds.find(
+    (round) => round.number === game.currentRound && IN_PLAY.has(round.status),
+  );
 }
 
 /** The first round written but not yet played. */
