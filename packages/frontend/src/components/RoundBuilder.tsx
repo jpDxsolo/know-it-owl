@@ -84,12 +84,28 @@ export interface RoundBuilderProps {
   gmToken: string;
   /** Shown in the heading; the server assigns the real number. */
   roundNumber: number;
+  /** Prefills the category — a tie-breaker names itself. */
+  initialCategory?: string;
+  /**
+   * One question, no more. A tie-breaker is decided by a single question, and
+   * it is a round in every other respect — the host asks it, teams answer it,
+   * the host marks it and reveals. Nothing new to learn.
+   */
+  singleQuestion?: boolean;
   onSaved: () => void;
   onCancel: () => void;
 }
 
-export function RoundBuilder({ gameId, gmToken, roundNumber, onSaved, onCancel }: RoundBuilderProps) {
-  const [category, setCategory] = useState("");
+export function RoundBuilder({
+  gameId,
+  gmToken,
+  roundNumber,
+  initialCategory = "",
+  singleQuestion = false,
+  onSaved,
+  onCancel,
+}: RoundBuilderProps) {
+  const [category, setCategory] = useState(initialCategory);
   const [drafts, setDrafts] = useState<Draft[]>([emptyDraft()]);
   const [saving, setSaving] = useState(false);
   const [problem, setProblem] = useState<string>();
@@ -198,7 +214,9 @@ export function RoundBuilder({ gameId, gmToken, roundNumber, onSaved, onCancel }
   return (
     <section className="kio-builder">
       <div className="kio-builder__head">
-        <h1 className="kio-builder__title">Round {roundNumber}</h1>
+        <h1 className="kio-builder__title">
+          {singleQuestion ? "Tie-breaker" : `Round ${roundNumber}`}
+        </h1>
         <p className="kio-muted">Draft — players can&rsquo;t see this yet</p>
         <button className="kio-button kio-button--ghost" type="button" onClick={onCancel}>
           Discard
@@ -352,13 +370,15 @@ export function RoundBuilder({ gameId, gmToken, roundNumber, onSaved, onCancel }
         })}
       </ol>
 
-      <button
-        className="kio-builder__add"
-        type="button"
-        onClick={() => setDrafts((current) => [...current, emptyDraft()])}
-      >
-        + Add question
-      </button>
+      {!singleQuestion && (
+        <button
+          className="kio-builder__add"
+          type="button"
+          onClick={() => setDrafts((current) => [...current, emptyDraft()])}
+        >
+          + Add question
+        </button>
+      )}
 
       {problem && <p className="kio-field-error">{problem}</p>}
 

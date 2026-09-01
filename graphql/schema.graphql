@@ -165,6 +165,8 @@ type Mutation {
   submitAnswers(input: SubmitAnswersInput!): GameUpdate!
   gradeResponse(input: GradeResponseInput!): TeamResponse!
   endRound(gameId: ID!, gmToken: String!, roundNumber: Int!): GameUpdate!
+  "Declare the quiz over. Only from REVEAL — a game ends between rounds, never mid-round."
+  finishGame(gameId: ID!, gmToken: String!): GameUpdate!
   "contentLength is signed into the URL, so the upload must be exactly that many bytes."
   getImageUploadUrl(gameId: ID!, gmToken: String!, contentType: String!, contentLength: Int!): UploadUrlPayload!
 }
@@ -181,6 +183,7 @@ type Subscription {
         "chooseDouble"
         "submitAnswers"
         "endRound"
+        "finishGame"
       ]
     )
 }

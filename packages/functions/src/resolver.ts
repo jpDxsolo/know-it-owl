@@ -10,6 +10,7 @@ import { chooseDouble } from "./handlers/chooseDouble.js";
 import { submitAnswers } from "./handlers/submitAnswers.js";
 import { gradeResponse } from "./handlers/gradeResponse.js";
 import { endRound } from "./handlers/endRound.js";
+import { finishGame } from "./handlers/finishGame.js";
 import { getImageUploadUrl } from "./handlers/getImageUploadUrl.js";
 import { getGame } from "./handlers/getGame.js";
 import { myTeam } from "./handlers/myTeam.js";
@@ -36,6 +37,7 @@ const handlers: Record<string, Handler> = {
   submitAnswers,
   gradeResponse,
   endRound,
+  finishGame,
   getImageUploadUrl,
   // Query
   game: getGame,

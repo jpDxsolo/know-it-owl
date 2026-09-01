@@ -16,7 +16,7 @@ import { AppHeader } from "../components/AppHeader";
 import { useGame } from "../hooks/useGame";
 import { useRoundResults, type RoundResult, type TeamResponse } from "../hooks/useRoundResults";
 import { useStatusRedirect } from "../hooks/useStatusRedirect";
-import { ApiError, execute, StartRoundMutation } from "../services/api";
+import { ApiError, execute, FinishGameMutation, StartRoundMutation } from "../services/api";
 import { gmToken as storedGmToken, playerId } from "../services/identity";
 import "./RoundReveal.css";
 
@@ -45,6 +45,7 @@ export function RoundReveal() {
   useStatusRedirect(gameId, game?.status, viewer, "reveal");
 
   const [busy, setBusy] = useState(false);
+  const [confirming, setConfirming] = useState(false);
   const [problem, setProblem] = useState<string>();
 
   const roundNumber = game?.currentRound ?? null;
@@ -99,6 +100,30 @@ export function RoundReveal() {
 
   // The GM's own view carries DRAFT rounds; a player's never does.
   const draft = game.rounds.find((candidate) => candidate.status === "DRAFT");
+
+  /*
+   * A level top of the table, which is the only reason a tie-breaker exists.
+   * Read from the standings the reveal already carries, so it reflects the
+   * round just scored rather than the one before it.
+   */
+  const ordered = byScore(teams);
+  const top = ordered[0];
+  const tiedAtTop = ordered.filter((team) => top && team.score === top.score);
+  const tied = tiedAtTop.length > 1;
+
+  async function finish(): Promise<void> {
+    const token = gameId ? storedGmToken(gameId) : null;
+    if (!gameId || !token) return;
+    setBusy(true);
+    setProblem(undefined);
+    try {
+      await execute(FinishGameMutation, { gameId, gmToken: token });
+    } catch (cause) {
+      setProblem(cause instanceof ApiError ? cause.message : String(cause));
+    } finally {
+      setBusy(false);
+    }
+  }
 
   async function startNext(roundNumber: number): Promise<void> {
     const token = gameId ? storedGmToken(gameId) : null;
@@ -258,6 +283,20 @@ export function RoundReveal() {
             >
               {busy ? "Starting…" : `Start round ${draft.number}`}
             </button>
+          ) : tied ? (
+            /*
+             * With the table level, the tie-breaker is the thing the host
+             * actually wants — so it leads, rather than hiding behind a warning
+             * in the finish dialog. It is an ordinary one-question round: asked,
+             * answered, marked and revealed like any other.
+             */
+            <button
+              className="kio-button kio-button--primary"
+              type="button"
+              onClick={() => navigate(`/game/${gameId}/gm`, { state: { tieBreaker: true } })}
+            >
+              Write a tie-breaker
+            </button>
           ) : (
             <button
               className="kio-button kio-button--primary"
@@ -267,14 +306,66 @@ export function RoundReveal() {
               Write the next round
             </button>
           )}
+          {/*
+            * Secondary, and deliberately so: ending the quiz is the rarer of
+            * the two and cannot be undone, so it never sits where a host is
+            * already aiming to press "start".
+            */}
+          <button
+            className="kio-button kio-button--secondary"
+            type="button"
+            onClick={() => setConfirming(true)}
+            disabled={busy}
+          >
+            Finish the game
+          </button>
           <p className="kio-muted">
             {draft
               ? "Everyone moves on with you."
-              : "Nothing written yet — the dashboard is where rounds are made."}
+              : tied
+                ? `${tiedAtTop.map((team) => team.name).join(" and ")} are level on ${top.score}.`
+                : "Nothing written yet — the dashboard is where rounds are made."}
           </p>
         </div>
       ) : (
         <p className="kio-muted kio-reveal__next">Your host will start the next round.</p>
+      )}
+      {confirming && (
+        <div className="kio-confirm" role="dialog" aria-modal="true" aria-labelledby="finishTitle">
+          <div className="kio-card kio-confirm__box">
+            <h2 className="kio-confirm__title" id="finishTitle">
+              Finish the game?
+            </h2>
+            {tied && (
+              <p className="kio-muted">
+                {tiedAtTop.map((team) => team.name).join(" and ")} are level on {top.score}.
+                Finishing now leaves them joint winners.
+              </p>
+            )}
+            <p className="kio-muted">
+              The scores stop here and everyone goes to the final standings. There is no way back
+              — a finished game cannot be restarted.
+            </p>
+            <div className="kio-confirm__actions">
+              <button
+                className="kio-button kio-button--secondary"
+                type="button"
+                onClick={() => setConfirming(false)}
+                disabled={busy}
+              >
+                Keep playing
+              </button>
+              <button
+                className="kio-button kio-button--primary"
+                type="button"
+                onClick={() => void finish()}
+                disabled={busy}
+              >
+                {busy ? "Finishing…" : "Finish the game"}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </main>
   );

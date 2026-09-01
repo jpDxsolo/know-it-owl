@@ -97,7 +97,7 @@ function Location() {
   return <span data-testid="location">{useLocation().pathname}</span>;
 }
 
-function renderDashboard(state?: { justCreated: boolean }) {
+function renderDashboard(state?: { justCreated?: boolean; tieBreaker?: boolean }) {
   return render(
     <MemoryRouter initialEntries={[{ pathname: "/game/g1/gm", state }]}>
       <Location />
@@ -263,6 +263,19 @@ describe("with teams but no rounds", () => {
         readsBefore,
       ),
     );
+  });
+
+  it("opens straight into a one-question tie-breaker when sent for one", async () => {
+    // A tie-breaker is a round with a single question — same authoring, same
+    // playing, same marking. The only difference is that it names itself and
+    // will not grow a second question.
+    setGmToken("g1", "token");
+    serve(seated());
+    renderDashboard({ tieBreaker: true });
+
+    await waitFor(() => expect(screen.getByText("Tie-breaker")).toBeInTheDocument());
+    expect(screen.getByLabelText(/category/i)).toHaveValue("Tie-breaker");
+    expect(screen.queryByRole("button", { name: /add question/i })).not.toBeInTheDocument();
   });
 
   it("opens the round builder", async () => {

@@ -280,6 +280,12 @@ export const SubmitAnswersMutation = graphql(`
   }
 `);
 
+export const FinishGameMutation = graphql(`
+  mutation FinishGame($gameId: ID!, $gmToken: String!) {
+    finishGame(gameId: $gameId, gmToken: $gmToken) { ...GameUpdateFields }
+  }
+`);
+
 export const EndRoundMutation = graphql(`
   mutation EndRound($gameId: ID!, $gmToken: String!, $roundNumber: Int!) {
     endRound(gameId: $gameId, gmToken: $gmToken, roundNumber: $roundNumber) { ...GameUpdateFields }
