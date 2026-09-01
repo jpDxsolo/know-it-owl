@@ -10,13 +10,14 @@
  * A doubled team's points were doubled on entry, which is why there is no ×2
  * happening anywhere in this file: doing it here would double them twice.
  */
-import { useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { AppHeader } from "../components/AppHeader";
 import { useGame } from "../hooks/useGame";
 import { useRoundResults, type RoundResult, type TeamResponse } from "../hooks/useRoundResults";
 import { useStatusRedirect } from "../hooks/useStatusRedirect";
-import { playerId } from "../services/identity";
+import { ApiError, execute, StartRoundMutation } from "../services/api";
+import { gmToken as storedGmToken, playerId } from "../services/identity";
 import "./RoundReveal.css";
 
 type Team = RoundResult["standings"][number];
@@ -39,8 +40,12 @@ export function byScore(teams: readonly Team[]): Team[] {
 
 export function RoundReveal() {
   const { gameId } = useParams<{ gameId: string }>();
+  const navigate = useNavigate();
   const { game, realtime, loading, error, viewer, lastEvent } = useGame(gameId);
   useStatusRedirect(gameId, game?.status, viewer, "reveal");
+
+  const [busy, setBusy] = useState(false);
+  const [problem, setProblem] = useState<string>();
 
   const roundNumber = game?.currentRound ?? null;
   const { results, loading: reading, notYet, refresh } = useRoundResults(gameId, roundNumber);
@@ -91,6 +96,23 @@ export function RoundReveal() {
   const teams = results.standings;
   const nameOf = (teamId: string): string =>
     teams.find((team) => team.id === teamId)?.name ?? "A team";
+
+  // The GM's own view carries DRAFT rounds; a player's never does.
+  const draft = game.rounds.find((candidate) => candidate.status === "DRAFT");
+
+  async function startNext(roundNumber: number): Promise<void> {
+    const token = gameId ? storedGmToken(gameId) : null;
+    if (!gameId || !token) return;
+    setBusy(true);
+    setProblem(undefined);
+    try {
+      await execute(StartRoundMutation, { gameId, gmToken: token, roundNumber });
+    } catch (cause) {
+      setProblem(cause instanceof ApiError ? cause.message : String(cause));
+    } finally {
+      setBusy(false);
+    }
+  }
 
   const mine = myTeam
     ? {
@@ -216,7 +238,44 @@ export function RoundReveal() {
         </aside>
       </div>
 
-      <p className="kio-muted kio-reveal__next">Your host will start the next round.</p>
+      {viewer === "GM" ? (
+        /*
+         * The host's way out of here.
+         *
+         * A reveal is a pause, not an ending — the server is happy to start
+         * another round from REVEAL, and happy to have one written. But this
+         * screen offered nothing, and it is where the host lands the moment
+         * they reveal, so the quiz looked finished after one round.
+         */
+        <div className="kio-reveal__host">
+          {problem && <p className="kio-field-error">{problem}</p>}
+          {draft ? (
+            <button
+              className="kio-button kio-button--primary"
+              type="button"
+              onClick={() => void startNext(draft.number)}
+              disabled={busy}
+            >
+              {busy ? "Starting…" : `Start round ${draft.number}`}
+            </button>
+          ) : (
+            <button
+              className="kio-button kio-button--primary"
+              type="button"
+              onClick={() => navigate(`/game/${gameId}/gm`)}
+            >
+              Write the next round
+            </button>
+          )}
+          <p className="kio-muted">
+            {draft
+              ? "Everyone moves on with you."
+              : "Nothing written yet — the dashboard is where rounds are made."}
+          </p>
+        </div>
+      ) : (
+        <p className="kio-muted kio-reveal__next">Your host will start the next round.</p>
+      )}
     </main>
   );
 }

@@ -1,9 +1,11 @@
 import { cleanup, render, screen, waitFor, within } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { Game } from "@know-it-owl/frontend/hooks/useGame";
 import { RoundReveal } from "@know-it-owl/frontend/screens/RoundReveal";
 import { setApiConfig } from "@know-it-owl/frontend/services/config";
+import { setGmToken } from "@know-it-owl/frontend/services/identity";
 
 class InertSocket {
   onopen: (() => void) | undefined;
@@ -139,6 +141,74 @@ afterEach(() => {
   vi.restoreAllMocks();
   setApiConfig(undefined);
   localStorage.clear();
+});
+
+describe("the host's way onward", () => {
+  /** The GM's own view carries DRAFT rounds; a player's never does. */
+  const withDraft = {
+    ...game,
+    rounds: [
+      {
+        number: 2,
+        category: "Music",
+        status: "DRAFT" as const,
+        releasedCount: 0,
+        questionCount: 1,
+        questions: [],
+      },
+    ],
+  };
+
+  function serveAs(snapshot: Game): { calls: string[] } {
+    const calls: string[] = [];
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (_url: string, init: RequestInit) => {
+        const body = JSON.parse(String(init.body)) as { query: string };
+        calls.push(body.query);
+        if (body.query.includes("query RoundResults")) {
+          return { ok: true, status: 200, json: async () => ({ data: { roundResults: revealed } }) };
+        }
+        return { ok: true, status: 200, json: async () => ({ data: { game: snapshot } }) };
+      }),
+    );
+    return { calls };
+  }
+
+  it("starts the next round without sending the host hunting for the dashboard", async () => {
+    // A reveal is a pause, not an ending: the server starts a round happily
+    // from REVEAL. This screen offered nothing, and it is where the host lands
+    // the moment they reveal — so the quiz looked finished after one round.
+    setGmToken("g1", "token");
+    const { calls } = serveAs(withDraft);
+    renderReveal();
+
+    await waitFor(() =>
+      expect(screen.getByRole("button", { name: /start round 2/i })).toBeEnabled(),
+    );
+    await userEvent.click(screen.getByRole("button", { name: /start round 2/i }));
+
+    await waitFor(() => expect(calls.some((query) => query.includes("StartRound"))).toBe(true));
+  });
+
+  it("sends the host to write one when nothing is drafted", async () => {
+    setGmToken("g1", "token");
+    serveAs(game);
+    renderReveal();
+
+    await waitFor(() =>
+      expect(screen.getByRole("button", { name: /write the next round/i })).toBeInTheDocument(),
+    );
+  });
+
+  it("shows a player none of it", async () => {
+    serveAs(withDraft);
+    renderReveal();
+
+    await waitFor(() => expect(screen.getByText("Capitals")).toBeInTheDocument());
+    expect(screen.queryByRole("button", { name: /start round/i })).not.toBeInTheDocument();
+    expect(screen.getByText(/your host will start the next round/i)).toBeInTheDocument();
+  });
 });
 
 describe("before the reveal", () => {
