@@ -28,7 +28,7 @@
  * whole reason the logo is there.
  */
 .kio-logo--mark {
-  width: 3rem;
+  width: 3.5rem;
 }
 
 @media (min-width: 40rem) {
@@ -37,6 +37,6 @@
   }
 
   .kio-logo--mark {
-    width: 6rem;
+    width: 8rem;
   }
 }
