@@ -18,6 +18,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { AppHeader } from "../components/AppHeader";
+import { TeamRename } from "../components/TeamRename";
 import { useGame, type Game } from "../hooks/useGame";
 import { useStatusRedirect } from "../hooks/useStatusRedirect";
 import { ApiError, execute, SubmitAnswersMutation } from "../services/api";
@@ -271,6 +272,7 @@ export function TeamRound() {
             <div>
               <h2 className="kio-label">Your team</h2>
               <p className="kio-round__panelName">{myTeam.name}</p>
+              {gameId && <TeamRename gameId={gameId} teamId={myTeam.id} name={myTeam.name} />}
               <ul className="kio-team__players">
                 {myTeam.players.map((player) => (
                   <li key={player.id} className="kio-chip">

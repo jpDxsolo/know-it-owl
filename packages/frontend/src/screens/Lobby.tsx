@@ -9,6 +9,7 @@
 import { useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import { AppHeader } from "../components/AppHeader";
+import { TeamRename } from "../components/TeamRename";
 import { useGame, type Game } from "../hooks/useGame";
 import { useStatusRedirect } from "../hooks/useStatusRedirect";
 import { ApiError, execute, RandomizeTeamsMutation, StartRoundMutation } from "../services/api";
@@ -158,7 +159,15 @@ export function Lobby() {
               >
                 <div className="kio-team__head">
                   <h2 className="kio-team__name">{team.name}</h2>
-                  {team.id === mine?.id && <span className="kio-team__badge">Your team</span>}
+                  {team.id === mine?.id && (
+                    <>
+                      <span className="kio-team__badge">Your team</span>
+                      {/* Only your own: the server refuses anyone else's. */}
+                      {gameId && (
+                        <TeamRename gameId={gameId} teamId={team.id} name={team.name} />
+                      )}
+                    </>
+                  )}
                 </div>
                 <ul className="kio-team__players">
                   {team.players.map((player) => (

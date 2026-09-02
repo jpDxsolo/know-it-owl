@@ -1,0 +1,25 @@
+/*
+ * Renaming a team, in a card that is otherwise a heading and a badge.
+ *
+ * It wraps to its own line rather than squeezing the field, because a team
+ * name can be thirty characters and the card it sits in is not wide.
+ */
+
+.kio-rename {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--kio-space-2);
+  width: 100%;
+}
+
+.kio-rename__field {
+  flex: 1 1 10rem;
+  min-width: 0;
+}
+
+.kio-rename__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--kio-space-2);
+}

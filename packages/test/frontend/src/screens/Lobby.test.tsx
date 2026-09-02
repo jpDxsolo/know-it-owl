@@ -178,31 +178,65 @@ describe("what the host can do", () => {
   });
 });
 
-describe("once the teams are drawn", () => {
-  const drawn = () => {
-    const me = playerId();
-    return game({
-      status: "TEAMS_SET",
-      players: [player(me, "Ada", "t1"), player("p2", "Grace", "t2")],
-      teams: [
-        {
-          id: "t1",
-          name: "The Quizzly Bears",
-          score: 0,
-          doubleUsedRound: null,
-          players: [player(me, "Ada", "t1")],
-        },
-        {
-          id: "t2",
-          name: "The Smarty Pants",
-          score: 0,
-          doubleUsedRound: null,
-          players: [player("p2", "Grace", "t2")],
-        },
-      ],
-    });
-  };
+/** Teams drawn, with this browser's player on the first of them. */
+const drawn = () => {
+  const me = playerId();
+  return game({
+    status: "TEAMS_SET",
+    players: [player(me, "Ada", "t1"), player("p2", "Grace", "t2")],
+    teams: [
+      {
+        id: "t1",
+        name: "The Quizzly Bears",
+        score: 0,
+        doubleUsedRound: null,
+        players: [player(me, "Ada", "t1")],
+      },
+      {
+        id: "t2",
+        name: "The Smarty Pants",
+        score: 0,
+        doubleUsedRound: null,
+        players: [player("p2", "Grace", "t2")],
+      },
+    ],
+  });
+};
 
+
+describe("naming your team", () => {
+  it("offers a rename on your own team and no other", async () => {
+    // The server refuses anyone else's outright, so offering it would be a
+    // button whose only outcome is an error.
+    serve(drawn());
+    renderLobby();
+
+    await waitFor(() => expect(screen.getByText("Your team")).toBeInTheDocument());
+    expect(screen.getAllByRole("button", { name: "Rename" })).toHaveLength(1);
+    const mine = screen.getByText("Your team").closest("li");
+    expect(mine?.textContent).toContain("Rename");
+  });
+
+  it("renames the team through the API", async () => {
+    serve(drawn());
+    renderLobby();
+    await waitFor(() => expect(screen.getByRole("button", { name: "Rename" })).toBeInTheDocument());
+
+    await userEvent.click(screen.getByRole("button", { name: "Rename" }));
+    await userEvent.clear(screen.getByLabelText("Team name"));
+    await userEvent.type(screen.getByLabelText("Team name"), "The Night Owls");
+    await userEvent.click(screen.getByRole("button", { name: "Save" }));
+
+    await waitFor(() =>
+      expect(calls.some((call) => call.query.includes("SetTeamName"))).toBe(true),
+    );
+    expect(
+      (calls.find((call) => call.query.includes("SetTeamName"))?.variables as { name: string }).name,
+    ).toBe("The Night Owls");
+  });
+});
+
+describe("once the teams are drawn", () => {
   it("groups players into their teams and marks yours", async () => {
     serve(drawn());
     renderLobby();
