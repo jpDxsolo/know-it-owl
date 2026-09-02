@@ -127,6 +127,17 @@ export async function createViewUrl(imageKey: string): Promise<string> {
 /** A question as it leaves the API: the storage key replaced by a usable URL. */
 export interface SignedQuestion extends Omit<VisibleQuestion, "imageKey"> {
   imageUrl: string | null;
+  /**
+   * The storage key, for the host only.
+   *
+   * A presigned URL dies within the hour, so it is no use to a quiz saved to a
+   * file and opened next week — that needs the key the image is actually
+   * stored under. Players get `imageUrl` and nothing else; there is no reason
+   * for them to know where the bytes live — so for a player the property is
+   * absent entirely rather than null, and "no key appears in a player payload"
+   * stays literally true of the serialised object.
+   */
+  imageKey?: string;
 }
 
 export interface SignedRound extends Omit<VisibleRound, "questions"> {
@@ -138,8 +149,14 @@ export interface SignedRound extends Omit<VisibleRound, "questions"> {
  *
  * One signature per distinct key, computed in parallel: a picture round asked
  * for by ten teams at once should not mint the same URL ten times over.
+ *
+ * `keepKeys` additionally carries the key through, and is for the host alone —
+ * see `SignedQuestion.imageKey`.
  */
-export async function signRounds(rounds: VisibleRound[]): Promise<SignedRound[]> {
+export async function signRounds(
+  rounds: VisibleRound[],
+  keepKeys = false,
+): Promise<SignedRound[]> {
   const keys = new Set<string>();
   for (const round of rounds) {
     for (const question of round.questions) {
@@ -156,7 +173,11 @@ export async function signRounds(rounds: VisibleRound[]): Promise<SignedRound[]>
     ...round,
     questions: round.questions.map((question) => {
       const { imageKey, ...rest } = question;
-      return { ...rest, imageUrl: imageKey === undefined ? null : (urls.get(imageKey) ?? null) };
+      return {
+        ...rest,
+        imageUrl: imageKey === undefined ? null : (urls.get(imageKey) ?? null),
+        ...(keepKeys && imageKey !== undefined ? { imageKey } : {}),
+      };
     }),
   }));
 }

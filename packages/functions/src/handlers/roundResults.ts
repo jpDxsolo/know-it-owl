@@ -44,7 +44,7 @@ export async function roundResults(args: Record<string, unknown>): Promise<Round
     throw new ForbiddenError("These results are not public until the round is revealed");
   }
 
-  const [signed] = await signRounds([view]);
+  const [signed] = await signRounds([view], role === "GM");
   const { responses } = await loadRoundSubmissions(gameId, roundNumber);
   const game = assembleGame(state.game, state.players, state.teams, []);
 

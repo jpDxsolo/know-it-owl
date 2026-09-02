@@ -73,6 +73,8 @@ type Question {
   defaultPoints: Int!
   "Only populated after the round is revealed."
   correctAnswers: [String!]
+  "Storage key for a picture. GM only — it is what lets a round be saved to a quiz file and opened later, where a presigned URL would have expired."
+  imageKey: String
 }
 
 type TeamResponse {

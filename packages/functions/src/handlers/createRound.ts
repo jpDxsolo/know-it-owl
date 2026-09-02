@@ -89,6 +89,7 @@ export async function createRound(args: Record<string, unknown>): Promise<Signed
 
   // The GM gets every question back but no answer keys: one rule, applied to
   // every pre-reveal payload, rather than an exception for the author.
-  const [signed] = await signRounds([withoutAnswerKeys(round, questions)]);
+  // Only the host ever sees this echo.
+  const [signed] = await signRounds([withoutAnswerKeys(round, questions)], true);
   return signed;
 }
