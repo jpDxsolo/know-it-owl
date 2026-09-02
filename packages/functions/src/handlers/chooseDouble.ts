@@ -43,6 +43,9 @@ export async function chooseDouble(args: Record<string, unknown>): Promise<GameU
   if (round.status !== "ACTIVE") {
     throw new ConflictError(`Round ${roundNumber} is not in play`);
   }
+  if (!round.doublingAllowed) {
+    throw new ConflictError(`Round ${roundNumber} cannot be doubled`);
+  }
 
   const table = tableName();
   try {

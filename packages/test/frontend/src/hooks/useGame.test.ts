@@ -47,6 +47,7 @@ const PLAYER_ROUNDS: Game["rounds"] = [
     status: "ACTIVE",
     releasedCount: 1,
     questionCount: 3,
+    doublingAllowed: true,
     questions: [question(1)],
   },
 ];
@@ -59,6 +60,7 @@ const GM_ROUNDS: Game["rounds"] = [
     status: "ACTIVE",
     releasedCount: 1,
     questionCount: 3,
+    doublingAllowed: true,
     questions: [question(1), question(2), question(3)],
   },
   {
@@ -67,6 +69,7 @@ const GM_ROUNDS: Game["rounds"] = [
     status: "DRAFT",
     releasedCount: 0,
     questionCount: 1,
+    doublingAllowed: true,
     questions: [question(1)],
   },
 ];

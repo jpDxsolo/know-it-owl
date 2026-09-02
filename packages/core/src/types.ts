@@ -39,6 +39,12 @@ export interface Round {
   status: RoundStatus;
   /** Questions unveiled so far, 0 while the round is a draft. */
   releasedCount: number;
+  /**
+   * Whether a team may spend its double on this round. The host decides per
+   * round, because some rounds should not be doublable — a picture round worth
+   * ten points, a joke round worth one.
+   */
+  doublingAllowed: boolean;
 }
 
 export interface Question {

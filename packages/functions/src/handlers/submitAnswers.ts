@@ -48,6 +48,12 @@ export async function submitAnswers(args: Record<string, unknown>): Promise<Game
     );
   }
 
+  // The screen hides the toggle, but the rule lives here: the client is not
+  // what decides whether a round can be doubled.
+  if (wantsDouble && !round.doublingAllowed) {
+    throw new ConflictError(`Round ${roundNumber} cannot be doubled`);
+  }
+
   const answers = parseAnswerInputs(input.answers, questions);
 
   // Already doubled this round via chooseDouble: the answers record it, but

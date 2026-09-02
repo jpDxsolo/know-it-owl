@@ -98,6 +98,30 @@ afterEach(() => {
   setApiConfig(undefined);
 });
 
+describe("the doubling toggle", () => {
+  it("is on by default, because most rounds are doublable", async () => {
+    renderBuilder();
+    expect(screen.getByRole("switch", { name: /teams may double/i })).toHaveAttribute(
+      "aria-checked",
+      "true",
+    );
+  });
+
+  it("sends the round closed to doubling when turned off", async () => {
+    renderBuilder();
+    await userEvent.type(screen.getByLabelText(/category/i), "Picture round");
+    await userEvent.type(screen.getByLabelText(/^question$/i), "What is this?");
+    await userEvent.type(screen.getByLabelText(/^answer$/i), "An owl");
+    await userEvent.click(screen.getByRole("switch", { name: /teams may double/i }));
+    await userEvent.click(screen.getByRole("button", { name: /save round/i }));
+
+    await waitFor(() => expect(calls.some((c) => c.query.includes("CreateRound"))).toBe(true));
+    expect(calls.find((c) => c.query.includes("CreateRound"))?.variables.doublingAllowed).toBe(
+      false,
+    );
+  });
+});
+
 describe("writing a text question", () => {
   it("sends the round with its category and answer", async () => {
     renderBuilder();
@@ -112,6 +136,7 @@ describe("writing a text question", () => {
       gameId: "g1",
       gmToken: "token",
       category: "90s Music",
+      doublingAllowed: true,
       questions: [
         {
           type: "TEXT",

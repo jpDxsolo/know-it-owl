@@ -244,6 +244,7 @@ describe("once the teams are drawn", () => {
           status: "DRAFT",
           releasedCount: 0,
           questionCount: 0,
+          doublingAllowed: true,
           questions: [],
         },
       ],

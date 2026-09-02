@@ -45,6 +45,7 @@ function round(questions: ReturnType<typeof question>[]): VisibleRound {
     category: "Birds",
     status: "ACTIVE",
     releasedCount: 2,
+    doublingAllowed: true,
     questionCount: questions.length,
     questions,
   };

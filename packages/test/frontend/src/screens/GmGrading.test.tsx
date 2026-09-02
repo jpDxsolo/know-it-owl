@@ -96,6 +96,7 @@ function results(questions: Question[], responses: ReturnType<typeof response>[]
       status: "GRADING",
       releasedCount: questions.length,
       questionCount: questions.length,
+      doublingAllowed: true,
       questions,
     },
     responses,

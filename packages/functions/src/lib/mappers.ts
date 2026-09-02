@@ -45,6 +45,7 @@ export interface RoundItem extends Item {
   category: string;
   status: RoundStatus;
   releasedCount: number;
+  doublingAllowed: boolean;
 }
 
 export interface QuestionItem extends Item {
@@ -117,6 +118,19 @@ function nullableStr(item: Item, field: string): string | null {
   const value = item[field];
   if (value === undefined || value === null) return null;
   return typeof value === "string" ? value : invalid(item, field, "a string or null");
+}
+
+/**
+ * A boolean that may simply not be there.
+ *
+ * Rounds written before `doublingAllowed` existed carry no such attribute, and
+ * they were all doublable — so absent has to mean the default rather than a
+ * validation failure, or every game already in the table breaks on read.
+ */
+function boolOr(item: Item, field: string, fallback: boolean): boolean {
+  const value = item[field];
+  if (value === undefined || value === null) return fallback;
+  return typeof value === "boolean" ? value : invalid(item, field, "a boolean");
 }
 
 function bool(item: Item, field: string): boolean {
@@ -220,6 +234,7 @@ export function toRound(item: Item): Round {
     category: str(item, "category"),
     status: oneOf(item, "status", ROUND_STATUSES),
     releasedCount: num(item, "releasedCount"),
+    doublingAllowed: boolOr(item, "doublingAllowed", true),
   };
 }
 

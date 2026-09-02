@@ -458,6 +458,16 @@ export function TeamRound() {
             </>
           )}
 
+          {/*
+            * A round the host closed to doubling shows no switch at all, rather
+            * than a disabled one. A disabled control reads as "you cannot do
+            * this yet"; there is no yet here, and the server refuses it anyway.
+            */}
+          {!round.doublingAllowed ? (
+            <p className="kio-muted kio-round__noDouble">
+              No doubling on this round — your host has turned it off.
+            </p>
+          ) : (
           <section
             className={`kio-card kio-double${doubleOn ? " kio-double--on" : ""}`}
             aria-labelledby="doubleTitle"
@@ -486,6 +496,7 @@ export function TeamRound() {
               <span className="kio-switch__knob" aria-hidden="true" />
             </button>
           </section>
+          )}
 
           {problem && <p className="kio-field-error">{problem}</p>}
 

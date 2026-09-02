@@ -37,6 +37,7 @@ interface StubOptions {
   questionCount?: number;
   doubleUsedRound?: number | null;
   playerTeamId?: string | null;
+  doublingAllowed?: boolean;
 }
 
 function stubGame({
@@ -45,6 +46,7 @@ function stubGame({
   questionCount = 2,
   doubleUsedRound = null,
   playerTeamId = "t1",
+  doublingAllowed = true,
 }: StubOptions = {}) {
   ddbMock.on(GetCommand, { Key: keys.gameMeta("g1") }).resolves({
     Item: {
@@ -64,7 +66,7 @@ function stubGame({
   });
   ddbMock.on(QueryCommand, { ExpressionAttributeValues: { ":sk": "ROUND#" } }).resolves({
     Items: [
-      { ...keys.round("g1", 1), category: "History", status: roundStatus, releasedCount },
+      { ...keys.round("g1", 1), category: "History", status: roundStatus, releasedCount, doublingAllowed },
       ...Array.from({ length: questionCount }, (_, i) => questionItem(i + 1)),
     ],
   });
@@ -268,6 +270,12 @@ describe("submitAnswers", () => {
     await expect(submitAnswers(submitArgs({ roundNumber: 9 }))).rejects.toThrow(NotFoundError);
   });
 
+  it("refuses chooseDouble on a round the host closed to it", async () => {
+    stubGame({ doublingAllowed: false });
+    await expect(chooseDouble(doubleArgs)).rejects.toThrow(/cannot be doubled/i);
+    expect(ddbMock.commandCalls(TransactWriteCommand)).toHaveLength(0);
+  });
+
   it("rejects a malformed input object", async () => {
     stubGame();
     await expect(submitAnswers({})).rejects.toThrow(ValidationError);
@@ -308,6 +316,21 @@ describe("submitAnswers with a double", () => {
     await expect(submitAnswers(submitArgs({ double: true }))).rejects.toThrow(ConflictError);
     // One transaction, cancelled as a whole: nothing was written.
     expect(ddbMock.commandCalls(TransactWriteCommand)).toHaveLength(1);
+  });
+
+  it("refuses a double on a round the host closed to it", async () => {
+    // The screen hides the toggle, but the client is not what decides this.
+    stubGame({ doublingAllowed: false });
+    await expect(submitAnswers(submitArgs({ double: true }))).rejects.toThrow(
+      /cannot be doubled/i,
+    );
+    expect(ddbMock.commandCalls(TransactWriteCommand)).toHaveLength(0);
+  });
+
+  it("still accepts a plain submission on a round that cannot be doubled", async () => {
+    stubGame({ doublingAllowed: false });
+    const update = await submitAnswers(submitArgs());
+    expect(update.event).toBe("ANSWERS_SUBMITTED");
   });
 
   it("rejects a double when one was already spent on another round", async () => {
