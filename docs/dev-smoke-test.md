@@ -50,10 +50,12 @@ It plays one whole game and exits non-zero on the first failed assertion. A
 passing run ends with:
 
 ```
-   events: gm-tab 13, player-tab 13
+   events: gm-tab 18, player-tab 18
    PLAYER_JOINED → PLAYER_JOINED → PLAYER_JOINED → PLAYER_JOINED → TEAMS_SET →
    TEAM_RENAMED → ROUND_STARTED → QUESTION_RELEASED → QUESTION_RELEASED →
-   DOUBLE_CHOSEN → ANSWERS_SUBMITTED → ANSWERS_SUBMITTED → ROUND_REVEALED
+   DOUBLE_CHOSEN → ANSWERS_SUBMITTED → ANSWERS_SUBMITTED → ROUND_REVEALED →
+   ROUND_STARTED → ANSWERS_SUBMITTED → ANSWERS_SUBMITTED → ROUND_REVEALED →
+   GAME_FINISHED
 
 SMOKE TEST PASSED
 ```
@@ -72,6 +74,9 @@ What each step is actually guarding:
 | 9    | Both remaining questions release; the `PICTURE_10` comes back with a presigned `imageUrl` |
 | 10   | Every response is graded, `endRound` reveals, and only then do answer keys appear |
 | 11   | The double reaches the standings, and no GM token or hash is in any broadcast |
+| 12   | A round closed to doubling refuses **both** routes to one — `chooseDouble` and the `double` flag on `submitAnswers` — and still plays, marks and reveals |
+| 13   | `imageKey` reaches the host and not the player, which is what lets a quiz be saved to a file and opened after the presigned URL has expired |
+| 14   | `finishGame` refuses a wrong token, moves the game to FINISHED, fans out, refuses a second time, and leaves the scores exactly as the last reveal left them |
 
 ## 3. The same thing by hand, in the AppSync console
 

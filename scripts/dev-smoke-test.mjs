@@ -33,7 +33,7 @@ async function subscribe({ apiUrl, apiKey, gameId, label }) {
         status
         players { id displayName teamId }
         teams { id name score doubleUsedRound }
-        rounds { number category status releasedCount
+        rounds { number category status releasedCount doublingAllowed
                  questions { number type text imageUrl defaultPoints correctAnswers } }
       }
     }
@@ -104,7 +104,7 @@ const UPDATE = `gameId status currentRound event
     status
     players { id displayName teamId }
     teams { id name score doubleUsedRound }
-    rounds { number category status releasedCount
+    rounds { number category status releasedCount doublingAllowed
              questions { number type text imageUrl defaultPoints correctAnswers } }
   }`;
 
@@ -272,6 +272,104 @@ const all = JSON.stringify([...gmTab.events, ...playerTab.events]);
 assert.ok(!all.includes(gmToken), "GM token appeared in a broadcast");
 assert.ok(!all.includes("gmTokenHash"), "gmTokenHash appeared in a broadcast");
 ok(`double reached the standings (${doubled.score} vs ${plain.score}); no GM secret in any broadcast`);
+
+step(12, "a round the host closed to doubling");
+await run(
+  `mutation($g:ID!,$t:String!,$q:[QuestionInput!]!){ createRound(gameId:$g,gmToken:$t,category:"No doubling",questions:$q,doublingAllowed:false){ number doublingAllowed } }`,
+  {
+    g: gameId, t: gmToken,
+    q: [{ type: "TEXT", text: "Capital of Peru?", correctAnswers: ["Lima"], defaultPoints: 1 }],
+  },
+);
+await run(`mutation($g:ID!,$t:String!){ startRound(gameId:$g,gmToken:$t,roundNumber:2){ ${UPDATE} } }`, { g: gameId, t: gmToken });
+await gmTab.settle();
+const round2 = playerTab.events.filter((e) => e.event === "ROUND_STARTED").at(-1).game.rounds
+  .find((r) => r.number === 2);
+assert.equal(round2.doublingAllowed, false, "the closed round did not reach players as closed");
+
+// The second captain still has their double, so this is refused by the rule
+// and not by the one-double-per-game limit.
+await assert.rejects(
+  run(`mutation($g:ID!,$p:ID!){ chooseDouble(gameId:$g,playerId:$p,roundNumber:2){ ${UPDATE} } }`, { g: gameId, p: captains[1] }),
+  /cannot be doubled/,
+);
+const round2Answers = [{ questionNumber: 1, answers: ["Lima"] }];
+await assert.rejects(
+  run(`mutation($i:SubmitAnswersInput!){ submitAnswers(input:$i){ event } }`, {
+    i: { gameId, playerId: captains[1], roundNumber: 2, answers: round2Answers, double: true },
+  }),
+  /cannot be doubled/,
+);
+ok("both routes to a double refused: chooseDouble and the submit flag");
+
+for (const p of captains) {
+  await run(`mutation($i:SubmitAnswersInput!){ submitAnswers(input:$i){ ${UPDATE} } }`, {
+    i: { gameId, playerId: p, roundNumber: 2, answers: round2Answers },
+  });
+}
+const round2Grade = await run(
+  `query($g:ID!,$t:String){ roundResults(gameId:$g,roundNumber:2,gmToken:$t){ responses { questionNumber teamId answers } } }`,
+  { g: gameId, t: gmToken },
+);
+for (const r of round2Grade.roundResults.responses) {
+  await run(`mutation($i:GradeResponseInput!){ gradeResponse(input:$i){ graded } }`, {
+    i: { gameId, gmToken, roundNumber: 2, questionNumber: r.questionNumber, teamId: r.teamId, points: [1] },
+  });
+}
+await run(`mutation($g:ID!,$t:String!){ endRound(gameId:$g,gmToken:$t,roundNumber:2){ ${UPDATE} } }`, { g: gameId, t: gmToken });
+ok("a closed round still plays, marks and reveals normally");
+
+step(13, "the storage key reaches the host and nobody else");
+// This is what lets a quiz be saved to a file and opened next week: a presigned
+// URL expires within the hour, so only the key survives the trip.
+const asHost = await run(
+  `query($g:ID!,$t:String){ game(gameId:$g,gmToken:$t){ rounds { questions { number type imageKey imageUrl } } } }`,
+  { g: gameId, t: gmToken },
+);
+const hostPicture = asHost.game.rounds.flatMap((r) => r.questions).find((q) => q.type === "PICTURE_10");
+assert.ok(hostPicture, "no picture question came back for the host");
+assert.equal(hostPicture.imageKey, signed.getImageUploadUrl.imageKey, "the host did not get the storage key");
+
+const asPlayer = await run(
+  `query($g:ID!){ game(gameId:$g){ rounds { questions { number type imageKey imageUrl } } } }`,
+  { g: gameId },
+);
+const playerQuestions = asPlayer.game.rounds.flatMap((r) => r.questions);
+const playerPicture = playerQuestions.find((q) => q.type === "PICTURE_10");
+assert.ok(playerPicture, "no picture question came back for the player");
+assert.equal(playerPicture.imageKey, null, "a storage key reached a player");
+assert.ok(playerPicture.imageUrl?.includes("X-Amz-Signature"), "the player lost their presigned URL");
+ok("host gets the key, player gets only a signed URL");
+
+step(14, "finishGame");
+// The resolver for this shipped unattached once: the schema had the field, the
+// infra config did not list it, and every call answered "cannot return null".
+await assert.rejects(
+  run(`mutation($g:ID!,$t:String!){ finishGame(gameId:$g,gmToken:$t){ ${UPDATE} } }`, { g: gameId, t: "not-the-token" }),
+  /Invalid game master token/,
+);
+const finished = await run(`mutation($g:ID!,$t:String!){ finishGame(gameId:$g,gmToken:$t){ ${UPDATE} } }`, { g: gameId, t: gmToken });
+assert.equal(finished.finishGame.event, "GAME_FINISHED");
+assert.equal(finished.finishGame.status, "FINISHED");
+await gmTab.settle();
+assert.ok(
+  playerTab.events.some((e) => e.event === "GAME_FINISHED"),
+  "GAME_FINISHED did not fan out to players",
+);
+await assert.rejects(
+  run(`mutation($g:ID!,$t:String!){ finishGame(gameId:$g,gmToken:$t){ ${UPDATE} } }`, { g: gameId, t: gmToken }),
+  /already finished/,
+);
+
+// Finishing settles nothing new: the table is what the last reveal left.
+const finalTable = await run(`query($g:ID!){ standings(gameId:$g){ name score } }`, { g: gameId });
+console.log("   ", JSON.stringify(finalTable.standings));
+assert.deepEqual(
+  finalTable.standings.map((t) => t.score).sort((a, b) => a - b),
+  finished.finishGame.game.teams.map((t) => t.score).sort((a, b) => a - b),
+  "finishing changed the scores",
+);
+ok("finished, fanned out, refused twice over, and the scores stood still");
 
 console.log(`\n   events: gm-tab ${gmTab.events.length}, player-tab ${playerTab.events.length}`);
 console.log(`   ${gmTab.events.map((e) => e.event).join(" → ")}`);
