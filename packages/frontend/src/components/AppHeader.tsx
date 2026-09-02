@@ -25,7 +25,7 @@ export interface AppHeaderProps {
 export function AppHeader({ realtime }: AppHeaderProps) {
   return (
     <header className="kio-header">
-      <Logo size={40} />
+      <Logo size={96} />
       {realtime && (
         <p className={`kio-status kio-status--${realtime}`}>
           <span className="kio-status__dot" aria-hidden="true" />
