@@ -41,6 +41,23 @@ function messageFor(error: ApiError): string {
   return error.message;
 }
 
+/**
+ * Which field to mark, if any.
+ *
+ * The rule is that an error marks the field a player can actually fix, and a
+ * conflict is not always one of them: a taken name is theirs to change, but
+ * "this game has already started" is not something either field can mend, and
+ * outlining the name over it just makes a perfectly good name look rejected.
+ *
+ * Matching the server's wording is a weak coupling, and deliberate: the
+ * alternative is a new error code threaded through the whole API to
+ * distinguish two refusals from one mutation.
+ */
+function fieldFor(error: ApiError): "joinCode" | "name" | undefined {
+  if (error.code !== "CONFLICT") return "joinCode";
+  return error.message.includes("already taken") ? "name" : undefined;
+}
+
 export function Join() {
   const navigate = useNavigate();
   const returning = lastGame();
@@ -77,9 +94,7 @@ export function Join() {
       const failure =
         cause instanceof ApiError ? cause : new ApiError(String(cause), "UNKNOWN");
       setError(messageFor(failure));
-      // A taken name and a bad code are both CONFLICT-ish to the server but
-      // very different to the player: mark the field they can actually fix.
-      setErrorField(failure.code === "CONFLICT" ? "name" : "joinCode");
+      setErrorField(fieldFor(failure));
     } finally {
       setBusy(false);
     }

@@ -135,10 +135,37 @@ describe("joinGame", () => {
     await expect(joinGame(args)).rejects.toThrow(NotFoundError);
   });
 
-  it("refuses to join a game that has left the lobby", async () => {
+  it("refuses a newcomer once the game has left the lobby", async () => {
+    // They would have no team, and the teams have already been drawn.
     stubGame("ROUND_ACTIVE");
     await expect(joinGame(args)).rejects.toThrow(/already started/);
     expect(ddbMock.commandCalls(PutCommand)).toHaveLength(0);
+  });
+
+  it("lets a player already in the game come back mid-quiz", async () => {
+    // Returning is not joining. A closed tab or a stray back button should not
+    // end someone's night, and their seat is the id in their own storage — so
+    // the "already started" gate is for newcomers, not for them.
+    stubGame("ROUND_ACTIVE", [
+      { ...keys.player("g1", "p1"), displayName: "Ada", teamId: "t1" },
+    ]);
+    const update = await joinGame(args);
+
+    expect(update.event).toBe("PLAYER_JOINED");
+    expect(update.player?.id).toBe("p1");
+    // And back onto the same team, not a fresh seat.
+    expect(update.player?.teamId).toBe("t1");
+    expect(update.game.players).toHaveLength(1);
+  });
+
+  it("lets them back into a game that is being marked, or is over", async () => {
+    for (const status of ["GRADING", "REVEAL", "FINISHED"] as const) {
+      stubGame(status, [
+        { ...keys.player("g1", "p1"), displayName: "Ada", teamId: "t1" },
+      ]);
+      const update = await joinGame(args);
+      expect(update.player?.teamId).toBe("t1");
+    }
   });
 
   it("rejects an empty display name", async () => {

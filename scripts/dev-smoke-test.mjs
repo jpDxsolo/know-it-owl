@@ -319,7 +319,27 @@ for (const r of round2Grade.roundResults.responses) {
 await run(`mutation($g:ID!,$t:String!){ endRound(gameId:$g,gmToken:$t,roundNumber:2){ ${UPDATE} } }`, { g: gameId, t: gmToken });
 ok("a closed round still plays, marks and reveals normally");
 
-step(13, "the storage key reaches the host and nobody else");
+step(13, "a player comes back mid-quiz");
+// Returning is not joining: the seat is the player id, so a closed tab or a
+// stray back button must not end someone's night. A newcomer is still refused,
+// because the teams have been drawn and there is none for them.
+const back = await run(
+  `mutation($c:String!,$p:ID!,$n:String!){ joinGame(joinCode:$c,playerId:$p,displayName:$n){ ${UPDATE} } }`,
+  { c: joinCode, p: captains[0], n: "Player 1" },
+);
+const seat = back.joinGame.game.players.find((p) => p.id === captains[0]);
+assert.equal(back.joinGame.game.players.length, 4, "rejoining created a second player");
+assert.equal(seat.teamId, teams[0].id, "the returning player lost their team");
+await assert.rejects(
+  run(
+    `mutation($c:String!,$p:ID!,$n:String!){ joinGame(joinCode:$c,playerId:$p,displayName:$n){ ${UPDATE} } }`,
+    { c: joinCode, p: "latecomer", n: "Latecomer" },
+  ),
+  /already started/,
+);
+ok("returned to the same seat and team; a newcomer still refused");
+
+step(14, "the storage key reaches the host and nobody else");
 // This is what lets a quiz be saved to a file and opened next week: a presigned
 // URL expires within the hour, so only the key survives the trip.
 const asHost = await run(
@@ -341,7 +361,7 @@ assert.equal(playerPicture.imageKey, null, "a storage key reached a player");
 assert.ok(playerPicture.imageUrl?.includes("X-Amz-Signature"), "the player lost their presigned URL");
 ok("host gets the key, player gets only a signed URL");
 
-step(14, "finishGame");
+step(15, "finishGame");
 // The resolver for this shipped unattached once: the schema had the field, the
 // infra config did not list it, and every call answered "cannot return null".
 await assert.rejects(

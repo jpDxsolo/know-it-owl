@@ -21,11 +21,18 @@ async function gameIdForCode(code: string): Promise<string> {
 }
 
 /**
- * Add a player to a game in LOBBY.
+ * Add a player to a game, or return one who has already been in it.
  *
  * The client supplies `playerId`, so a retried or replayed call must not create
  * a second player: the write is keyed on that id and carries the existing
  * `teamId` forward, making a repeat join a no-op apart from the display name.
+ *
+ * That same property is what makes coming back mid-quiz work. A closed tab, a
+ * stray back button, a browser killed for memory — the player's seat is the id
+ * in their storage, and returning to it is not joining. So the "already
+ * started" gate applies to *newcomers* only: someone arriving after the teams
+ * are drawn has no team and no way to be given one, but someone who already has
+ * a team is simply picking their phone back up.
  */
 export async function joinGame(args: Record<string, unknown>): Promise<GameUpdate> {
   const code = requiredString(args, "joinCode", {
@@ -43,11 +50,10 @@ export async function joinGame(args: Record<string, unknown>): Promise<GameUpdat
     // The code item outlived its game; treat it as a dead code rather than a 500.
     throw new NotFoundError("No game with that join code");
   }
-  if (view.status !== "LOBBY") {
+  const existing = view.players.find((candidate) => candidate.id === playerId);
+  if (!existing && view.status !== "LOBBY") {
     throw new ConflictError("This game has already started");
   }
-
-  const existing = view.players.find((candidate) => candidate.id === playerId);
   const nameTaken = view.players.some(
     (candidate) =>
       candidate.id !== playerId &&
