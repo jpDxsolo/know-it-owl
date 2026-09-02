@@ -319,6 +319,7 @@ describe("with teams but no rounds", () => {
           status: "DRAFT",
           releasedCount: 0,
           questionCount: 1,
+          doublingAllowed: true,
           questions: [question(1)],
         },
       ],
@@ -346,6 +347,7 @@ describe("running a round", () => {
           status: "ACTIVE",
           releasedCount,
           questionCount: 3,
+          doublingAllowed: true,
           questions: [question(1), question(2), question(3)],
         },
       ],
@@ -457,6 +459,111 @@ describe("running a round", () => {
   });
 });
 
+describe("quiz files", () => {
+  /** Teams drawn, no rounds written yet — where a quiz gets opened. */
+  const seated = () =>
+    game({
+      status: "TEAMS_SET",
+      players: [player("p1", "Ada", "t1"), player("p2", "Grace", "t2")],
+      teams: [
+        team("t1", "Owls", [player("p1", "Ada", "t1")]),
+        team("t2", "Bears", [player("p2", "Grace", "t2")]),
+      ],
+    });
+
+  /** A two-round quiz as it would arrive from disk. */
+  const quiz = {
+    knowItOwlQuiz: 1,
+    name: "Tuesday",
+    rounds: [
+      {
+        category: "Capitals",
+        doublingAllowed: true,
+        questions: [
+          { type: "TEXT", text: "Capital of Australia?", correctAnswers: ["Canberra"], defaultPoints: 2 },
+        ],
+      },
+      {
+        category: "Picture round",
+        doublingAllowed: false,
+        questions: [
+          {
+            type: "PICTURE_10",
+            imageKey: "games/old-game/pic",
+            correctAnswers: Array.from({ length: 10 }, (_, i) => `Thing ${i + 1}`),
+            defaultPoints: 1,
+          },
+        ],
+      },
+    ],
+  };
+
+  /** A File whose text() resolves to the given contents, as jsdom gives none. */
+  function quizFile(contents: string): File {
+    const made = new File([contents], "quiz.kio.json", { type: "application/json" });
+    Object.defineProperty(made, "text", { value: async () => contents });
+    return made;
+  }
+
+  it("creates every round in the file, in order", async () => {
+    // createRound assigns the next number itself, so these cannot be fired
+    // together — a quiz would come out shuffled by whichever landed first.
+    setGmToken("g1", "token");
+    serve(seated());
+    renderDashboard();
+    await waitFor(() => expect(screen.getByText("Owls")).toBeInTheDocument());
+
+    await userEvent.upload(
+      screen.getByLabelText(/open a quiz file/i),
+      quizFile(JSON.stringify(quiz)),
+    );
+
+    await waitFor(() =>
+      expect(calls.filter((call) => call.query.includes("CreateRound"))).toHaveLength(2),
+    );
+    const created = calls.filter((call) => call.query.includes("CreateRound"));
+    expect(created.map((call) => call.variables.category)).toEqual([
+      "Capitals",
+      "Picture round",
+    ]);
+    expect(created[1].variables.doublingAllowed).toBe(false);
+    expect(created[1].variables.questions).toEqual([
+      {
+        type: "PICTURE_10",
+        imageKey: "games/old-game/pic",
+        correctAnswers: quiz.rounds[1].questions[0].correctAnswers,
+        defaultPoints: 1,
+      },
+    ]);
+  });
+
+  it("explains a file that is not a quiz, and creates nothing", async () => {
+    setGmToken("g1", "token");
+    serve(seated());
+    renderDashboard();
+    await waitFor(() => expect(screen.getByText("Owls")).toBeInTheDocument());
+
+    await userEvent.upload(
+      screen.getByLabelText(/open a quiz file/i),
+      quizFile('{"hello":"world"}'),
+    );
+
+    await waitFor(() =>
+      expect(screen.getByText(/wasn't written by know it owl/i)).toBeInTheDocument(),
+    );
+    expect(calls.some((call) => call.query.includes("CreateRound"))).toBe(false);
+  });
+
+  it("has nothing to save until a round exists", async () => {
+    setGmToken("g1", "token");
+    serve(seated());
+    renderDashboard();
+
+    await waitFor(() => expect(screen.getByText("Owls")).toBeInTheDocument());
+    expect(screen.getByRole("button", { name: /save this quiz to a file/i })).toBeDisabled();
+  });
+});
+
 describe("between rounds", () => {
   const revealed = () =>
     game({
@@ -474,6 +581,7 @@ describe("between rounds", () => {
           status: "REVEALED",
           releasedCount: 3,
           questionCount: 3,
+          doublingAllowed: true,
           questions: [question(1), question(2), question(3)],
         },
         {
@@ -482,6 +590,7 @@ describe("between rounds", () => {
           status: "DRAFT",
           releasedCount: 0,
           questionCount: 1,
+          doublingAllowed: true,
           questions: [question(1)],
         },
       ],
@@ -555,6 +664,7 @@ describe("submission tracking", () => {
             status: "ACTIVE",
             releasedCount: 1,
             questionCount: 1,
+            doublingAllowed: true,
             questions: [question(1)],
           },
         ],

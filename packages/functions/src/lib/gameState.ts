@@ -79,7 +79,8 @@ export async function snapshot(state: GameState, role: ViewerRole): Promise<Game
     state.game,
     state.players,
     state.teams,
-    await signRounds(visibleRounds(state.rounds, state.questions, role)),
+    // Keys for the host, so a round can be saved to a file and opened again.
+    await signRounds(visibleRounds(state.rounds, state.questions, role), role === "GM"),
   );
 }
 

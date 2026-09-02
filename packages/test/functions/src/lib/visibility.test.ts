@@ -27,9 +27,9 @@ function question(roundNumber: number, number: number): Question {
 }
 
 const rounds: Round[] = [
-  { number: 1, category: "History", status: "REVEALED", releasedCount: 1 },
-  { number: 2, category: "Music", status: "ACTIVE", releasedCount: 2 },
-  { number: 3, category: "Surprise", status: "DRAFT", releasedCount: 0 },
+  { number: 1, category: "History", status: "REVEALED", doublingAllowed: true, releasedCount: 1 },
+  { number: 2, category: "Music", status: "ACTIVE", doublingAllowed: true, releasedCount: 2 },
+  { number: 3, category: "Surprise", status: "DRAFT", doublingAllowed: true, releasedCount: 0 },
 ];
 
 const questions = [question(1, 1), question(2, 1), question(2, 2), question(3, 1)];
@@ -122,7 +122,7 @@ describe("visibleRounds", () => {
 });
 
 describe("isQuestionReleased", () => {
-  const active = { number: 2, category: "Music", status: "ACTIVE" as const, releasedCount: 2 };
+  const active = { number: 2, category: "Music", status: "ACTIVE" as const, doublingAllowed: true, releasedCount: 2 };
 
   it("lets a player see up to the counter and no further", () => {
     expect(isQuestionReleased(active, 2, "PLAYER")).toBe(true);
@@ -134,32 +134,32 @@ describe("isQuestionReleased", () => {
   });
 
   it("opens every question once the round is revealed", () => {
-    const revealed = { ...active, status: "REVEALED" as const, releasedCount: 1 };
+    const revealed = { ...active, status: "REVEALED" as const, doublingAllowed: true, releasedCount: 1 };
     expect(isQuestionReleased(revealed, 3, "PLAYER")).toBe(true);
   });
 
   it("releases nothing in a round that has not started", () => {
-    const draft = { ...active, status: "DRAFT" as const, releasedCount: 0 };
+    const draft = { ...active, status: "DRAFT" as const, doublingAllowed: true, releasedCount: 0 };
     expect(isQuestionReleased(draft, 1, "PLAYER")).toBe(false);
   });
 });
 
 describe("visibleRound release gating", () => {
   it("drops questions past the counter for a player", () => {
-    const round = { number: 2, category: "Music", status: "ACTIVE" as const, releasedCount: 1 };
+    const round = { number: 2, category: "Music", status: "ACTIVE" as const, doublingAllowed: true, releasedCount: 1 };
     const result = visibleRound(round, questions, "PLAYER");
     expect(result?.questions.map((q) => q.number)).toEqual([1]);
   });
 
   it("keeps them all for the GM", () => {
-    const round = { number: 2, category: "Music", status: "ACTIVE" as const, releasedCount: 1 };
+    const round = { number: 2, category: "Music", status: "ACTIVE" as const, doublingAllowed: true, releasedCount: 1 };
     expect(visibleRound(round, questions, "GM")?.questions.map((q) => q.number)).toEqual([1, 2]);
   });
 
   it("still tells a player how many questions the round holds", () => {
     // The count is what unlocks a team's submit button; without it a player
     // could not tell a half-released round from a finished one.
-    const round = { number: 2, category: "Music", status: "ACTIVE" as const, releasedCount: 1 };
+    const round = { number: 2, category: "Music", status: "ACTIVE" as const, doublingAllowed: true, releasedCount: 1 };
     const result = visibleRound(round, questions, "PLAYER");
     expect(result?.questionCount).toBe(2);
     expect(result?.questions).toHaveLength(1);
@@ -168,7 +168,7 @@ describe("visibleRound release gating", () => {
 
 describe("withoutAnswerKeys", () => {
   it("returns every question of the round with no key at all", () => {
-    const round = { number: 2, category: "Music", status: "DRAFT" as const, releasedCount: 0 };
+    const round = { number: 2, category: "Music", status: "DRAFT" as const, doublingAllowed: true, releasedCount: 0 };
     const result = withoutAnswerKeys(round, questions);
     expect(result.questions.map((q) => q.number)).toEqual([1, 2]);
     expect(result.questions.every((q) => q.correctAnswers === null)).toBe(true);

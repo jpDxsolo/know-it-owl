@@ -5,7 +5,7 @@
  * the host should never have to go looking for the next control. What changes
  * between states is which panel leads, not where things live.
  */
-import { useState } from "react";
+import { useRef, useState, type ChangeEvent } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { AppHeader } from "../components/AppHeader";
 import { RoundBuilder } from "../components/RoundBuilder";
@@ -13,11 +13,19 @@ import { useGmGame } from "../hooks/useGmGame";
 import type { Game } from "../hooks/useGame";
 import {
   ApiError,
+  CreateRoundMutation,
   execute,
   RandomizeTeamsMutation,
   ReleaseQuestionMutation,
   StartRoundMutation,
 } from "../services/api";
+import {
+  parseQuizFile,
+  quizFileName,
+  QuizFileError,
+  toQuestionInputs,
+  toQuizFile,
+} from "../services/quizFile";
 import "./GmDashboard.css";
 
 /*
@@ -79,6 +87,9 @@ export function GmDashboard() {
   const [copied, setCopied] = useState(false);
   const [building, setBuilding] = useState(tieBreaker);
   const [noticeSeen, setNoticeSeen] = useState(false);
+  const [opening, setOpening] = useState(false);
+  /* A hidden input, so the file picker can sit behind an ordinary button. */
+  const quizInput = useRef<HTMLInputElement>(null);
 
   async function run(what: () => Promise<void>): Promise<void> {
     setBusy(true);
@@ -152,6 +163,67 @@ export function GmDashboard() {
     run(async () => {
       await execute(RandomizeTeamsMutation, { gameId, gmToken, teamCount: teams });
     });
+
+  /**
+   * Write the rounds out as a file.
+   *
+   * The blob is same-origin and revoked straight after, so this is a download
+   * and not a navigation. Only the host can do it, and only the host's view
+   * carries the answer keys and image keys that make the file worth having.
+   */
+  const exportQuiz = (): void => {
+    if (!game || game.rounds.length === 0) return;
+    const name = `Know It Owl ${new Date().toISOString().slice(0, 10)}`;
+    const file = toQuizFile(name, game.rounds);
+    const url = URL.createObjectURL(
+      new Blob([JSON.stringify(file, null, 2)], { type: "application/json" }),
+    );
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = quizFileName(name);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+  };
+
+  /**
+   * Open a saved quiz into this game.
+   *
+   * Rounds are created one at a time and in order, because `createRound`
+   * assigns the next number itself — firing them together would number them by
+   * whichever transaction landed first, and a quiz would come out shuffled.
+   */
+  async function openQuiz(event: ChangeEvent<HTMLInputElement>): Promise<void> {
+    const chosen = event.target.files?.[0];
+    // Let the same file be chosen again after a failure.
+    event.target.value = "";
+    if (!chosen || !gameId || !gmToken) return;
+
+    setOpening(true);
+    setProblem(undefined);
+    try {
+      const quiz = parseQuizFile(await chosen.text());
+      for (const round of quiz.rounds) {
+        await execute(CreateRoundMutation, {
+          gameId,
+          gmToken,
+          category: round.category,
+          questions: toQuestionInputs(round),
+          doublingAllowed: round.doublingAllowed,
+        });
+      }
+      refresh();
+    } catch (cause) {
+      setProblem(
+        cause instanceof QuizFileError || cause instanceof ApiError
+          ? cause.message
+          : String(cause),
+      );
+    } finally {
+      setOpening(false);
+    }
+  }
 
   const startRound = (roundNumber: number) =>
     run(async () => {
@@ -341,6 +413,38 @@ export function GmDashboard() {
                   </button>
                 </li>
               </ul>
+
+              {/*
+                * A quiz written once and opened whenever you play it, rather
+                * than written on the night. There is no storage behind this —
+                * the file is the quiz.
+                */}
+              <div className="kio-gm__quizFile">
+                <button
+                  className="kio-button kio-button--ghost"
+                  type="button"
+                  onClick={() => quizInput.current?.click()}
+                  disabled={opening}
+                >
+                  {opening ? "Opening…" : "Open a quiz file"}
+                </button>
+                <button
+                  className="kio-button kio-button--ghost"
+                  type="button"
+                  onClick={exportQuiz}
+                  disabled={game.rounds.length === 0}
+                >
+                  Save this quiz to a file
+                </button>
+                <input
+                  ref={quizInput}
+                  className="kio-sr-only"
+                  type="file"
+                  accept="application/json,.json"
+                  onChange={(event) => void openQuiz(event)}
+                  aria-label="Open a quiz file"
+                />
+              </div>
             </section>
           </div>
 

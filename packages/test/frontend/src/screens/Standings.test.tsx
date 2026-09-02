@@ -57,8 +57,8 @@ function standing(scores: [number, number, number], status: Game["status"] = "FI
       team("t3", "Foxes", scores[2], 1, [alan]),
     ],
     rounds: [
-      { number: 1, category: "One", status: "REVEALED", releasedCount: 1, questionCount: 1, questions: [] },
-      { number: 2, category: "Two", status: "REVEALED", releasedCount: 1, questionCount: 1, questions: [] },
+      { number: 1, category: "One", status: "REVEALED", releasedCount: 1, questionCount: 1, doublingAllowed: true, questions: [] },
+      { number: 2, category: "Two", status: "REVEALED", releasedCount: 1, questionCount: 1, doublingAllowed: true, questions: [] },
     ],
   };
 }

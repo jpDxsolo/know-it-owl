@@ -58,6 +58,8 @@ type Round {
   status: RoundStatus!
   "How many questions the GM has unveiled. Players never see beyond it."
   releasedCount: Int!
+  "Whether a team may spend its double on this round. The GM decides per round."
+  doublingAllowed: Boolean!
   "How many questions the round holds in total. A count, never the content — it is what tells a team the host has finished releasing."
   questionCount: Int!
   questions: [Question!]!
@@ -71,6 +73,8 @@ type Question {
   defaultPoints: Int!
   "Only populated after the round is revealed."
   correctAnswers: [String!]
+  "Storage key for a picture. GM only — it is what lets a round be saved to a quiz file and opened later, where a presigned URL would have expired."
+  imageKey: String
 }
 
 type TeamResponse {
@@ -157,7 +161,8 @@ type Mutation {
   joinGame(joinCode: String!, playerId: ID!, displayName: String!): GameUpdate!
   randomizeTeams(gameId: ID!, gmToken: String!, teamCount: Int!): GameUpdate!
   setTeamName(gameId: ID!, playerId: ID!, teamId: ID!, name: String!): GameUpdate!
-  createRound(gameId: ID!, gmToken: String!, category: String!, questions: [QuestionInput!]!): Round!
+  "Omit doublingAllowed to allow it, which is what every round did before the flag existed."
+  createRound(gameId: ID!, gmToken: String!, category: String!, questions: [QuestionInput!]!, doublingAllowed: Boolean): Round!
   startRound(gameId: ID!, gmToken: String!, roundNumber: Int!): GameUpdate!
   "Unveil the next question. Strictly sequential: questionNumber must be releasedCount + 1."
   releaseQuestion(gameId: ID!, gmToken: String!, roundNumber: Int!, questionNumber: Int!): GameUpdate!

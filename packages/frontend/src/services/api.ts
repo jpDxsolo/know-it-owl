@@ -136,7 +136,8 @@ export const GameFields = graphql(`
       status
       releasedCount
       questionCount
-      questions { number type text imageUrl defaultPoints correctAnswers }
+      doublingAllowed
+      questions { number type text imageUrl imageKey defaultPoints correctAnswers }
     }
   }
 `);
@@ -183,8 +184,8 @@ export const RoundResultsQuery = graphql(`
   query RoundResults($gameId: ID!, $roundNumber: Int!, $gmToken: String) {
     roundResults(gameId: $gameId, roundNumber: $roundNumber, gmToken: $gmToken) {
       round {
-        number category status releasedCount questionCount
-        questions { number type text imageUrl defaultPoints correctAnswers }
+        number category status releasedCount questionCount doublingAllowed
+        questions { number type text imageUrl imageKey defaultPoints correctAnswers }
       }
       responses {
         roundNumber questionNumber teamId answers doubled graded gradedPoints
@@ -211,10 +212,10 @@ export const CreateGameMutation = graphql(`
 `);
 
 export const CreateRoundMutation = graphql(`
-  mutation CreateRound($gameId: ID!, $gmToken: String!, $category: String!, $questions: [QuestionInput!]!) {
-    createRound(gameId: $gameId, gmToken: $gmToken, category: $category, questions: $questions) {
-      number category status releasedCount questionCount
-      questions { number type text imageUrl defaultPoints correctAnswers }
+  mutation CreateRound($gameId: ID!, $gmToken: String!, $category: String!, $questions: [QuestionInput!]!, $doublingAllowed: Boolean) {
+    createRound(gameId: $gameId, gmToken: $gmToken, category: $category, questions: $questions, doublingAllowed: $doublingAllowed) {
+      number category status releasedCount questionCount doublingAllowed
+      questions { number type text imageUrl imageKey defaultPoints correctAnswers }
     }
   }
 `);

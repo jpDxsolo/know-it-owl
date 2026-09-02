@@ -26,6 +26,9 @@ export async function createRound(args: Record<string, unknown>): Promise<Signed
   const gmToken = requiredString(args, "gmToken");
   const category = requiredString(args, "category", { maxLength: MAX_CATEGORY_LENGTH });
   const parsed = parseQuestionInputs(args.questions, MAX_QUESTIONS_PER_ROUND);
+  // Absent means allowed: doubling is the norm, and a host who says nothing
+  // about it wants the round to behave like every round before this field.
+  const doublingAllowed = args.doublingAllowed !== false;
 
   const state = await loadGameState(gameId);
   if (!state) throw new NotFoundError("No such game");
@@ -43,12 +46,14 @@ export async function createRound(args: Record<string, unknown>): Promise<Signed
     category,
     status: "DRAFT",
     releasedCount: 0,
+    doublingAllowed,
   };
   const roundItem: RoundItem = {
     ...keys.round(gameId, roundNumber),
     category: round.category,
     status: round.status,
     releasedCount: round.releasedCount,
+    doublingAllowed: round.doublingAllowed,
   };
 
   const table = tableName();
@@ -84,6 +89,7 @@ export async function createRound(args: Record<string, unknown>): Promise<Signed
 
   // The GM gets every question back but no answer keys: one rule, applied to
   // every pre-reveal payload, rather than an exception for the author.
-  const [signed] = await signRounds([withoutAnswerKeys(round, questions)]);
+  // Only the host ever sees this echo.
+  const [signed] = await signRounds([withoutAnswerKeys(round, questions)], true);
   return signed;
 }

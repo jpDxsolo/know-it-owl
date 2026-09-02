@@ -85,6 +85,7 @@ function playing(
   released: number,
   overrides: {
     questionCount?: number;
+    doublingAllowed?: boolean;
     teamOverrides?: Parameters<typeof team>[3];
     questions?: (ReturnType<typeof question> | ReturnType<typeof picture>)[];
     roundStatus?: "ACTIVE" | "GRADING";
@@ -93,6 +94,7 @@ function playing(
 ): Game {
   const authored = overrides.questions ?? [1, 2, 3, 4, 5].map((n) => question(n));
   const questionCount = overrides.questionCount ?? authored.length;
+  const doublingAllowed = overrides.doublingAllowed ?? true;
   return {
     id: "g1",
     joinCode: "ABC123",
@@ -110,6 +112,7 @@ function playing(
         status: overrides.roundStatus ?? "ACTIVE",
         releasedCount: released,
         questionCount,
+        doublingAllowed,
         questions: authored.filter((entry) => entry.number <= released),
       },
     ],
@@ -382,6 +385,16 @@ describe("the double", () => {
     await userEvent.click(screen.getByRole("switch"));
     expect(screen.getByRole("switch")).toHaveAttribute("aria-checked", "true");
     await waitFor(() => expect(roundDraft("g1", 1)?.double).toBe(true));
+  });
+
+  it("is not offered at all on a round the host closed to it", async () => {
+    // A disabled switch reads as "not yet"; there is no yet here.
+    serve(playing(1, { doublingAllowed: false }));
+    renderRound();
+
+    await waitFor(() => expect(screen.getByText("Capitals")).toBeInTheDocument());
+    expect(screen.queryByRole("switch")).not.toBeInTheDocument();
+    expect(screen.getByText(/no doubling on this round/i)).toBeInTheDocument();
   });
 
   it("is spent, and says which round took it", async () => {

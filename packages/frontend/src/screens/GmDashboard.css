@@ -175,6 +175,15 @@
   flex: none;
 }
 
+/* Saving and opening a quiz: quiet, beside the rounds they act on. */
+.kio-gm__quizFile {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--kio-space-3);
+  margin-top: var(--kio-space-3);
+}
+
 .kio-gm__foot {
   display: flex;
   flex-direction: column;

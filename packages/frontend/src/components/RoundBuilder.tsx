@@ -107,6 +107,8 @@ export function RoundBuilder({
 }: RoundBuilderProps) {
   const [category, setCategory] = useState(initialCategory);
   const [drafts, setDrafts] = useState<Draft[]>([emptyDraft()]);
+  /* Doubling is the norm; a host turns it off for the odd round. */
+  const [doublingAllowed, setDoublingAllowed] = useState(true);
   const [saving, setSaving] = useState(false);
   const [problem, setProblem] = useState<string>();
   /** Only mark fields red once the host has tried to save. */
@@ -202,6 +204,7 @@ export function RoundBuilder({
         gmToken,
         category: category.trim(),
         questions: drafts.map(toInput),
+        doublingAllowed,
       });
       onSaved();
     } catch (cause) {
@@ -381,6 +384,32 @@ export function RoundBuilder({
       )}
 
       {problem && <p className="kio-field-error">{problem}</p>}
+
+      <section
+        className={`kio-card kio-double${doublingAllowed ? "" : " kio-double--off"}`}
+        aria-labelledby="doublingTitle"
+      >
+        <div>
+          <h2 className="kio-double__title" id="doublingTitle">
+            Teams may double this round
+          </h2>
+          <p className="kio-muted">
+            {doublingAllowed
+              ? "A team can spend its one double here."
+              : "Nobody can double this round — the toggle will not even appear for them."}
+          </p>
+        </div>
+        <button
+          className="kio-switch"
+          type="button"
+          role="switch"
+          aria-checked={doublingAllowed}
+          aria-label="Teams may double this round"
+          onClick={() => setDoublingAllowed((on) => !on)}
+        >
+          <span className="kio-switch__knob" aria-hidden="true" />
+        </button>
+      </section>
 
       <div className="kio-builder__foot">
         <p className="kio-muted">

@@ -298,6 +298,84 @@ h3 {
   }
 }
 
+/*
+ * The double: a team's one bet, and the host's switch for allowing it.
+ *
+ * Shared, because the round builder turns it off and the team round turns it
+ * on. It lived on the team round screen until the builder needed it, at which
+ * point it only worked by accident — one stylesheet is emitted for the whole
+ * app, so a class defined anywhere is reachable everywhere.
+ */
+.kio-double {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--kio-space-4);
+  border-color: var(--kio-amber);
+}
+
+.kio-double--on {
+  background-color: var(--kio-navy-raised);
+}
+
+/* Turned off by the host: no longer an affordance, so it drops the amber. */
+.kio-double--off {
+  border-color: var(--kio-hairline);
+}
+
+.kio-double--off .kio-double__title {
+  color: var(--kio-muted);
+}
+
+.kio-double__title {
+  font-size: 1rem;
+  color: var(--kio-amber);
+}
+
+.kio-switch {
+  position: relative;
+  width: 3.25rem;
+  height: 1.875rem;
+  flex: none;
+  padding: 0;
+  background-color: var(--kio-navy-ground);
+  border: 1px solid var(--kio-hairline);
+  border-radius: var(--kio-radius-pill);
+  cursor: pointer;
+}
+
+.kio-switch[aria-checked="true"] {
+  background-color: var(--kio-amber);
+  border-color: var(--kio-amber);
+}
+
+.kio-switch:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.kio-switch:focus-visible {
+  outline: 2px solid var(--kio-amber);
+  outline-offset: 2px;
+}
+
+.kio-switch__knob {
+  position: absolute;
+  top: 50%;
+  left: 0.1875rem;
+  width: 1.375rem;
+  height: 1.375rem;
+  transform: translateY(-50%);
+  background-color: var(--kio-muted);
+  border-radius: var(--kio-radius-pill);
+  transition: left 0.15s ease-in-out, background-color 0.15s ease-in-out;
+}
+
+.kio-switch[aria-checked="true"] .kio-switch__knob {
+  left: calc(100% - 1.5625rem);
+  background-color: var(--kio-gold-ink);
+}
+
 /* Visible to screen readers only. */
 .kio-sr-only {
   position: absolute;
