@@ -75,8 +75,9 @@ What each step is actually guarding:
 | 10   | Every response is graded, `endRound` reveals, and only then do answer keys appear |
 | 11   | The double reaches the standings, and no GM token or hash is in any broadcast |
 | 12   | A round closed to doubling refuses **both** routes to one — `chooseDouble` and the `double` flag on `submitAnswers` — and still plays, marks and reveals |
-| 13   | `imageKey` reaches the host and not the player, which is what lets a quiz be saved to a file and opened after the presigned URL has expired |
-| 14   | `finishGame` refuses a wrong token, moves the game to FINISHED, fans out, refuses a second time, and leaves the scores exactly as the last reveal left them |
+| 13   | A player already in the game comes back mid-quiz to the same seat and team, while a newcomer is still refused |
+| 14   | `imageKey` reaches the host and not the player, which is what lets a quiz be saved to a file and opened after the presigned URL has expired |
+| 15   | `finishGame` refuses a wrong token, moves the game to FINISHED, fans out, refuses a second time, and leaves the scores exactly as the last reveal left them |
 
 ## 3. The same thing by hand, in the AppSync console
 

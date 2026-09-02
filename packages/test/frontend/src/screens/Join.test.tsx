@@ -135,6 +135,19 @@ describe("when the join is refused", () => {
     expect(screen.getByLabelText(/game code/i)).not.toHaveAttribute("aria-invalid", "true");
   });
 
+  it("marks neither field when the game itself is the problem", async () => {
+    // "This game has already started" is not something either field can mend,
+    // and outlining the name over it makes a perfectly good name look rejected.
+    reply(refused("ConflictError", "This game has already started"));
+    renderJoin();
+    await fillIn("abc123", "Ada");
+    await userEvent.click(screen.getByRole("button", { name: /join the quiz/i }));
+
+    await waitFor(() => expect(screen.getByText(/already started/i)).toBeInTheDocument());
+    expect(screen.getByLabelText(/your name/i)).not.toHaveAttribute("aria-invalid", "true");
+    expect(screen.getByLabelText(/game code/i)).not.toHaveAttribute("aria-invalid", "true");
+  });
+
   it("rewrites a lost connection into something a player can act on", async () => {
     vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new TypeError("Failed to fetch")));
     renderJoin();
