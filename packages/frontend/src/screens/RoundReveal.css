@@ -137,6 +137,19 @@
   border-color: var(--kio-gold);
 }
 
+/*
+ * A picture round will not fit the three-column row a text answer uses, so the
+ * team's name leads, the ten slots take the full width beneath it, and the
+ * total sits with the name.
+ */
+.kio-revealq__team--picture {
+  grid-template-columns: minmax(0, 1fr) 2.5rem;
+}
+
+.kio-revealq__team--picture .kio-slots {
+  grid-column: 1 / -1;
+}
+
 .kio-revealq__teamName {
   color: var(--kio-muted);
   font-size: 0.8125rem;

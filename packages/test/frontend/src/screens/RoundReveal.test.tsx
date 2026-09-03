@@ -355,6 +355,60 @@ describe("the reveal", () => {
     expect(link?.getAttribute("rel")).toContain("noopener");
   });
 
+  it("gives a picture round's answers their own numbered boxes", async () => {
+    // Run together on a line, ten answers to ten numbered things are
+    // unreadable — the whole question is which belongs to which.
+    const ten = Array.from({ length: 10 }, (_, index) => `Landmark ${index + 1}`);
+    serve({
+      ...revealed,
+      round: {
+        ...revealed.round,
+        questions: [
+          {
+            number: 1,
+            type: "PICTURE_10",
+            text: null,
+            imageUrl: "https://images.test/one.jpg",
+            defaultPoints: 1,
+            correctAnswers: ten,
+          } satisfies RevealQuestion,
+        ],
+      },
+      responses: [
+        {
+          roundNumber: 1,
+          questionNumber: 1,
+          teamId: "t1",
+          // Only the third was right, and it is the third slot that must say so.
+          answers: ["", "", "Landmark 3", "", "", "", "", "", "", ""],
+          doubled: false,
+          graded: true,
+          gradedPoints: [0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
+        },
+      ],
+    });
+    renderReveal();
+
+    await waitFor(() => expect(screen.getByText("Landmark 10")).toBeInTheDocument());
+
+    // The key: every answer present, each beside its own number.
+    const key = screen.getByText("Correct answers").closest("div") as HTMLElement;
+    const rows = within(key).getAllByRole("listitem");
+    expect(rows).toHaveLength(10);
+    expect(rows[0]).toHaveTextContent("1Landmark 1");
+    expect(rows[9]).toHaveTextContent("10Landmark 10");
+
+    // The team's attempt, numbered the same way so it reads straight down.
+    // Scoped to the answers, since the standings name every team as well.
+    const answers = screen.getByText("The answers").closest("section") as HTMLElement;
+    const mine = within(answers).getByText("Owls").closest("li") as HTMLElement;
+    const said = within(mine).getAllByRole("listitem");
+    expect(said).toHaveLength(10);
+    expect(said[2]).toHaveTextContent("3Landmark 3");
+    // A blank is still shown, so the numbering never slips.
+    expect(said[0]).toHaveTextContent("1—");
+  });
+
   it("shows no double badge for a team that did not double", async () => {
     serve({
       ...revealed,

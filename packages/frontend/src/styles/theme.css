@@ -376,6 +376,56 @@ h3 {
   background-color: var(--kio-gold-ink);
 }
 
+/*
+ * Ten numbered things in one picture, read back.
+ *
+ * A picture round's answers are meaningless run together on a line: the whole
+ * question is which answer belongs to which number, so each keeps its number
+ * wherever it is shown — the answer key, and every team's attempt beside it.
+ */
+.kio-slots {
+  list-style: none;
+  display: grid;
+  gap: var(--kio-space-1) var(--kio-space-4);
+  margin: var(--kio-space-2) 0 0;
+  padding: 0;
+}
+
+.kio-slots__row {
+  display: grid;
+  grid-template-columns: 1.5rem minmax(0, 1fr);
+  align-items: baseline;
+  gap: var(--kio-space-2);
+}
+
+.kio-slots__number {
+  color: var(--kio-muted);
+  font-family: var(--kio-font-headline);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-align: right;
+}
+
+.kio-slots__value {
+  overflow-wrap: anywhere;
+}
+
+/* The key itself, and the ones a team was given something for. */
+.kio-slots__value--key,
+.kio-slots__value--scored {
+  color: var(--kio-green);
+  font-weight: 600;
+}
+
+@media (min-width: 40rem) {
+  .kio-slots {
+    /* 1–5 down the left, 6–10 down the right — the same halves everywhere. */
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-flow: column;
+    grid-template-rows: repeat(5, auto);
+  }
+}
+
 /* Visible to screen readers only. */
 .kio-sr-only {
   position: absolute;

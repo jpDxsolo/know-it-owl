@@ -190,10 +190,30 @@ export function RoundReveal() {
                   <p className="kio-revealq__prompt">{question.text}</p>
                 )}
 
-                <p className="kio-revealq__key">
-                  <span className="kio-label">Correct answer</span>
-                  {(question.correctAnswers ?? []).join(" · ") || "—"}
-                </p>
+                {question.type === "PICTURE_10" ? (
+                  /*
+                   * Ten answers to ten numbered things in one picture. Run
+                   * together on a line they are unreadable — nobody can tell
+                   * which belongs to which — so each keeps the number it was
+                   * asked under, in the same shape the team typed it into.
+                   */
+                  <div>
+                    <span className="kio-label">Correct answers</span>
+                    <ol className="kio-slots">
+                      {(question.correctAnswers ?? []).map((answer, index) => (
+                        <li key={index} className="kio-slots__row">
+                          <span className="kio-slots__number">{index + 1}</span>
+                          <span className="kio-slots__value kio-slots__value--key">{answer}</span>
+                        </li>
+                      ))}
+                    </ol>
+                  </div>
+                ) : (
+                  <p className="kio-revealq__key">
+                    <span className="kio-label">Correct answer</span>
+                    {(question.correctAnswers ?? []).join(" · ") || "—"}
+                  </p>
+                )}
 
                 <ul className="kio-revealq__teams">
                   {teams.map((team) => {
@@ -209,13 +229,36 @@ export function RoundReveal() {
                       <li
                         key={team.id}
                         className={`kio-revealq__team${
-                          team.id === myTeam?.id ? " kio-revealq__team--mine" : ""
-                        }`}
+                          question.type === "PICTURE_10" ? " kio-revealq__team--picture" : ""
+                        }${team.id === myTeam?.id ? " kio-revealq__team--mine" : ""}`}
                       >
                         <span className="kio-revealq__teamName">{nameOf(team.id)}</span>
-                        <span className="kio-revealq__said">
-                          {response ? response.answers.filter(Boolean).join(" · ") || "—" : "—"}
-                        </span>
+                        {question.type === "PICTURE_10" ? (
+                          /* Numbered the same way, so a team can read straight
+                             down against the key and see which ones they got. */
+                          <ol className="kio-slots">
+                            {(question.correctAnswers ?? []).map((_, index) => {
+                              const said = response?.answers[index]?.trim();
+                              const scored = (response?.gradedPoints?.[index] ?? 0) > 0;
+                              return (
+                                <li key={index} className="kio-slots__row">
+                                  <span className="kio-slots__number">{index + 1}</span>
+                                  <span
+                                    className={`kio-slots__value${
+                                      scored ? " kio-slots__value--scored" : ""
+                                    }`}
+                                  >
+                                    {said || "—"}
+                                  </span>
+                                </li>
+                              );
+                            })}
+                          </ol>
+                        ) : (
+                          <span className="kio-revealq__said">
+                            {response ? response.answers.filter(Boolean).join(" · ") || "—" : "—"}
+                          </span>
+                        )}
                         <span
                           className={`kio-revealq__points${
                             points > 0 ? " kio-revealq__points--scored" : ""
