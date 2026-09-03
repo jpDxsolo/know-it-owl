@@ -220,6 +220,14 @@
 
   .kio-answers {
     grid-template-columns: repeat(2, 1fr);
+    /*
+     * Down the first column, then the second: 1–5 on the left, 6–10 on the
+     * right. The default row-major fill put the odd numbers in one column and
+     * the even in the other, which reads as two interleaved lists rather than
+     * one list in two halves.
+     */
+    grid-auto-flow: column;
+    grid-template-rows: repeat(5, auto);
     gap: var(--kio-space-2) var(--kio-space-4);
   }
 
