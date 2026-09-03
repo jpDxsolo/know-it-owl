@@ -276,10 +276,30 @@ export function GmGrading() {
               <p className="kio-marking__prompt">
                 {question.type === "PICTURE_10" ? "Picture round" : question.text}
               </p>
-              <p className="kio-marking__key">
-                <span className="kio-label">Correct</span>
-                {(question.correctAnswers ?? []).join(" · ") || "No answer key"}
-              </p>
+              {question.type === "PICTURE_10" ? (
+                /*
+                 * Numbered, and in the same halves as the answers below it.
+                 * Marking a picture round is ten separate judgements — is
+                 * their 3 the key's 3 — and a run-on line of ten answers makes
+                 * the host count along it for every one of them.
+                 */
+                <div>
+                  <span className="kio-label">Correct</span>
+                  <ol className="kio-slots">
+                    {(question.correctAnswers ?? []).map((answer, index) => (
+                      <li key={index} className="kio-slots__row">
+                        <span className="kio-slots__number">{index + 1}</span>
+                        <span className="kio-slots__value kio-slots__value--key">{answer}</span>
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+              ) : (
+                <p className="kio-marking__key">
+                  <span className="kio-label">Correct</span>
+                  {(question.correctAnswers ?? []).join(" · ") || "No answer key"}
+                </p>
+              )}
               {/* Out of the tab order on purpose, here and on every row below.
                   A host tabbing down the column wants the next points box, not
                   two buttons on the way to it — and nothing is lost, because

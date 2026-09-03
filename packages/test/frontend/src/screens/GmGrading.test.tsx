@@ -376,6 +376,36 @@ describe("entering points", () => {
     expect(sent.points).toEqual([1, 1, 1, 1, 1, 1, 1, 1, 1, 1]);
   });
 
+  it("numbers a picture round's answer key, so it can be marked against", async () => {
+    // Marking one is ten separate judgements — is their 3 the key's 3 — and a
+    // run-on line of ten answers makes the host count along it every time.
+    setGmToken("g1", "token");
+    serve(
+      results(
+        [pictureQuestion(1)],
+        [response(1, "t1", Array.from({ length: 10 }, (_, i) => `Guess ${i + 1}`))],
+      ),
+    );
+    renderGrading();
+
+    await waitFor(() => expect(screen.getByText("Thing 10")).toBeInTheDocument());
+    const key = screen.getByText("Correct").closest("div") as HTMLElement;
+    const rows = within(key).getAllByRole("listitem");
+    expect(rows).toHaveLength(10);
+    expect(rows[0]).toHaveTextContent("1Thing 1");
+    expect(rows[9]).toHaveTextContent("10Thing 10");
+  });
+
+  it("still runs a text answer key on one line, which needs no numbering", async () => {
+    setGmToken("g1", "token");
+    serve(oneTextQuestion());
+    renderGrading();
+
+    await waitFor(() => expect(screen.getByText(/marking round 1/i)).toBeInTheDocument());
+    const key = screen.getByText("Correct").closest("p");
+    expect(key).toHaveTextContent("Canberra");
+  });
+
   it("reports a refusal rather than losing it", async () => {
     setGmToken("g1", "token");
     vi.stubGlobal(
