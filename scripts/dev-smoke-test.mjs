@@ -323,9 +323,12 @@ step(13, "a player comes back mid-quiz");
 // Returning is not joining: the seat is the player id, so a closed tab or a
 // stray back button must not end someone's night. A newcomer is still refused,
 // because the teams have been drawn and there is none for them.
+// Their own name, as the Join screen prefills it — a returning player claiming
+// somebody else's name is a different refusal, and a correct one.
+const returningName = players.find((p) => p.id === captains[0]).displayName;
 const back = await run(
   `mutation($c:String!,$p:ID!,$n:String!){ joinGame(joinCode:$c,playerId:$p,displayName:$n){ ${UPDATE} } }`,
-  { c: joinCode, p: captains[0], n: "Player 1" },
+  { c: joinCode, p: captains[0], n: returningName },
 );
 const seat = back.joinGame.game.players.find((p) => p.id === captains[0]);
 assert.equal(back.joinGame.game.players.length, 4, "rejoining created a second player");
